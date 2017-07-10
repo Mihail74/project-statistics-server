@@ -1,4 +1,4 @@
-package ru.mdkardaev.projectstatistic;
+package ru.mdkardaev.main;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,4 +13,4 @@ public class ProjectStatisticApplicationTests {
 	public void contextLoads() {
 	}
 
-}
+			}
