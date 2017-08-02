@@ -1,7 +1,7 @@
-package ru.mdkardaev.Player.repository;
+package ru.mdkardaev.player.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.mdkardaev.Player.entity.Player;
+import ru.mdkardaev.player.entity.Player;
 
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 }
