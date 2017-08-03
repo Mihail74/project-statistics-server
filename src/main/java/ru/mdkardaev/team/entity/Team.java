@@ -1,15 +1,21 @@
 package ru.mdkardaev.team.entity;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.player.entity.Player;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "team")
-@Data
+@Table(name = "team",
+        uniqueConstraints = {@UniqueConstraint(name = "uq_team_name", columnNames = {"name"})})
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"name"})
 @NoArgsConstructor
 public class Team {
 
@@ -18,9 +24,15 @@ public class Team {
     @SequenceGenerator(name = "idGenerator", sequenceName = "team_id_seq")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "teams")
     private Set<Player> players;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "team_game",
+            joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"))
+    private Set<Game> games;
 }

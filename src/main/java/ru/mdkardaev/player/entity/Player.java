@@ -1,15 +1,20 @@
 package ru.mdkardaev.player.entity;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.mdkardaev.team.entity.Team;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "player")
-@Data
+@Table(name = "player",
+        uniqueConstraints = {@UniqueConstraint(name = "uq_player_email", columnNames = {"email"})})
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"email"})
 @NoArgsConstructor
 public class Player {
 
@@ -20,6 +25,12 @@ public class Player {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "team_player",
