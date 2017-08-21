@@ -30,9 +30,11 @@ public class Team {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "teams")
     private Set<Player> players;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_game",
             joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"),
+            foreignKey = @ForeignKey(name = "fk_team"),
+            inverseForeignKey = @ForeignKey(name = "fk_game"))
     private Set<Game> games;
 }

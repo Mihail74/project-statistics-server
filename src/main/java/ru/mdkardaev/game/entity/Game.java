@@ -26,6 +26,6 @@ public class Game {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "scoreToWin")
+    @Column(name = "score_to_win")
     private Integer scoreToWin;
 }

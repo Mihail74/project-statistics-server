@@ -1,46 +1,37 @@
 package ru.mdkardaev.player.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mdkardaev.player.entity.Player;
 import ru.mdkardaev.player.repository.PlayerRepository;
-import ru.mdkardaev.team.entity.Team;
-import ru.mdkardaev.team.repository.TeamRepository;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import ru.mdkardaev.player.requests.RegisterRequest;
+import ru.mdkardaev.player.responses.RegisterResponse;
 
 @RestController
+@RequestMapping("api/player")
+@Api(tags = {"player"})
 public class PlayerController {
 
     @Autowired
     private PlayerRepository playerRepository;
-    @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
 
-    @RequestMapping(path = "/testPlayer",
+    @RequestMapping(path = "/register",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @SneakyThrows
-    public Player testCreate() {
-        Player player = new Player();
-        player.setName(UUID.randomUUID().toString());
-
-        Team team = new Team();
-        team.setName(UUID.randomUUID().toString());
-
-        Set<Team> teams = new HashSet<>();
-        teams.add(team);
-        player.setTeams(teams);
-        
-        return playerRepository.save(player);
+    @ApiOperation(value = "Register user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User is successfully  registered", response = RegisterResponse.class)
+    })
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(new RegisterResponse());
     }
 }

@@ -32,9 +32,11 @@ public class Player {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_player",
             joinColumns = @JoinColumn(name = "player_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
+            foreignKey = @ForeignKey(name = "fk_player"),
+            inverseForeignKey = @ForeignKey(name = "fk_team"))
     private Set<Team> teams;
 }
