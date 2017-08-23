@@ -1,9 +1,6 @@
 package ru.mdkardaev.player.entity;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.mdkardaev.team.entity.Team;
 
 import javax.persistence.*;
@@ -15,7 +12,9 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"email"})
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Player {
 
     @Id
@@ -23,13 +22,13 @@ public class Player {
     @SequenceGenerator(name = "idGenerator", sequenceName = "player_id_seq")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)

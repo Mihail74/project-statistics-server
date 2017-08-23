@@ -7,31 +7,32 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mdkardaev.player.repository.PlayerRepository;
+import ru.mdkardaev.player.handler.PlayerRegistrationService;
 import ru.mdkardaev.player.requests.RegisterRequest;
-import ru.mdkardaev.player.responses.RegisterResponse;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/player")
-@Api(tags = {"player"})
+@Api(tags = {"players"}, description = "Operations with players")
 public class PlayerController {
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private PlayerRegistrationService playerRegistrationService;
 
     @RequestMapping(path = "/register",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.ALL_VALUE)
     @ApiOperation(value = "Register user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User is successfully  registered", response = RegisterResponse.class)
+            @ApiResponse(code = 200, message = "User is successfully  registered")
     })
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(new RegisterResponse());
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
+        Long playerID = playerRegistrationService.register(request);
+        return ResponseEntity.ok().build();
     }
 }
