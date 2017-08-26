@@ -26,13 +26,14 @@ public class PlayerController {
 
     @RequestMapping(path = "/register",
             method = RequestMethod.POST,
-            produces = MediaType.ALL_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Register user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User is successfully  registered")
+            @ApiResponse(code = 200, message = "User is successfully  registered"),
+            @ApiResponse(code = 409, message = "User with the specified email already exist")
     })
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
-        Long playerID = playerRegistrationService.register(request);
+        playerRegistrationService.register(request);
         return ResponseEntity.ok().build();
     }
 }
