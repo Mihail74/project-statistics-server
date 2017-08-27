@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Email;
 
 @ApiModel(value = "Request on player registration")
 @Data
-public class RegisterRequest {
+public class RegisterPlayerRequest {
 
     @ApiModelProperty(value = "user name", example = "Ivan", required = true)
     private String name;

@@ -1,10 +1,7 @@
 package ru.mdkardaev.game.entity;
 
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -14,7 +11,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name"})
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Game {
 
     @Id
@@ -22,7 +21,7 @@ public class Game {
     @SequenceGenerator(name = "idGenerator", sequenceName = "game_id_seq")
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "score_to_win")
