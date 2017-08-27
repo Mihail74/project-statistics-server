@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mdkardaev.player.services.PlayerRegistrationService;
+import ru.mdkardaev.player.dtos.PlayerDTO;
+import ru.mdkardaev.player.requests.GetPlayersRequest;
 import ru.mdkardaev.player.requests.RegisterPlayerRequest;
+import ru.mdkardaev.player.responses.GetPlayersResponse;
+import ru.mdkardaev.player.services.PlayerService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/player")
@@ -22,7 +26,7 @@ import javax.validation.Valid;
 public class PlayerController {
 
     @Autowired
-    private PlayerRegistrationService playerRegistrationService;
+    private PlayerService playerService;
 
     @RequestMapping(path = "/register",
             method = RequestMethod.POST,
@@ -33,7 +37,19 @@ public class PlayerController {
             @ApiResponse(code = 409, message = "User with the specified email already exist")
     })
     public ResponseEntity<?> register(@RequestBody @Valid RegisterPlayerRequest request) {
-        playerRegistrationService.register(request);
+        playerService.register(request);
         return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(path = "/players",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Return players list")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return players list", response = GetPlayersResponse.class),
+    })
+    public ResponseEntity<?> getPlayers(GetPlayersRequest request) {
+        List<PlayerDTO> players = playerService.getPlayers();
+        return ResponseEntity.ok(new GetPlayersResponse(players));
     }
 }
