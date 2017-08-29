@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.stream.Stream;
 
 /**
- * Коды SQL - ошибок
+ * SQL code error
  */
 @Getter
 public enum SQLStates {

@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.requests.CreateGameRequest;
-import ru.mdkardaev.game.services.GameCreationService;
+import ru.mdkardaev.game.responses.GetGamesResponse;
+import ru.mdkardaev.game.services.GameService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/games")
@@ -22,7 +25,7 @@ import javax.validation.Valid;
 public class GameController {
 
     @Autowired
-    private GameCreationService gameCreationService;
+    private GameService gameService;
 
     @RequestMapping(path = "/create",
             method = RequestMethod.POST,
@@ -32,8 +35,20 @@ public class GameController {
             @ApiResponse(code = 200, message = "Game is successfully  registered"),
             @ApiResponse(code = 409, message = "Game with the specified name already exist")
     })
-    public ResponseEntity<?> register(@RequestBody @Valid CreateGameRequest request) {
-        gameCreationService.create(request);
+    public ResponseEntity<?> createGame(@RequestBody @Valid CreateGameRequest request) {
+        gameService.create(request);
         return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(path = "/",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get games list")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return games list", response = GetGamesResponse.class)
+    })
+    public ResponseEntity<?> getGames() {
+        List<GameDTO> games = gameService.getGames();
+        return ResponseEntity.ok(new GetGamesResponse(games));
     }
 }

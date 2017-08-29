@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class CreateGameRequest {
 
-    @ApiModelProperty(value = "game name", example = "Футбол", required = true)
+    @ApiModelProperty(value = "game name", example = "football", required = true)
     private String name;
     @ApiModelProperty(value = "score to win a match", example = "5", required = true)
     private Integer scoreToWin;

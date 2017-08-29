@@ -41,7 +41,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(
+    @RequestMapping(path = "/",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Return users list")

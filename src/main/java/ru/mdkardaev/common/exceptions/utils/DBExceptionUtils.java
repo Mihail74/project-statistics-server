@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 public class DBExceptionUtils {
 
     /**
-     * В случае, причина возникновения Exception e является ConstraintViolationException с sqlState == conditionalSqlState,
-     * то кидается исключение, поставляемое exceptionSupplier
+     * In case when cause of Exceptione is ConstraintViolationException with sqlState == conditionalSqlState,
+     * then throws exception supplied by the exceptionSupplier
      */
     public void conditionThrowNewException(Exception e, SQLStates conditionalSqlState, Supplier<RuntimeException> exceptionSupplier) {
         if (e.getCause() instanceof ConstraintViolationException) {

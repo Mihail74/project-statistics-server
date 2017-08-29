@@ -2,23 +2,30 @@ package ru.mdkardaev.game.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
+import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.exceptions.GameAlreadyExist;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.game.requests.CreateGameRequest;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
-public class GameCreationService {
+public class GameService {
 
     @Autowired
     private DBExceptionUtils dbExceptionUtils;
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private ConversionService conversionService;
 
     public void create(CreateGameRequest request) {
         Game game = Game.builder()
@@ -37,5 +44,12 @@ public class GameCreationService {
             log.error(e.getMessage(), e);
             throw e;
         }
+    }
+
+    public List<GameDTO> getGames() {
+        return gameRepository.findAll()
+                             .stream()
+                             .map(e -> conversionService.convert(e, GameDTO.class))
+                             .collect(Collectors.toList());
     }
 }
