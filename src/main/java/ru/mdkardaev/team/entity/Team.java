@@ -1,9 +1,6 @@
 package ru.mdkardaev.team.entity;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.user.entity.User;
 
@@ -16,7 +13,9 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name"})
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Team {
 
     @Id
@@ -27,7 +26,13 @@ public class Team {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "teams")
+    //    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "teams")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "team_users",
+            joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+            foreignKey = @ForeignKey(name = "fk_team"),
+            inverseForeignKey = @ForeignKey(name = "fk_users"))
     private Set<User> users;
 
     @ManyToMany(fetch = FetchType.LAZY)
