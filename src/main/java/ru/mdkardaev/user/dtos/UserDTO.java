@@ -1,4 +1,4 @@
-package ru.mdkardaev.player.dtos;
+package ru.mdkardaev.user.dtos;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-@ApiModel(value = "Player")
+@ApiModel(value = "User")
 @Data
 @Builder
 @AllArgsConstructor
-public class PlayerDTO {
+public class UserDTO {
 
     @ApiModelProperty(value = "id", example = "1", required = true)
     private Long id;

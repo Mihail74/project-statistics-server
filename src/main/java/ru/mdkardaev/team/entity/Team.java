@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.mdkardaev.game.entity.Game;
-import ru.mdkardaev.player.entity.Player;
+import ru.mdkardaev.user.entity.User;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -28,7 +28,7 @@ public class Team {
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "teams")
-    private Set<Player> players;
+    private Set<User> users;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_game",

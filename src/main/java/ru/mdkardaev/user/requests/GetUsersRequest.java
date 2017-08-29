@@ -1,12 +1,12 @@
-package ru.mdkardaev.player.requests;
+package ru.mdkardaev.user.requests;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@ApiModel(value = "Request on players list")
+@ApiModel(value = "Request on users list")
 @Data
-public class GetPlayersRequest {
+public class GetUsersRequest {
 
     @ApiModelProperty(value = "Stub. Just for testing", example = "test")
     private String test;

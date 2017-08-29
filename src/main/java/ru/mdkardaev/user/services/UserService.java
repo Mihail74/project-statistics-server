@@ -1,4 +1,4 @@
-package ru.mdkardaev.player.services;
+package ru.mdkardaev.user.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,36 +7,36 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
-import ru.mdkardaev.player.dtos.PlayerDTO;
-import ru.mdkardaev.player.entity.Player;
-import ru.mdkardaev.player.exceptions.UserAlreadyExist;
-import ru.mdkardaev.player.repository.PlayerRepository;
-import ru.mdkardaev.player.requests.RegisterPlayerRequest;
+import ru.mdkardaev.user.dtos.UserDTO;
+import ru.mdkardaev.user.entity.User;
+import ru.mdkardaev.user.exceptions.UserAlreadyExist;
+import ru.mdkardaev.user.repository.UserRepository;
+import ru.mdkardaev.user.requests.RegisterUserRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class PlayerService {
+public class UserService {
 
     @Autowired
     private DBExceptionUtils dbExceptionUtils;
     @Autowired
-    private PlayerRepository playerRepository;
+    private UserRepository userRepository;
     @Autowired
     private ConversionService conversionService;
 
-    public void register(RegisterPlayerRequest request) {
+    public void register(RegisterUserRequest request) {
 
-        Player player = Player.builder()
-                              .name(request.getName())
-                              .password(request.getPassword())
-                              .email(request.getEmail())
-                              .build();
+        User user = User.builder()
+                        .name(request.getName())
+                        .password(request.getPassword())
+                        .email(request.getEmail())
+                        .build();
 
         try {
-            playerRepository.save(player);
+            userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             dbExceptionUtils
                     .conditionThrowNewException(e,
@@ -49,10 +49,10 @@ public class PlayerService {
         }
     }
 
-    public List<PlayerDTO> getPlayers() {
-        return playerRepository.findAll()
-                               .stream()
-                               .map(e -> conversionService.convert(e, PlayerDTO.class))
-                               .collect(Collectors.toList());
+    public List<UserDTO> getUsers() {
+        return userRepository.findAll()
+                             .stream()
+                             .map(e -> conversionService.convert(e, UserDTO.class))
+                             .collect(Collectors.toList());
     }
 }
