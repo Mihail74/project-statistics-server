@@ -9,10 +9,10 @@ import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.team.entity.Team;
+import ru.mdkardaev.team.exceptions.TeamAlreadyExist;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.user.entity.User;
-import ru.mdkardaev.user.exceptions.UserAlreadyExist;
 import ru.mdkardaev.user.repository.UserRepository;
 
 import java.util.HashSet;
@@ -48,8 +48,8 @@ public class TeamService {
             dbExceptionUtils
                     .conditionThrowNewException(e,
                                                 SQLStates.UNIQUE_VIOLATION,
-                                                () -> new UserAlreadyExist(String.format(
-                                                        "Team with email: [%s] already exist.",
+                                                () -> new TeamAlreadyExist(String.format(
+                                                        "Team with name: [%s] already exist.",
                                                         request.getName())));
             log.error(e.getMessage(), e);
             throw e;
