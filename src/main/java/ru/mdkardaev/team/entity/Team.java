@@ -26,7 +26,6 @@ public class Team {
     @Column(name = "name", nullable = false)
     private String name;
 
-    //    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "teams")
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_users",
             joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
