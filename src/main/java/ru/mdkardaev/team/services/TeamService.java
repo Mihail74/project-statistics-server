@@ -10,9 +10,6 @@ import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.team.dtos.TeamDTO;
-import ru.mdkardaev.team.dtos.TeamWIthoutUsersAndGames;
-import ru.mdkardaev.team.dtos.TeamWithoutGames;
-import ru.mdkardaev.team.dtos.TeamWithoutUsers;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.exceptions.TeamAlreadyExist;
 import ru.mdkardaev.team.repository.TeamRepository;
@@ -21,10 +18,10 @@ import ru.mdkardaev.team.requests.GetTeamRequest;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -67,17 +64,9 @@ public class TeamService {
     }
 
     public List<TeamDTO> getTeams(GetTeamRequest request) {
-
-        Class<?> resultClass = TeamWIthoutUsersAndGames.class;
-        if (request.isIncludeGames() && request.isIncludeUsers()) {
-            resultClass = TeamDTO.class;
-        } else if (request.isIncludeUsers()) {
-            resultClass = TeamWithoutGames.class;
-        } else if (request.isIncludeGames()) {
-            resultClass = TeamWithoutUsers.class;
-        }
-
-//        teamRepository.findAll().stream().map(e -> (TeamDTO) conversionService.convert(e, resultClass));
-        return new ArrayList<>();
+        return teamRepository.findAll()
+                             .stream()
+                             .map(e -> conversionService.convert(e, TeamDTO.class))
+                             .collect(Collectors.toList());
     }
 }
