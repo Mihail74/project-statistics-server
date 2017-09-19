@@ -12,7 +12,7 @@ public class GameToGameDTOConverter implements Converter<Game, GameDTO> {
         return GameDTO.builder()
                       .id(from.getId())
                       .name(from.getName())
-                      .scoreToWin(from.getScoreToWin())
+                      .description(from.getDescription())
                       .build();
     }
 }

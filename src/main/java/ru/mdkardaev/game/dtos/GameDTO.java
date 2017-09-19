@@ -14,8 +14,10 @@ public class GameDTO {
 
     @ApiModelProperty(value = "id", example = "1", required = true)
     private Long id;
+
     @ApiModelProperty(value = "name", example = "football", required = true)
     private String name;
-    @ApiModelProperty(value = "scoreToWin", example = "5", required = true)
-    private Integer scoreToWin;
+
+    @ApiModelProperty(value = "description", example = "table football 2x2")
+    private String description;
 }

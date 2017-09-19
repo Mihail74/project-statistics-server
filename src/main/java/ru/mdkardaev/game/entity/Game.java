@@ -24,6 +24,7 @@ public class Game {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "score_to_win")
-    private Integer scoreToWin;
+    @Column(name = "description")
+    private String description;
+
 }

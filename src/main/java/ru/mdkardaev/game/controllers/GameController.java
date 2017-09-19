@@ -33,7 +33,7 @@ public class GameController {
     @ApiOperation(value = "Create game")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Game is successfully  registered"),
-            @ApiResponse(code = 409, message = "Game with the specified name already exist")
+            @ApiResponse(code = 500, message = "Game with the specified name already exist or name is empty")
     })
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateGameRequest request) {
         gameService.create(request);

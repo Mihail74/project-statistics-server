@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.exceptions.GameAlreadyExist;
+import ru.mdkardaev.game.exceptions.InvalidRequestParameter;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.game.requests.CreateGameRequest;
 
@@ -28,9 +30,13 @@ public class GameService {
     private ConversionService conversionService;
 
     public void create(CreateGameRequest request) {
+        if (StringUtils.isEmpty(request.getName())) {
+            throw new InvalidRequestParameter("name cannot be empty");
+        }
+
         Game game = Game.builder()
                         .name(request.getName())
-                        .scoreToWin(request.getScoreToWin())
+                        .description(request.getDescription())
                         .build();
         try {
             gameRepository.save(game);
