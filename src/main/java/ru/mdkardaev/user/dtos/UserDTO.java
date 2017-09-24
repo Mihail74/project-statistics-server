@@ -14,8 +14,6 @@ public class UserDTO {
 
     @ApiModelProperty(value = "id", example = "1", required = true)
     private Long id;
-    @ApiModelProperty(value = "name", example = "Ivan", required = true)
-    private String name;
-    @ApiModelProperty(value = "email", example = "test@gmail.com", required = true)
-    private String email;
+    @ApiModelProperty(value = "login", example = "login", required = true)
+    private String login;
 }

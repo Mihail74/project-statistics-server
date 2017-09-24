@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.requests.CreateGameRequest;
 import ru.mdkardaev.game.responses.GetGamesResponse;
@@ -20,8 +21,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/games")
-@Api(tags = {"games"}, description = "Operations with games")
+@RequestMapping(value = "/api/games")
+@Api(tags = SwaggerConfig.Tags.GAMES)
 public class GameController {
 
     @Autowired
@@ -29,11 +30,11 @@ public class GameController {
 
     @RequestMapping(path = "/create",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Create game")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Game is successfully  registered"),
-            @ApiResponse(code = 500, message = "Game with the specified name already exist or name is empty")
+            @ApiResponse(code = 400, message = "Game with the specified name already exist or name is empty")
     })
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateGameRequest request) {
         gameService.create(request);
@@ -42,7 +43,7 @@ public class GameController {
 
     @RequestMapping(path = "/",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Get games list")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return games list", response = GetGamesResponse.class)

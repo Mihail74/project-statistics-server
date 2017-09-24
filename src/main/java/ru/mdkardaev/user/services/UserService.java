@@ -4,35 +4,51 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
+import ru.mdkardaev.user.exceptions.UserAlreadyExist;
+import ru.mdkardaev.security.jwt.JwtFactory;
+import ru.mdkardaev.security.requests.RegisterUserRequest;
 import ru.mdkardaev.user.dtos.UserDTO;
 import ru.mdkardaev.user.entity.User;
-import ru.mdkardaev.user.exceptions.UserAlreadyExist;
 import ru.mdkardaev.user.repository.UserRepository;
-import ru.mdkardaev.user.requests.RegisterUserRequest;
+import ru.mdkardaev.user.roles.Role;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserService {
-
-    @Autowired
-    private DBExceptionUtils dbExceptionUtils;
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private DBExceptionUtils dbExceptionUtils;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtFactory jwtTokenFactory;
+    @Autowired
     private ConversionService conversionService;
+
+
+    public List<UserDTO> getUsers() {
+        return userRepository.findAll()
+                             .stream()
+                             .map(e -> conversionService.convert(e, UserDTO.class))
+                             .collect(Collectors.toList());
+    }
 
     public void register(RegisterUserRequest request) {
 
         User user = User.builder()
-                        .name(request.getName())
-                        .password(request.getPassword())
-                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .login(request.getLogin())
+                        .roles(new HashSet<>(Collections.singletonList(Role.USER)))
                         .build();
 
         try {
@@ -42,17 +58,10 @@ public class UserService {
                     .conditionThrowNewException(e,
                                                 SQLStates.UNIQUE_VIOLATION,
                                                 () -> new UserAlreadyExist(String.format(
-                                                        "User with email: [%s] already exist.",
-                                                        request.getEmail())));
+                                                        "User with login: [%s] already exist.",
+                                                        request.getLogin())));
             log.error(e.getMessage(), e);
             throw e;
         }
-    }
-
-    public List<UserDTO> getUsers() {
-        return userRepository.findAll()
-                             .stream()
-                             .map(e -> conversionService.convert(e, UserDTO.class))
-                             .collect(Collectors.toList());
     }
 }

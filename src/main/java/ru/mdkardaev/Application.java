@@ -16,15 +16,4 @@ public class Application {
     public static void main(String[] args) throws JsonProcessingException {
         SpringApplication.run(Application.class, args);
     }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                //Добавляет cors для webpack-server
-                registry.addMapping("/**").allowedOrigins("http://localhost:12222");
-            }
-        };
-    }
 }

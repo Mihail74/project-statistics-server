@@ -13,7 +13,7 @@ public class UserToUserDTOConverter implements Converter<User, UserDTO> {
     public UserDTO convert(User from) {
         return UserDTO.builder()
                       .id(from.getId())
-                      .name(from.getName())
-                      .email(from.getEmail()).build();
+                      .login(from.getLogin())
+                      .build();
     }
 }
