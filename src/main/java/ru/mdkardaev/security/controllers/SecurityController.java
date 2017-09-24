@@ -84,7 +84,7 @@ public class SecurityController {
             @ApiResponse(code = 200, message = "Tokens has been refreshed successful", response = SignInResponse.class),
             @ApiResponse(code = 400, message = "Bad refresh token")
     })
-    @RequestMapping(value = "api/token/refresh")
+    @RequestMapping(value = "/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
 
         TokenPair tokenPair = signInOutService.refresh(request.getRawRefreshToken());

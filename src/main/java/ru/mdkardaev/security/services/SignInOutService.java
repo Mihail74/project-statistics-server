@@ -95,7 +95,7 @@ public class SignInOutService {
         Claims claims = refreshClaims.getBody();
 
         String refreshTokenId = claims.getId();
-        String accessTokeId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
+        String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
         String userLogin = claims.getSubject();
         TokenType tokenType = Optional.ofNullable(claims.get(JwtConstants.TOKEN_TYPE))
                                       .map(Object::toString)
@@ -108,7 +108,9 @@ public class SignInOutService {
             throw new BadCredentialsException("Incorrect token type");
         }
 
-        tokenRepository.delete(accessTokeId);
+        if (tokenRepository.exists(accessTokenId)) {
+            tokenRepository.delete(accessTokenId);
+        }
         tokenRepository.delete(refreshTokenId);
 
         return issueTokenPair(user);
