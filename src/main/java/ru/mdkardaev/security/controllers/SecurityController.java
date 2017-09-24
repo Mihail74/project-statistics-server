@@ -15,13 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.security.dtos.TokenPair;
-import ru.mdkardaev.security.jwt.JwtValidator;
 import ru.mdkardaev.security.requests.RefreshTokenRequest;
 import ru.mdkardaev.security.requests.RegisterUserRequest;
 import ru.mdkardaev.security.requests.SignInRequest;
 import ru.mdkardaev.security.responses.SignInResponse;
-import ru.mdkardaev.security.services.DbUserDetailsService;
-import ru.mdkardaev.security.services.SignInOutService;
+import ru.mdkardaev.security.services.SecurityService;
 import ru.mdkardaev.user.services.UserService;
 
 @RequestMapping(method = RequestMethod.POST,
@@ -32,54 +30,37 @@ import ru.mdkardaev.user.services.UserService;
 public class SecurityController {
 
     @Autowired
-    private DbUserDetailsService userDetailsService;
-    @Autowired
-    private SignInOutService signInOutService;
+    private SecurityService securityService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private JwtValidator jwtValidator;
 
-    @RequestMapping(path = "/register")
     @ApiOperation(value = "Register user")
     @ApiResponses({
             @ApiResponse(code = 200, message = "User is successfully registered"),
             @ApiResponse(code = 409, message = "User with the specified login already exist"),
     })
+    @RequestMapping(path = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterUserRequest request) {
         userService.register(request);
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(path = "/signin")
     @ApiOperation(value = "SignIn")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Sign in is successful", response = SignInResponse.class),
             @ApiResponse(code = 400, message = "Incorrect login or password")
     })
+    @RequestMapping(path = "/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
-        TokenPair tokenPair = signInOutService.signIn(request);
+        TokenPair tokenPair = securityService.signIn(request);
 
-        SignInResponse response = new SignInResponse();
-
-        response.setAccessToken(tokenPair.getAccessToken().getRawToken());
-        response.setAccessTokenExpiredTime(tokenPair.getAccessToken()
-                                                    .getClaims()
-                                                    .getExpiration()
-                                                    .toInstant()
-                                                    .toEpochMilli());
-
-        response.setRefreshToken(tokenPair.getRefreshToken().getRawToken());
-        response.setRefreshTokenExpiredTime(tokenPair.getRefreshToken()
-                                                     .getClaims()
-                                                     .getExpiration()
-                                                     .toInstant()
-                                                     .toEpochMilli());
+        SignInResponse response = createSignInResponse(tokenPair);
 
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "SignIn")
+
+    @ApiOperation(value = "refresh")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Tokens has been refreshed successful", response = SignInResponse.class),
             @ApiResponse(code = 400, message = "Bad refresh token")
@@ -87,23 +68,9 @@ public class SecurityController {
     @RequestMapping(value = "/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
 
-        TokenPair tokenPair = signInOutService.refresh(request.getRawRefreshToken());
+        TokenPair tokenPair = securityService.refresh(request.getRawRefreshToken());
 
-        SignInResponse response = new SignInResponse();
-
-        response.setAccessToken(tokenPair.getAccessToken().getRawToken());
-        response.setAccessTokenExpiredTime(tokenPair.getAccessToken()
-                                                    .getClaims()
-                                                    .getExpiration()
-                                                    .toInstant()
-                                                    .toEpochMilli());
-
-        response.setRefreshToken(tokenPair.getRefreshToken().getRawToken());
-        response.setRefreshTokenExpiredTime(tokenPair.getRefreshToken()
-                                                     .getClaims()
-                                                     .getExpiration()
-                                                     .toInstant()
-                                                     .toEpochMilli());
+        SignInResponse response = createSignInResponse(tokenPair);
 
         return ResponseEntity.ok(response);
     }
@@ -117,8 +84,27 @@ public class SecurityController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String accessToken = (String) authentication.getCredentials();
 
-        signInOutService.signOut(accessToken);
+        securityService.signOut(accessToken);
 
         return ResponseEntity.ok().build();
+    }
+
+    private SignInResponse createSignInResponse(TokenPair tokenPair) {
+        SignInResponse response = new SignInResponse();
+
+        response.setAccessToken(tokenPair.getAccessToken().getRawToken());
+        response.setAccessTokenExpiredTime(tokenPair.getAccessToken()
+                                                    .getClaims()
+                                                    .getExpiration()
+                                                    .toInstant()
+                                                    .toEpochMilli());
+
+        response.setRefreshToken(tokenPair.getRefreshToken().getRawToken());
+        response.setRefreshTokenExpiredTime(tokenPair.getRefreshToken()
+                                                     .getClaims()
+                                                     .getExpiration()
+                                                     .toInstant()
+                                                     .toEpochMilli());
+        return response;
     }
 }

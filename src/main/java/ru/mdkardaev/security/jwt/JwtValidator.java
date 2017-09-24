@@ -19,9 +19,6 @@ public class JwtValidator {
      * Validate token and return it's claims
      */
     public Jws<Claims> validateAndGetClaims(String token) throws BadCredentialsException, JwtExpiredTokenException {
-        //TODO: здесь нужено также включить проверку на неотозванность токена
-        // (как вариант при отзыве токена иметь какой-то глобальный кэш, чтобы не кидать запросы в БД)
-        // Отзыв возможен либо при рефреше, выходе либо программно
         try {
             return Jwts.parser().setSigningKey(jwtSettings.getTokenSigningKey()).parseClaimsJws(token);
 

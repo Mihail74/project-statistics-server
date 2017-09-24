@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class SignInOutService {
+public class SecurityService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -46,6 +46,55 @@ public class SignInOutService {
                 || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect login or password");
         }
+
+        return issueTokenPair(user);
+    }
+
+    @Transactional
+    public void signOut(String rawAccessToken) {
+        ru.mdkardaev.user.entity.Token accessToken = tokenRepository.findByRawToken(rawAccessToken);
+        Long userId = accessToken.getUser().getId();
+
+        List<ru.mdkardaev.user.entity.Token> refreshTokens =
+                tokenRepository.findTokenByUser_idAndType(userId, TokenType.REFRESH_TOKEN);
+
+        List<ru.mdkardaev.user.entity.Token> refreshTokensToDelete =
+                refreshTokens.stream()
+                             .filter(e -> {
+                                 String accessTokenId = (String) jwtValidator.validateAndGetClaims(e.getRawToken())
+                                                                             .getBody()
+                                                                             .get(JwtConstants.CONNECTED_TOKEN);
+                                 return accessToken.getId().equals(accessTokenId);
+                             })
+                             .collect(Collectors.toList());
+
+        tokenRepository.delete(accessToken);
+        tokenRepository.delete(refreshTokensToDelete);
+    }
+
+    @Transactional
+    public TokenPair refresh(String rawRefreshToken) {
+        Jws<Claims> refreshClaims = jwtValidator.validateAndGetClaims(rawRefreshToken);
+        Claims claims = refreshClaims.getBody();
+
+        String refreshTokenId = claims.getId();
+        String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
+        String userLogin = claims.getSubject();
+        TokenType tokenType = Optional.ofNullable(claims.get(JwtConstants.TOKEN_TYPE))
+                                      .map(Object::toString)
+                                      .map(TokenType::valueOf)
+                                      .orElse(null);
+
+        User user = userRepository.findByLogin(userLogin);
+
+        if (tokenType != TokenType.REFRESH_TOKEN || user == null) {
+            throw new BadCredentialsException("Incorrect token type");
+        }
+
+        if (tokenRepository.exists(accessTokenId)) {
+            tokenRepository.delete(accessTokenId);
+        }
+        tokenRepository.delete(refreshTokenId);
 
         return issueTokenPair(user);
     }
@@ -87,54 +136,5 @@ public class SignInOutService {
         tokenRepository.save(refreshToken);
 
         return new TokenPair(accessJwt, refreshJwt);
-    }
-
-    @Transactional
-    public TokenPair refresh(String rawRefreshToken) {
-        Jws<Claims> refreshClaims = jwtValidator.validateAndGetClaims(rawRefreshToken);
-        Claims claims = refreshClaims.getBody();
-
-        String refreshTokenId = claims.getId();
-        String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
-        String userLogin = claims.getSubject();
-        TokenType tokenType = Optional.ofNullable(claims.get(JwtConstants.TOKEN_TYPE))
-                                      .map(Object::toString)
-                                      .map(TokenType::valueOf)
-                                      .orElse(null);
-
-        User user = userRepository.findByLogin(userLogin);
-
-        if (tokenType != TokenType.REFRESH_TOKEN || user == null) {
-            throw new BadCredentialsException("Incorrect token type");
-        }
-
-        if (tokenRepository.exists(accessTokenId)) {
-            tokenRepository.delete(accessTokenId);
-        }
-        tokenRepository.delete(refreshTokenId);
-
-        return issueTokenPair(user);
-    }
-
-    @Transactional
-    public void signOut(String rawAccessToken) {
-        ru.mdkardaev.user.entity.Token accessToken = tokenRepository.findByRawToken(rawAccessToken);
-        Long userId = accessToken.getUser().getId();
-
-        List<ru.mdkardaev.user.entity.Token> refreshTokens =
-                tokenRepository.findTokenByUser_idAndType(userId, TokenType.REFRESH_TOKEN);
-
-        List<ru.mdkardaev.user.entity.Token> refreshTokensToDelete =
-                refreshTokens.stream()
-                             .filter(e -> {
-                                 String accessTokenId = (String) jwtValidator.validateAndGetClaims(e.getRawToken())
-                                                                             .getBody()
-                                                                             .get(JwtConstants.CONNECTED_TOKEN);
-                                 return accessToken.getId().equals(accessTokenId);
-                             })
-                             .collect(Collectors.toList());
-
-        tokenRepository.delete(accessToken);
-        tokenRepository.delete(refreshTokensToDelete);
     }
 }
