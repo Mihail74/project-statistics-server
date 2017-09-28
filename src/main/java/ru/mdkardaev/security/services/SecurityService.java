@@ -1,7 +1,6 @@
 package ru.mdkardaev.security.services;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,8 +60,7 @@ public class SecurityService {
         List<ru.mdkardaev.user.entity.Token> refreshTokensToDelete =
                 refreshTokens.stream()
                              .filter(e -> {
-                                 String accessTokenId = (String) jwtValidator.validateAndGetClaims(e.getRawToken())
-                                                                             .getBody()
+                                 String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
                                                                              .get(JwtConstants.CONNECTED_TOKEN);
                                  return accessToken.getId().equals(accessTokenId);
                              })
@@ -74,8 +72,7 @@ public class SecurityService {
 
     @Transactional
     public TokenPair refresh(String rawRefreshToken) {
-        Jws<Claims> refreshClaims = jwtValidator.validateAndGetClaims(rawRefreshToken);
-        Claims claims = refreshClaims.getBody();
+        Claims claims = jwtValidator.validateAndGetClaims(rawRefreshToken);
 
         String refreshTokenId = claims.getId();
         String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);

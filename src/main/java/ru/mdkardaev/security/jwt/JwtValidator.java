@@ -18,9 +18,9 @@ public class JwtValidator {
     /**
      * Validate token and return it's claims
      */
-    public Jws<Claims> validateAndGetClaims(String token) throws BadCredentialsException, JwtExpiredTokenException {
+    public Claims validateAndGetClaims(String token) throws BadCredentialsException, JwtExpiredTokenException {
         try {
-            return Jwts.parser().setSigningKey(jwtSettings.getTokenSigningKey()).parseClaimsJws(token);
+            return Jwts.parser().setSigningKey(jwtSettings.getTokenSigningKey()).parseClaimsJws(token).getBody();
 
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException ex) {
             log.error("Invalid JWT Token", ex);
@@ -28,6 +28,16 @@ public class JwtValidator {
         } catch (ExpiredJwtException expiredEx) {
             log.info("JWT Token is expired", expiredEx);
             throw new JwtExpiredTokenException(String.format("JWT Token %s expired", token), expiredEx);
+        }
+    }
+
+    public Claims getClaimsIncludeExpired(String token){
+        try {
+            return Jwts.parser().setSigningKey(jwtSettings.getTokenSigningKey()).parseClaimsJws(token).getBody();
+
+        }  catch (ExpiredJwtException expiredEx) {
+            log.info("JWT Token is expired", expiredEx);
+            return expiredEx.getClaims();
         }
     }
 }

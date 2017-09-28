@@ -1,7 +1,6 @@
 package ru.mdkardaev.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -30,10 +29,10 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String rawAccessToken = (String) authentication.getCredentials();
 
-        Jws<Claims> jwsClaims = jwtValidator.validateAndGetClaims(rawAccessToken);
+        Claims claims = jwtValidator.validateAndGetClaims(rawAccessToken);
 
-        String subject = jwsClaims.getBody().getSubject();
-        List<String> roles = (List<String>) jwsClaims.getBody().get(JwtConstants.USER_ROLES, List.class);
+        String subject = claims.getSubject();
+        List<String> roles = (List<String>) claims.get(JwtConstants.USER_ROLES, List.class);
 
         List<GrantedAuthority> authorities = roles.stream()
                                                   .map(SimpleGrantedAuthority::new)
