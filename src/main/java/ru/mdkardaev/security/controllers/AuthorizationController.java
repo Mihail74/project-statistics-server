@@ -19,7 +19,7 @@ import ru.mdkardaev.security.requests.RefreshTokenRequest;
 import ru.mdkardaev.security.requests.RegisterUserRequest;
 import ru.mdkardaev.security.requests.SignInRequest;
 import ru.mdkardaev.security.responses.SignInResponse;
-import ru.mdkardaev.security.services.SecurityService;
+import ru.mdkardaev.security.services.AuthorizationService;
 import ru.mdkardaev.user.services.UserService;
 
 @RequestMapping(method = RequestMethod.POST,
@@ -27,10 +27,10 @@ import ru.mdkardaev.user.services.UserService;
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = SwaggerConfig.Tags.SECURITY)
 @RestController
-public class SecurityController {
+public class AuthorizationController {
 
     @Autowired
-    private SecurityService securityService;
+    private AuthorizationService authorizationService;
     @Autowired
     private UserService userService;
 
@@ -39,7 +39,7 @@ public class SecurityController {
             @ApiResponse(code = 200, message = "User is successfully registered"),
             @ApiResponse(code = 409, message = "User with the specified login already exist"),
     })
-    @RequestMapping(path = "/register")
+    @RequestMapping(path = "api/auth/register")
     public ResponseEntity<?> register(@RequestBody RegisterUserRequest request) {
         userService.register(request);
         return ResponseEntity.ok().build();
@@ -50,9 +50,9 @@ public class SecurityController {
             @ApiResponse(code = 200, message = "Sign in is successful", response = SignInResponse.class),
             @ApiResponse(code = 400, message = "Incorrect login or password")
     })
-    @RequestMapping(path = "/signin")
+    @RequestMapping(path = "api/auth/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
-        TokenPair tokenPair = securityService.signIn(request);
+        TokenPair tokenPair = authorizationService.signIn(request);
 
         SignInResponse response = createSignInResponse(tokenPair);
 
@@ -65,10 +65,10 @@ public class SecurityController {
             @ApiResponse(code = 200, message = "Tokens has been refreshed successful", response = SignInResponse.class),
             @ApiResponse(code = 400, message = "Bad refresh token")
     })
-    @RequestMapping(value = "/token/refresh")
+    @RequestMapping(value = "api/auth/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
 
-        TokenPair tokenPair = securityService.refresh(request.getRawRefreshToken());
+        TokenPair tokenPair = authorizationService.refresh(request.getRawRefreshToken());
 
         SignInResponse response = createSignInResponse(tokenPair);
 
@@ -79,12 +79,12 @@ public class SecurityController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "Sign out successful")
     })
-    @RequestMapping(value = "api/signout")
+    @RequestMapping(value = "api/auth/signout")
     public ResponseEntity<?> signOut() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String accessToken = (String) authentication.getCredentials();
 
-        securityService.signOut(accessToken);
+        authorizationService.signOut(accessToken);
 
         return ResponseEntity.ok().build();
     }

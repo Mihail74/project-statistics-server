@@ -27,7 +27,7 @@ import java.util.Collections;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String PROTECTED_ENTRY_POINT = "/api/**";
-    private static final String[] PUBLIC_ENTRY_POINT = {"/register", "/signin", "/token/refresh"};
+    private static final String[] PUBLIC_ENTRY_POINT = {"/api/auth/register", "/api/auth/signin", "/api/auth/token/refresh"};
 
     @Autowired
     private RestAuthenticationEntryPoint authenticationEntryPoint;

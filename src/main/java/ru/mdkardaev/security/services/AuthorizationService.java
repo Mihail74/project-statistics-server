@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class SecurityService {
+public class AuthorizationService {
 
     @Autowired
     private UserRepository userRepository;
