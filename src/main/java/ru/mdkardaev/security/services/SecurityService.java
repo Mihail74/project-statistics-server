@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class SecurityService {
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -59,12 +60,12 @@ public class SecurityService {
 
         List<ru.mdkardaev.user.entity.Token> refreshTokensToDelete =
                 refreshTokens.stream()
-                             .filter(e -> {
-                                 String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
-                                                                             .get(JwtConstants.CONNECTED_TOKEN);
-                                 return accessToken.getId().equals(accessTokenId);
-                             })
-                             .collect(Collectors.toList());
+                        .filter(e -> {
+                            String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
+                                    .get(JwtConstants.CONNECTED_TOKEN);
+                            return accessToken.getId().equals(accessTokenId);
+                        })
+                        .collect(Collectors.toList());
 
         tokenRepository.delete(accessToken);
         tokenRepository.delete(refreshTokensToDelete);
@@ -78,13 +79,15 @@ public class SecurityService {
         String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
         String userLogin = claims.getSubject();
         TokenType tokenType = Optional.ofNullable(claims.get(JwtConstants.TOKEN_TYPE))
-                                      .map(Object::toString)
-                                      .map(TokenType::valueOf)
-                                      .orElse(null);
+                .map(Object::toString)
+                .map(TokenType::valueOf)
+                .orElse(null);
 
         User user = userRepository.findByLogin(userLogin);
 
-        if (tokenType != TokenType.REFRESH_TOKEN || user == null) {
+        ru.mdkardaev.user.entity.Token refreshToken = tokenRepository.findOne(refreshTokenId);
+
+        if (refreshToken == null || tokenType != TokenType.REFRESH_TOKEN || user == null) {
             throw new BadCredentialsException("Incorrect token type");
         }
 
@@ -107,27 +110,27 @@ public class SecurityService {
 
         ru.mdkardaev.user.entity.Token accessToken =
                 ru.mdkardaev.user.entity.Token.builder()
-                                              .id(accessJwt.getClaims().getId())
-                                              .rawToken(accessJwt.getRawToken())
-                                              .type(TokenType.ACCESS_TOKEN)
-                                              .expiredTime(accessJwt.getClaims()
-                                                                    .getExpiration()
-                                                                    .toInstant()
-                                                                    .toEpochMilli())
-                                              .user(user)
-                                              .build();
+                        .id(accessJwt.getClaims().getId())
+                        .rawToken(accessJwt.getRawToken())
+                        .type(TokenType.ACCESS_TOKEN)
+                        .expiredTime(accessJwt.getClaims()
+                                             .getExpiration()
+                                             .toInstant()
+                                             .toEpochMilli())
+                        .user(user)
+                        .build();
 
         ru.mdkardaev.user.entity.Token refreshToken =
                 ru.mdkardaev.user.entity.Token.builder()
-                                              .id(refreshJwt.getClaims().getId())
-                                              .rawToken(refreshJwt.getRawToken())
-                                              .type(TokenType.REFRESH_TOKEN)
-                                              .expiredTime(refreshJwt.getClaims()
-                                                                     .getExpiration()
-                                                                     .toInstant()
-                                                                     .toEpochMilli())
-                                              .user(user)
-                                              .build();
+                        .id(refreshJwt.getClaims().getId())
+                        .rawToken(refreshJwt.getRawToken())
+                        .type(TokenType.REFRESH_TOKEN)
+                        .expiredTime(refreshJwt.getClaims()
+                                             .getExpiration()
+                                             .toInstant()
+                                             .toEpochMilli())
+                        .user(user)
+                        .build();
 
         tokenRepository.save(accessToken);
         tokenRepository.save(refreshToken);
