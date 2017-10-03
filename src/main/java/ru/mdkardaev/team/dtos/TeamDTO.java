@@ -18,8 +18,13 @@ public class TeamDTO {
 
     @ApiModelProperty(value = "id", example = "1", required = true)
     private Long id;
+    
     @ApiModelProperty(value = "name", example = "football", required = true)
     private String name;
+
+    @ApiModelProperty(value = "Team members", required = true)
     private List<UserDTO> users;
-    private List<GameDTO> games;
+
+    @ApiModelProperty(value = "Game", example = "football", required = true)
+    private GameDTO game;
 }

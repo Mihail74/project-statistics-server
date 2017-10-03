@@ -24,8 +24,11 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .tags(new Tag(Tags.GAMES, "Operations with games"),
-                      new Tag(Tags.SECURITY, "Register, SignIn, SignOut, Reresh"))
+                .tags(new Tag(Tags.GAMES, "Games"),
+                      new Tag(Tags.SECURITY, "Register, SignIn, SignOut, Reresh"),
+                      new Tag(Tags.TEAMS, "Teams"),
+                      new Tag(Tags.USERS, "Users")
+                )
                 .securitySchemes(Collections.singletonList(apiKey()))
                 .securityContexts(Collections.singletonList(securityContext()))
                 .select()
@@ -40,9 +43,9 @@ public class SwaggerConfig {
 
     private SecurityContext securityContext() {
         return SecurityContext.builder()
-                              .securityReferences(defaultAuth())
-                              .forPaths(PathSelectors.regex("/api/*"))
-                              .build();
+                .securityReferences(defaultAuth())
+                .forPaths(PathSelectors.regex("/api/*"))
+                .build();
     }
 
     private List<SecurityReference> defaultAuth() {
@@ -54,5 +57,7 @@ public class SwaggerConfig {
 
         public static final String GAMES = "Games";
         public static final String SECURITY = "Security";
+        public static final String TEAMS = "Teams";
+        public static final String USERS = "Users";
     }
 }

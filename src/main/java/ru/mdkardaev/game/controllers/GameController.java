@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.requests.CreateGameRequest;
+import ru.mdkardaev.game.responses.CreateGameResponse;
 import ru.mdkardaev.game.responses.GetGamesResponse;
 import ru.mdkardaev.game.services.GameService;
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -33,12 +35,13 @@ public class GameController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Create game")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Game is successfully  registered"),
+            @ApiResponse(code = 200, message = "Game is successfully created", response = CreateGameResponse.class),
             @ApiResponse(code = 400, message = "Game with the specified name already exist or name is empty")
     })
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateGameRequest request) {
-        gameService.create(request);
-        return ResponseEntity.ok().build();
+        Long gameId = gameService.create(request);
+        GameDTO game = gameService.getGame(gameId);
+        return ResponseEntity.ok(new CreateGameResponse(game));
     }
 
     @RequestMapping(path = "/",

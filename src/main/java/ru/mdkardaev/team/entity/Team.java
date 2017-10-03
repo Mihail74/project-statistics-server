@@ -1,10 +1,32 @@
 package ru.mdkardaev.team.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.mdkardaev.game.entity.Game;
+import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.user.entity.User;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import java.util.Set;
 
 @Entity
@@ -26,7 +48,7 @@ public class Team {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "team_users",
             joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
@@ -34,11 +56,10 @@ public class Team {
             inverseForeignKey = @ForeignKey(name = "fk_users"))
     private Set<User> users;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "team_game",
-            joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"),
-            foreignKey = @ForeignKey(name = "fk_team"),
-            inverseForeignKey = @ForeignKey(name = "fk_game"))
-    private Set<Game> games;
+    @OneToOne
+    @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))
+    private Game game;
+
+    @Enumerated(EnumType.STRING)
+    private TeamFormingStatus formingStatus;
 }

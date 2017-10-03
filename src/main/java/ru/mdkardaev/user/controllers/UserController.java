@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.user.dtos.UserDTO;
 import ru.mdkardaev.user.requests.GetUsersRequest;
 import ru.mdkardaev.user.responses.GetUsersResponse;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/users")
-@Api(tags = {"users"}, description = "Operations with users")
+@Api(tags = {SwaggerConfig.Tags.USERS})
 public class UserController {
 
     @Autowired

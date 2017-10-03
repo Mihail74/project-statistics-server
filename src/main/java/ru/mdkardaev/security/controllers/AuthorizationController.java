@@ -22,6 +22,8 @@ import ru.mdkardaev.security.responses.SignInResponse;
 import ru.mdkardaev.security.services.AuthorizationService;
 import ru.mdkardaev.user.services.UserService;
 
+import javax.validation.Valid;
+
 @RequestMapping(method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -40,7 +42,7 @@ public class AuthorizationController {
             @ApiResponse(code = 409, message = "User with the specified login already exist"),
     })
     @RequestMapping(path = "api/auth/register")
-    public ResponseEntity<?> register(@RequestBody RegisterUserRequest request) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterUserRequest request) {
         userService.register(request);
         return ResponseEntity.ok().build();
     }
@@ -94,17 +96,17 @@ public class AuthorizationController {
 
         response.setAccessToken(tokenPair.getAccessToken().getRawToken());
         response.setAccessTokenExpiredTime(tokenPair.getAccessToken()
+                                                   .getClaims()
+                                                   .getExpiration()
+                                                   .toInstant()
+                                                   .toEpochMilli());
+
+        response.setRefreshToken(tokenPair.getRefreshToken().getRawToken());
+        response.setRefreshTokenExpiredTime(tokenPair.getRefreshToken()
                                                     .getClaims()
                                                     .getExpiration()
                                                     .toInstant()
                                                     .toEpochMilli());
-
-        response.setRefreshToken(tokenPair.getRefreshToken().getRawToken());
-        response.setRefreshTokenExpiredTime(tokenPair.getRefreshToken()
-                                                     .getClaims()
-                                                     .getExpiration()
-                                                     .toInstant()
-                                                     .toEpochMilli());
         return response;
     }
 }

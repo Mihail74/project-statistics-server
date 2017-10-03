@@ -29,17 +29,20 @@ public class GameService {
     @Autowired
     private ConversionService conversionService;
 
-    public void create(CreateGameRequest request) {
+    /**
+     * return create game id
+     */
+    public Long create(CreateGameRequest request) {
         if (StringUtils.isEmpty(request.getName())) {
             throw new InvalidRequestParameter("name cannot be empty");
         }
 
         Game game = Game.builder()
-                        .name(request.getName())
-                        .description(request.getDescription())
-                        .build();
+                .name(request.getName())
+                .description(request.getDescription())
+                .build();
         try {
-            gameRepository.save(game);
+            game = gameRepository.save(game);
         } catch (DataIntegrityViolationException e) {
             dbExceptionUtils
                     .conditionThrowNewException(e,
@@ -50,12 +53,18 @@ public class GameService {
             log.error(e.getMessage(), e);
             throw e;
         }
+        return game.getId();
     }
 
     public List<GameDTO> getGames() {
         return gameRepository.findAll()
-                             .stream()
-                             .map(e -> conversionService.convert(e, GameDTO.class))
-                             .collect(Collectors.toList());
+                .stream()
+                .map(e -> conversionService.convert(e, GameDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public GameDTO getGame(Long id) {
+        Game game = gameRepository.findOne(id);
+        return conversionService.convert(game, GameDTO.class);
     }
 }

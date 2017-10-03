@@ -20,20 +20,16 @@ public class TeamToTeamDTOConverter implements Converter<Team, TeamDTO> {
     @Autowired
     private ConversionService conversionService;
 
+    @Override
     public TeamDTO convert(Team team) {
         return TeamDTO.builder()
-                      .id(team.getId())
-                      .name(team.getName())
-                      .games(team.getGames()
-                                 .stream()
-                                 .map(e -> conversionService.convert(e, GameDTO.class))
-                                 .collect(Collectors.toList())
-                      )
-                      .users(team.getUsers()
-                                 .stream()
-                                 .map(e -> conversionService.convert(e, UserDTO.class))
-                                 .collect(Collectors.toList())
-                      )
-                      .build();
+                .id(team.getId())
+                .name(team.getName())
+                .game(conversionService.convert(team.getGame(), GameDTO.class))
+                .users(team.getUsers()
+                               .stream()
+                               .map(e -> conversionService.convert(e, UserDTO.class))
+                               .collect(Collectors.toList()))
+                .build();
     }
 }

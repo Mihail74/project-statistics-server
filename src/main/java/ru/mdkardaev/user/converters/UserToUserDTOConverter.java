@@ -12,8 +12,7 @@ public class UserToUserDTOConverter implements Converter<User, UserDTO> {
     @Override
     public UserDTO convert(User from) {
         return UserDTO.builder()
-                      .id(from.getId())
-                      .login(from.getLogin())
-                      .build();
+                .login(from.getLogin())
+                .build();
     }
 }

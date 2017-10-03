@@ -7,38 +7,46 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.team.requests.GetTeamRequest;
+import ru.mdkardaev.team.responses.CreateTeamResponse;
 import ru.mdkardaev.team.responses.GetTeamResponse;
 import ru.mdkardaev.team.services.TeamService;
-import ru.mdkardaev.user.requests.GetUsersRequest;
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("api/teams")
-@Api(tags = {"teams"}, description = "Operations with teams")
+@Api(tags = {SwaggerConfig.Tags.TEAMS})
 public class TeamController {
+
     @Autowired
     private TeamService teamService;
 
     @RequestMapping(path = "/create",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Create team without members")
+    @ApiOperation(value = "Create team", notes = "Create team and send invite for members from request")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Game is successfully  registered"),
-            @ApiResponse(code = 409, message = "Game with the specified name already exist")
+            @ApiResponse(code = 200, message = "Team is successfully created", response = CreateTeamResponse.class),
+            @ApiResponse(code = 409, message = "Invalid parameters passed to request")
     })
-    public ResponseEntity<?> createGame(@RequestBody @Valid CreateTeamRequest request) {
-        teamService.create(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> createGame(@RequestBody @Valid CreateTeamRequest request,
+                                        @AuthenticationPrincipal UserDetails principal) {
+        Long teamID = teamService.create(request, principal.getUsername());
+
+        TeamDTO team = teamService.getTeam(teamID);
+        return ResponseEntity.ok(new CreateTeamResponse(team));
     }
 
     @RequestMapping(path = "/",
