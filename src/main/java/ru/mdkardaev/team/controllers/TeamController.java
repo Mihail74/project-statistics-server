@@ -33,6 +33,18 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
+    @RequestMapping(path = "/",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Return teams list")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Return teamslist", response = GetTeamResponse.class),
+    })
+    public ResponseEntity<?> getUsers(GetTeamRequest request) {
+        List<TeamDTO> teams = teamService.getTeams(request);
+        return ResponseEntity.ok(new GetTeamResponse(teams));
+    }
+
     @RequestMapping(path = "/create",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,17 +59,5 @@ public class TeamController {
 
         TeamDTO team = teamService.getTeam(teamID);
         return ResponseEntity.ok(new CreateTeamResponse(team));
-    }
-
-    @RequestMapping(path = "/",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Return teams list")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Return teamslist", response = GetTeamResponse.class),
-    })
-    public ResponseEntity<?> getUsers(GetTeamRequest request) {
-        List<TeamDTO> teams = teamService.getTeams(request);
-        return ResponseEntity.ok(new GetTeamResponse(teams));
     }
 }

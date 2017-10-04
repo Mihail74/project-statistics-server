@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Table(name = "team_invites")
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"userLogin", "teamName"})
+@EqualsAndHashCode(of = {"userLogin", "teamID"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,5 +32,5 @@ public class TeamInvite {
 
     private Long userID;
 
-    private Long teamName;
+    private Long teamID;
 }
