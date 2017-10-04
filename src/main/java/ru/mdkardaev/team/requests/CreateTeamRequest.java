@@ -17,10 +17,10 @@ public class CreateTeamRequest {
     @ApiModelProperty(value = "Team name", example = "name", required = true)
     private String name;
 
-    @ApiModelProperty(value = "List of member's login", example = "[login1]")
-    private List<String> memberLogins;
+    @ApiModelProperty(value = "List of member's id", example = "[1]")
+    private List<Long> membersID;
 
     @NotNull
-    @ApiModelProperty(value = "Game name", example = "football", required = true)
-    private String gameName;
+    @ApiModelProperty(value = "Game id", example = "1", required = true)
+    private Long gameID;
 }

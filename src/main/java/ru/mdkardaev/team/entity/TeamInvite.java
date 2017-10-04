@@ -7,8 +7,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.mdkardaev.team.enums.TeamInviteStatus;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,4 +36,7 @@ public class TeamInvite {
     private Long userID;
 
     private Long teamID;
+
+    @Enumerated(EnumType.STRING)
+    private TeamInviteStatus status;
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.requests.AcceptTeamInviteRequest;
-import ru.mdkardaev.team.responses.CreateTeamResponse;
+import ru.mdkardaev.team.requests.DeclineTeamInviteRequest;
 import ru.mdkardaev.team.services.TeamInviteService;
 
 import javax.validation.Valid;
@@ -33,9 +33,22 @@ public class MeTeamController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Accept invite to team")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Accept invite to team", response = CreateTeamResponse.class),
+            @ApiResponse(code = 200, message = "Accept invite to team"),
     })
     public ResponseEntity<?> acceptInvite(@RequestBody @Valid AcceptTeamInviteRequest request,
+                                          @AuthenticationPrincipal UserDetails principal) {
+        teamInviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(path = "/teams/invites/decline",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Decline invite to team")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Decline invite to team"),
+    })
+    public ResponseEntity<?> declineInvite(@RequestBody @Valid DeclineTeamInviteRequest request,
                                           @AuthenticationPrincipal UserDetails principal) {
         teamInviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
         return ResponseEntity.ok().build();

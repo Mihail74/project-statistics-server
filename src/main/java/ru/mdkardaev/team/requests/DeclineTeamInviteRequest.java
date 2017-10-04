@@ -6,9 +6,9 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
-@ApiModel(value = "Request to accept an invitation to the team")
+@ApiModel(value = "Request to decline an invitation to the team")
 @Data
-public class AcceptTeamInviteRequest {
+public class DeclineTeamInviteRequest {
 
     @NotNull
     @ApiModelProperty(value = "Invite id", example = "1", required = true)

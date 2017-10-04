@@ -48,7 +48,7 @@ public class TeamService {
      */
     @Transactional
     public Long create(CreateTeamRequest request, String leaderLogin) {
-        Game game = gameRepository.findByName(request.getGameName());
+        Game game = gameRepository.findOne(request.getGameID());
         if (game == null) {
             throw new InvalidParameterException("Game with specified [name] doesn't exist");
         }
@@ -73,7 +73,7 @@ public class TeamService {
             throw e;
         }
 
-        teamInviteService.inviteUsersToTeam(userRepository.findByLoginIn(request.getMemberLogins()), team);
+        teamInviteService.inviteUsersToTeam(userRepository.findByIdIn(request.getMembersID()), team);
 
         return team.getId();
     }

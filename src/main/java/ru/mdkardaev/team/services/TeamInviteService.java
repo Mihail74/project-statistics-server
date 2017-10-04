@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.entity.TeamInvite;
+import ru.mdkardaev.team.enums.TeamInviteStatus;
 import ru.mdkardaev.team.repository.TeamInviteRepository;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.user.entity.User;
@@ -46,7 +47,7 @@ public class TeamInviteService {
     public void acceptInvitation(Long inviteID, String userLogin) {
         TeamInvite invite = teamInviteRepository.findOne(inviteID);
 
-        if (invite == null) {
+        if (invite == null || invite.getStatus() != null) {
             throw new InvalidParameterException("invalid parameters");
         }
 
@@ -58,11 +59,29 @@ public class TeamInviteService {
             throw new InvalidParameterException("invalid parameters");
         }
 
-
         team.getUsers().add(user);
+        invite.setStatus(TeamInviteStatus.ACCEPTED);
 
         teamRepository.save(team);
-        teamInviteRepository.delete(invite);
+        teamInviteRepository.save(invite);
     }
 
+    @Transactional
+    public void declineInvitation(Long inviteID, String userLogin) {
+        TeamInvite invite = teamInviteRepository.findOne(inviteID);
+
+        if (invite == null || invite.getStatus() != null) {
+            throw new InvalidParameterException("invalid parameters");
+        }
+
+        User user = userRepository.findByLogin(userLogin);
+
+        if (!user.getId().equals(invite.getUserID())) {
+            throw new InvalidParameterException("invalid parameters");
+        }
+
+        invite.setStatus(TeamInviteStatus.DECLINED);
+        
+        teamInviteRepository.save(invite);
+    }
 }

@@ -9,5 +9,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByLogin(String login);
 
-    List<User> findByLoginIn(List<String> logins);
+    List<User> findByIdIn(List<Long> ids);
 }
