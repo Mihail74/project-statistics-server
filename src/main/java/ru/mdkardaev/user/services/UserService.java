@@ -8,11 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
-import ru.mdkardaev.user.exceptions.UserAlreadyExist;
 import ru.mdkardaev.security.jwt.JwtFactory;
 import ru.mdkardaev.security.requests.RegisterUserRequest;
 import ru.mdkardaev.user.dtos.UserDTO;
 import ru.mdkardaev.user.entity.User;
+import ru.mdkardaev.user.exceptions.UserAlreadyExist;
 import ru.mdkardaev.user.repository.UserRepository;
 import ru.mdkardaev.user.roles.Role;
 
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -38,18 +39,19 @@ public class UserService {
 
     public List<UserDTO> getUsers() {
         return userRepository.findAll()
-                             .stream()
-                             .map(e -> conversionService.convert(e, UserDTO.class))
-                             .collect(Collectors.toList());
+                .stream()
+                .map(e -> conversionService.convert(e, UserDTO.class))
+                .collect(Collectors.toList());
     }
 
     public void register(RegisterUserRequest request) {
 
         User user = User.builder()
-                        .password(passwordEncoder.encode(request.getPassword()))
-                        .login(request.getLogin())
-                        .roles(new HashSet<>(Collections.singletonList(Role.USER)))
-                        .build();
+                .login(request.getLogin())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .roles(new HashSet<>(Collections.singletonList(Role.USER)))
+                .build();
 
         try {
             userRepository.save(user);

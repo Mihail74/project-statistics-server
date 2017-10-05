@@ -12,6 +12,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDTO {
 
-    @ApiModelProperty(value = "login", example = "login", required = true)
-    private String login;
+    @ApiModelProperty(value = "ID", example = "1", required = true)
+    private Long id;
+
+    @ApiModelProperty(value = "Name", example = "name", required = true)
+    private String name;
 }

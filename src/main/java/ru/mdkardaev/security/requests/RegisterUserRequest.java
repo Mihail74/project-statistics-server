@@ -16,4 +16,8 @@ public class RegisterUserRequest {
     @NotEmpty
     @ApiModelProperty(value = "Login", example = "login", required = true)
     private String login;
+
+    @NotEmpty
+    @ApiModelProperty(value = "Name", example = "name", required = true)
+    private String name;
 }

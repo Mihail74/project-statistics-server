@@ -31,7 +31,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users",
-        uniqueConstraints = {@UniqueConstraint(name = "uq_users_login", columnNames = {"login"})})
+        uniqueConstraints = {@UniqueConstraint(name = "uq_users_login", columnNames = {"login"}),
+                @UniqueConstraint(name = "uq_users_name", columnNames = {"name"})})
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"login"})
@@ -50,6 +51,9 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_users",
