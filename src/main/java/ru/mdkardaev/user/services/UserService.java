@@ -37,9 +37,13 @@ public class UserService {
     private ConversionService conversionService;
 
 
-    public List<UserDTO> getUsers() {
+    /**
+     * return list of users exclude user with login == userName
+     */
+    public List<UserDTO> getUsers(String userName) {
         return userRepository.findAll()
                 .stream()
+                .filter(e -> !e.getLogin().equals(userName))
                 .map(e -> conversionService.convert(e, UserDTO.class))
                 .collect(Collectors.toList());
     }
