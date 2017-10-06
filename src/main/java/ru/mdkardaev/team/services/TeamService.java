@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
@@ -46,7 +45,6 @@ public class TeamService {
     /**
      * return created team id
      */
-    @Transactional
     public Long create(CreateTeamRequest request, String leaderLogin) {
         Game game = gameRepository.findOne(request.getGameID());
         if (game == null) {

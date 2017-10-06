@@ -47,7 +47,8 @@ public class TeamController {
 
     @RequestMapping(path = "/create",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Create team", notes = "Create team and send invite for members from request")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Team is successfully created", response = CreateTeamResponse.class),
