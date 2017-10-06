@@ -11,9 +11,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.dtos.TeamDTO;
+import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.responses.GetMeTeamsResponse;
 import ru.mdkardaev.team.services.TeamService;
 
@@ -34,8 +36,8 @@ public class MeTeamController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User's teams", response = GetMeTeamsResponse.class)
     })
-    public ResponseEntity<?> getUserTeams(@AuthenticationPrincipal UserDetails principal) {
-        List<TeamDTO> userTeams = teamService.getUserTeams(principal.getUsername());
+    public ResponseEntity<?> getUserTeams(@RequestParam("formingStatus") TeamFormingStatus formingStatus, @AuthenticationPrincipal UserDetails principal) {
+        List<TeamDTO> userTeams = teamService.getUserTeams(principal.getUsername(), formingStatus);
         return ResponseEntity.ok(new GetMeTeamsResponse(userTeams));
     }
 }

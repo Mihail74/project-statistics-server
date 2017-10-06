@@ -51,11 +51,11 @@ public class TeamService {
         }
 
         Team team = Team.builder()
-                .name(request.getName())
-                .users(Sets.newHashSet(userRepository.findByLogin(leaderLogin)))
-                .game(game)
-                .formingStatus(TeamFormingStatus.FORMING)
-                .build();
+                        .name(request.getName())
+                        .users(Sets.newHashSet(userRepository.findByLogin(leaderLogin)))
+                        .game(game)
+                        .formingStatus(TeamFormingStatus.FORMING)
+                        .build();
 
         try {
             team = teamRepository.save(team);
@@ -75,11 +75,16 @@ public class TeamService {
         return team.getId();
     }
 
-    public List<TeamDTO> getUserTeams(String userLogin) {
-        return teamRepository.findByUsers_login(userLogin)
-                .stream()
-                .map(e -> conversionService.convert(e, TeamDTO.class))
-                .collect(Collectors.toList());
+    public List<TeamDTO> getUserTeams(String userLogin, TeamFormingStatus formingStatus) {
+        List<Team> teams;
+        if (formingStatus == null) {
+            teams = teamRepository.findByUsers_login(userLogin);
+        } else {
+            teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
+        }
+        return teams.stream()
+                    .map(e -> conversionService.convert(e, TeamDTO.class))
+                    .collect(Collectors.toList());
     }
 
     public TeamDTO getTeam(Long id) {
