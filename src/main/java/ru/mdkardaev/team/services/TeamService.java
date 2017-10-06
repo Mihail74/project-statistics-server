@@ -17,7 +17,6 @@ import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.exceptions.TeamAlreadyExist;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
-import ru.mdkardaev.team.requests.GetTeamRequest;
 import ru.mdkardaev.user.repository.UserRepository;
 
 import java.util.List;
@@ -76,8 +75,8 @@ public class TeamService {
         return team.getId();
     }
 
-    public List<TeamDTO> getTeams(GetTeamRequest request) {
-        return teamRepository.findAll()
+    public List<TeamDTO> getUserTeams(String userLogin) {
+        return teamRepository.findByUsers_login(userLogin)
                 .stream()
                 .map(e -> conversionService.convert(e, TeamDTO.class))
                 .collect(Collectors.toList());

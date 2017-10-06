@@ -8,10 +8,11 @@ import ru.mdkardaev.team.dtos.TeamDTO;
 
 import java.util.List;
 
-@ApiModel(value = "Response for users list")
+@ApiModel(value = "User's teams")
 @Data
 @AllArgsConstructor
-public class GetTeamResponse {
-    @ApiModelProperty(value = "Users list", required = true)
+public class GetMeTeamsResponse {
+
+    @ApiModelProperty(value = "Teams", required = true)
     private List<TeamDTO> teams;
 }
