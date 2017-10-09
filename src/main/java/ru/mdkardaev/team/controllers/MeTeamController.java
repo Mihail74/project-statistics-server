@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
-import ru.mdkardaev.team.responses.GetMeTeamsResponse;
+import ru.mdkardaev.team.responses.GetMyTeamsResponse;
 import ru.mdkardaev.team.services.TeamService;
 
 import java.util.List;
@@ -34,10 +34,10 @@ public class MeTeamController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get my teams")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User's teams", response = GetMeTeamsResponse.class)
+            @ApiResponse(code = 200, message = "User's teams", response = GetMyTeamsResponse.class)
     })
     public ResponseEntity<?> getUserTeams(@RequestParam("formingStatus") TeamFormingStatus formingStatus, @AuthenticationPrincipal UserDetails principal) {
         List<TeamDTO> userTeams = teamService.getUserTeams(principal.getUsername(), formingStatus);
-        return ResponseEntity.ok(new GetMeTeamsResponse(userTeams));
+        return ResponseEntity.ok(new GetMyTeamsResponse(userTeams));
     }
 }

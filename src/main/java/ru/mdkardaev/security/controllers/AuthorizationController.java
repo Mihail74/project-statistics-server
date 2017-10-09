@@ -18,6 +18,7 @@ import ru.mdkardaev.security.dtos.TokenPair;
 import ru.mdkardaev.security.requests.RefreshTokenRequest;
 import ru.mdkardaev.security.requests.RegisterUserRequest;
 import ru.mdkardaev.security.requests.SignInRequest;
+import ru.mdkardaev.security.responses.RefreshTokenResponse;
 import ru.mdkardaev.security.responses.SignInResponse;
 import ru.mdkardaev.security.services.AuthorizationService;
 import ru.mdkardaev.user.services.UserService;
@@ -56,8 +57,7 @@ public class AuthorizationController {
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
         TokenPair tokenPair = authorizationService.signIn(request);
 
-        //TODO: отдавать информацию о профиле
-        SignInResponse response = createSignInResponse(tokenPair);
+        SignInResponse response = createSignInResponse(tokenPair, request.getLogin());
 
         return ResponseEntity.ok(response);
     }
@@ -65,7 +65,9 @@ public class AuthorizationController {
 
     @ApiOperation(value = "refresh")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Tokens has been refreshed successful", response = SignInResponse.class),
+            @ApiResponse(code = 200,
+                    message = "Tokens has been refreshed successful",
+                    response = RefreshTokenResponse.class),
             @ApiResponse(code = 400, message = "Bad refresh token")
     })
     @RequestMapping(value = "api/auth/token/refresh")
@@ -73,7 +75,7 @@ public class AuthorizationController {
 
         TokenPair tokenPair = authorizationService.refresh(request.getRawRefreshToken());
 
-        SignInResponse response = createSignInResponse(tokenPair);
+        RefreshTokenResponse response = createRefreshResponse(tokenPair);
 
         return ResponseEntity.ok(response);
     }
@@ -92,8 +94,28 @@ public class AuthorizationController {
         return ResponseEntity.ok().build();
     }
 
-    private SignInResponse createSignInResponse(TokenPair tokenPair) {
+    private SignInResponse createSignInResponse(TokenPair tokenPair, String login) {
         SignInResponse response = new SignInResponse();
+
+        response.setAccessToken(tokenPair.getAccessToken().getRawToken());
+        response.setAccessTokenExpiredTime(tokenPair.getAccessToken()
+                                                   .getClaims()
+                                                   .getExpiration()
+                                                   .toInstant()
+                                                   .toEpochMilli());
+
+        response.setRefreshToken(tokenPair.getRefreshToken().getRawToken());
+        response.setRefreshTokenExpiredTime(tokenPair.getRefreshToken()
+                                                    .getClaims()
+                                                    .getExpiration()
+                                                    .toInstant()
+                                                    .toEpochMilli());
+        response.setUser(userService.getUser(login));
+        return response;
+    }
+
+    private RefreshTokenResponse createRefreshResponse(TokenPair tokenPair) {
+        RefreshTokenResponse response = new RefreshTokenResponse();
 
         response.setAccessToken(tokenPair.getAccessToken().getRawToken());
         response.setAccessTokenExpiredTime(tokenPair.getAccessToken()

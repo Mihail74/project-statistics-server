@@ -48,6 +48,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public UserDTO getUser(String login) {
+        return conversionService.convert(userRepository.findByLogin(login), UserDTO.class);
+    }
+
     public void register(RegisterUserRequest request) {
 
         User user = User.builder()

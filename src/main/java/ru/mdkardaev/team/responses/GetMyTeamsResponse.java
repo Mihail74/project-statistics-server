@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.mdkardaev.team.dtos.TeamDTO;
 
-@ApiModel(value = "Response on create team")
+import java.util.List;
+
+@ApiModel(value = "User's teams")
 @Data
 @AllArgsConstructor
-public class CreateTeamResponse {
+public class GetMyTeamsResponse {
 
-    @ApiModelProperty(value = "Created team", required = true)
-    private TeamDTO team;
+    @ApiModelProperty(value = "Teams", required = true)
+    private List<TeamDTO> teams;
 }

@@ -78,6 +78,9 @@ public class TeamService {
         return team.getId();
     }
 
+    /**
+     * returns teams when user with userLogin is member
+     */
     public List<TeamDTO> getUserTeams(String userLogin, TeamFormingStatus formingStatus) {
         List<Team> teams;
         if (formingStatus == null) {
