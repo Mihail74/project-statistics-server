@@ -57,6 +57,10 @@ public class Team {
     private Set<User> users;
 
     @OneToOne
+    @JoinColumn(name = "leader_id", foreignKey = @ForeignKey(name = "fk_leader_user"))
+    private User leader;
+
+    @OneToOne
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))
     private Game game;
 

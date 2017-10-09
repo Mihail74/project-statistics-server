@@ -56,6 +56,7 @@ public class AuthorizationController {
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
         TokenPair tokenPair = authorizationService.signIn(request);
 
+        //TODO: отдавать информацию о профиле
         SignInResponse response = createSignInResponse(tokenPair);
 
         return ResponseEntity.ok(response);

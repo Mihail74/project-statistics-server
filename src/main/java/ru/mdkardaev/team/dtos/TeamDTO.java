@@ -26,6 +26,9 @@ public class TeamDTO {
     @ApiModelProperty(value = "Team members", required = true)
     private List<UserDTO> users;
 
+    @ApiModelProperty(value = "Leader", required = true)
+    private UserDTO leader;
+
     @ApiModelProperty(value = "Game", example = "football", required = true)
     private GameDTO game;
 

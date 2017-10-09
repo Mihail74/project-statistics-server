@@ -31,6 +31,7 @@ public class TeamToTeamDTOConverter implements Converter<Team, TeamDTO> {
                                .stream()
                                .map(e -> conversionService.convert(e, UserDTO.class))
                                .collect(Collectors.toList()))
+                .leader(conversionService.convert(team.getLeader(), UserDTO.class))
                 .build();
     }
 }

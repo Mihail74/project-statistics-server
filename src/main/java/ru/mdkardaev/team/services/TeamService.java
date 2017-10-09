@@ -17,6 +17,7 @@ import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.exceptions.TeamAlreadyExist;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
+import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
 import java.util.List;
@@ -50,12 +51,14 @@ public class TeamService {
             throw new InvalidParameterException("Game with specified [name] doesn't exist");
         }
 
+        User leader = userRepository.findByLogin(leaderLogin);
         Team team = Team.builder()
-                        .name(request.getName())
-                        .users(Sets.newHashSet(userRepository.findByLogin(leaderLogin)))
-                        .game(game)
-                        .formingStatus(TeamFormingStatus.FORMING)
-                        .build();
+                .name(request.getName())
+                .users(Sets.newHashSet(leader))
+                .leader(leader)
+                .game(game)
+                .formingStatus(TeamFormingStatus.FORMING)
+                .build();
 
         try {
             team = teamRepository.save(team);
@@ -83,8 +86,8 @@ public class TeamService {
             teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
         }
         return teams.stream()
-                    .map(e -> conversionService.convert(e, TeamDTO.class))
-                    .collect(Collectors.toList());
+                .map(e -> conversionService.convert(e, TeamDTO.class))
+                .collect(Collectors.toList());
     }
 
     public TeamDTO getTeam(Long id) {
