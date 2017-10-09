@@ -1,8 +1,8 @@
-package ru.mdkardaev.team.repository;
+package ru.mdkardaev.invite.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.mdkardaev.team.entity.Invite;
-import ru.mdkardaev.team.enums.InviteStatus;
+import ru.mdkardaev.invite.entity.Invite;
+import ru.mdkardaev.invite.enums.InviteStatus;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package ru.mdkardaev.team.responses;
+package ru.mdkardaev.invite.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.mdkardaev.team.dtos.InviteDTO;
+import ru.mdkardaev.invite.dtos.InviteDTO;
 
 import java.util.List;
 

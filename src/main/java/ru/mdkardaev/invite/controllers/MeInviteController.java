@@ -1,4 +1,4 @@
-package ru.mdkardaev.team.controllers;
+package ru.mdkardaev.invite.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -9,19 +9,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
-import ru.mdkardaev.team.dtos.InviteDTO;
-import ru.mdkardaev.team.requests.AcceptInviteRequest;
-import ru.mdkardaev.team.requests.DeclineInviteRequest;
-import ru.mdkardaev.team.responses.GetMyInvitesResponse;
-import ru.mdkardaev.team.services.InviteService;
+import ru.mdkardaev.invite.dtos.InviteDTO;
+import ru.mdkardaev.invite.requests.AcceptInviteRequest;
+import ru.mdkardaev.invite.requests.DeclineInviteRequest;
+import ru.mdkardaev.invite.responses.GetMyInviteResponse;
+import ru.mdkardaev.invite.responses.GetMyInvitesResponse;
+import ru.mdkardaev.invite.services.InviteService;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 @RestController
@@ -44,6 +41,18 @@ public class MeInviteController {
         return ResponseEntity.ok(new GetMyInvitesResponse(invites));
     }
 
+    @RequestMapping(path = "/{id}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get my invite to team")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Invite"),
+    })
+    public ResponseEntity<?> getMyInvite(@PathVariable("id") long id, @AuthenticationPrincipal UserDetails principal) {
+        InviteDTO invite = inviteService.getInvite(id);
+        return ResponseEntity.ok(new GetMyInviteResponse(invite));
+    }
+
     @RequestMapping(path = "/accept",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,7 +62,7 @@ public class MeInviteController {
     })
     public ResponseEntity<?> acceptInvite(@RequestBody @Valid AcceptInviteRequest request,
                                           @AuthenticationPrincipal UserDetails principal) {
-        inviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
+        inviteService.acceptInvitation(request.getId(), principal.getUsername());
         return ResponseEntity.ok().build();
     }
 

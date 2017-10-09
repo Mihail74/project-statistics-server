@@ -1,4 +1,4 @@
-package ru.mdkardaev.team.enums;
+package ru.mdkardaev.invite.enums;
 
 public enum InviteStatus {
     ACCEPTED, DECLINED;

@@ -1,4 +1,4 @@
-package ru.mdkardaev.team.entity;
+package ru.mdkardaev.invite.entity;
 
 
 import lombok.AllArgsConstructor;
@@ -7,7 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.mdkardaev.team.enums.InviteStatus;
+import ru.mdkardaev.team.entity.Team;
+import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.user.entity.User;
 
 import javax.persistence.Entity;

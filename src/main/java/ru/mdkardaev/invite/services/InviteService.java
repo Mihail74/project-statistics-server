@@ -1,4 +1,4 @@
-package ru.mdkardaev.team.services;
+package ru.mdkardaev.invite.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,11 +6,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
-import ru.mdkardaev.team.dtos.InviteDTO;
+import ru.mdkardaev.invite.dtos.InviteDTO;
+import ru.mdkardaev.invite.entity.Invite;
+import ru.mdkardaev.invite.enums.InviteStatus;
+import ru.mdkardaev.invite.repository.InviteRepository;
 import ru.mdkardaev.team.entity.Team;
-import ru.mdkardaev.team.entity.Invite;
-import ru.mdkardaev.team.enums.InviteStatus;
-import ru.mdkardaev.team.repository.InviteRepository;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
@@ -38,10 +38,10 @@ public class InviteService {
         List<Invite> invites = new ArrayList<>(users.size());
 
         for (User user : users) {
-                Invite invite = Invite.builder()
-                                      .team(team)
-                                      .user(user)
-                                      .build();
+            Invite invite = Invite.builder()
+                                  .team(team)
+                                  .user(user)
+                                  .build();
             invites.add(invite);
         }
 
@@ -94,8 +94,12 @@ public class InviteService {
         List<Invite> invites = inviteRepository
                 .findByUser_IdAndStatus(userRepository.findByLogin(userLogin).getId(), status);
         return invites.stream()
-                .map(e -> conversionService.convert(e, InviteDTO.class))
-                .collect(Collectors.toList());
+                      .map(e -> conversionService.convert(e, InviteDTO.class))
+                      .collect(Collectors.toList());
+    }
+
+    public InviteDTO getInvite(Long id) {
+        return conversionService.convert(inviteRepository.findOne(id), InviteDTO.class);
     }
 
 }
