@@ -36,7 +36,7 @@ public class TeamService {
 
 
     @Autowired
-    private TeamInviteService teamInviteService;
+    private InviteService inviteService;
     @Autowired
     private ConversionService conversionService;
     @Autowired
@@ -73,7 +73,7 @@ public class TeamService {
             throw e;
         }
 
-        teamInviteService.inviteUsersToTeam(userRepository.findByIdIn(request.getMembersID()), team);
+        inviteService.inviteUsersToTeam(userRepository.findByIdIn(request.getMembersID()), team);
 
         return team.getId();
     }

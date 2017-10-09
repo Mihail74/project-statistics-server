@@ -32,15 +32,13 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private JwtFactory jwtTokenFactory;
-    @Autowired
     private ConversionService conversionService;
 
 
     /**
      * return list of users exclude user with login == userName
      */
-    public List<UserDTO> getUsers(String userName) {
+    public List<UserDTO> getUsersWithoutUserWithLogin(String userName) {
         return userRepository.findAll()
                 .stream()
                 .filter(e -> !e.getLogin().equals(userName))
@@ -48,7 +46,8 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserDTO getUser(String login) {
+
+    public UserDTO getUserByLogin(String login) {
         return conversionService.convert(userRepository.findByLogin(login), UserDTO.class);
     }
 

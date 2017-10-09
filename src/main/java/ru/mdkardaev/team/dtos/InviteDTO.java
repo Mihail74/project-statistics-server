@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class TeamInviteDTO {
+public class InviteDTO {
 
 }

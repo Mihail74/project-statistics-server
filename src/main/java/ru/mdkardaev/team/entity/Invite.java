@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.mdkardaev.team.enums.TeamInviteStatus;
+import ru.mdkardaev.team.enums.InviteStatus;
 import ru.mdkardaev.user.entity.User;
 
 import javax.persistence.Entity;
@@ -23,14 +23,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "team_invites")
+@Table(name = "invites")
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"user", "team"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamInvite {
+public class Invite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idGenerator")
@@ -46,5 +46,5 @@ public class TeamInvite {
     private Team team;
 
     @Enumerated(EnumType.STRING)
-    private TeamInviteStatus status;
+    private InviteStatus status;
 }

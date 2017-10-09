@@ -6,11 +6,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
-import ru.mdkardaev.team.dtos.TeamInviteDTO;
+import ru.mdkardaev.team.dtos.InviteDTO;
 import ru.mdkardaev.team.entity.Team;
-import ru.mdkardaev.team.entity.TeamInvite;
-import ru.mdkardaev.team.enums.TeamInviteStatus;
-import ru.mdkardaev.team.repository.TeamInviteRepository;
+import ru.mdkardaev.team.entity.Invite;
+import ru.mdkardaev.team.enums.InviteStatus;
+import ru.mdkardaev.team.repository.InviteRepository;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
@@ -22,35 +22,35 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class TeamInviteService {
+public class InviteService {
 
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private TeamRepository teamRepository;
     @Autowired
-    private TeamInviteRepository teamInviteRepository;
+    private InviteRepository inviteRepository;
     @Autowired
     private ConversionService conversionService;
 
     @Transactional
     public void inviteUsersToTeam(Collection<User> users, Team team) {
-        List<TeamInvite> invites = new ArrayList<>(users.size());
+        List<Invite> invites = new ArrayList<>(users.size());
 
         for (User user : users) {
-            TeamInvite teamInvite = TeamInvite.builder()
-                    .team(team)
-                    .user(user)
-                    .build();
-            invites.add(teamInvite);
+                Invite invite = Invite.builder()
+                                      .team(team)
+                                      .user(user)
+                                      .build();
+            invites.add(invite);
         }
 
-        teamInviteRepository.save(invites);
+        inviteRepository.save(invites);
     }
 
     @Transactional
     public void acceptInvitation(Long inviteID, String userLogin) {
-        TeamInvite invite = teamInviteRepository.findOne(inviteID);
+        Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite == null || invite.getStatus() != null) {
             throw new InvalidParameterException("invalid parameters");
@@ -65,15 +65,15 @@ public class TeamInviteService {
         }
 
         team.getUsers().add(user);
-        invite.setStatus(TeamInviteStatus.ACCEPTED);
+        invite.setStatus(InviteStatus.ACCEPTED);
 
         teamRepository.save(team);
-        teamInviteRepository.save(invite);
+        inviteRepository.save(invite);
     }
 
     @Transactional
     public void declineInvitation(Long inviteID, String userLogin) {
-        TeamInvite invite = teamInviteRepository.findOne(inviteID);
+        Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite == null || invite.getStatus() != null) {
             throw new InvalidParameterException("invalid parameters");
@@ -85,16 +85,17 @@ public class TeamInviteService {
             throw new InvalidParameterException("invalid parameters");
         }
 
-        invite.setStatus(TeamInviteStatus.DECLINED);
+        invite.setStatus(InviteStatus.DECLINED);
 
-        teamInviteRepository.save(invite);
+        inviteRepository.save(invite);
     }
 
-    public List<TeamInviteDTO> getInvites(String userLogin, TeamInviteStatus status) {
-        List<TeamInvite> invites = teamInviteRepository
+    public List<InviteDTO> getUserInvites(String userLogin, InviteStatus status) {
+        List<Invite> invites = inviteRepository
                 .findByUser_IdAndStatus(userRepository.findByLogin(userLogin).getId(), status);
         return invites.stream()
-                .map(e -> conversionService.convert(e, TeamInviteDTO.class))
+                .map(e -> conversionService.convert(e, InviteDTO.class))
                 .collect(Collectors.toList());
     }
+
 }

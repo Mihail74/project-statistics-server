@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
-import ru.mdkardaev.team.dtos.TeamInviteDTO;
-import ru.mdkardaev.team.requests.AcceptTeamInviteRequest;
-import ru.mdkardaev.team.requests.DeclineTeamInviteRequest;
-import ru.mdkardaev.team.responses.GetMyTeamInvitesResponse;
-import ru.mdkardaev.team.services.TeamInviteService;
+import ru.mdkardaev.team.dtos.InviteDTO;
+import ru.mdkardaev.team.requests.AcceptInviteRequest;
+import ru.mdkardaev.team.requests.DeclineInviteRequest;
+import ru.mdkardaev.team.responses.GetMyInvitesResponse;
+import ru.mdkardaev.team.services.InviteService;
 
 import javax.validation.Valid;
 
@@ -27,10 +27,10 @@ import java.util.List;
 @RestController
 @RequestMapping("api/me/teams/invites")
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
-public class MeTeamInviteController {
+public class MeInviteController {
 
     @Autowired
-    private TeamInviteService teamInviteService;
+    private InviteService inviteService;
 
     @RequestMapping(path = "/",
             method = RequestMethod.GET,
@@ -40,8 +40,8 @@ public class MeTeamInviteController {
             @ApiResponse(code = 200, message = "Invites"),
     })
     public ResponseEntity<?> getMyInvites(@AuthenticationPrincipal UserDetails principal) {
-        List<TeamInviteDTO> invites = teamInviteService.getInvites(principal.getUsername(), null);
-        return ResponseEntity.ok(new GetMyTeamInvitesResponse(invites));
+        List<InviteDTO> invites = inviteService.getUserInvites(principal.getUsername(), null);
+        return ResponseEntity.ok(new GetMyInvitesResponse(invites));
     }
 
     @RequestMapping(path = "/accept",
@@ -51,9 +51,9 @@ public class MeTeamInviteController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Accept invite to team"),
     })
-    public ResponseEntity<?> acceptInvite(@RequestBody @Valid AcceptTeamInviteRequest request,
+    public ResponseEntity<?> acceptInvite(@RequestBody @Valid AcceptInviteRequest request,
                                           @AuthenticationPrincipal UserDetails principal) {
-        teamInviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
+        inviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
         return ResponseEntity.ok().build();
     }
 
@@ -64,9 +64,9 @@ public class MeTeamInviteController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Decline invite to team"),
     })
-    public ResponseEntity<?> declineInvite(@RequestBody @Valid DeclineTeamInviteRequest request,
+    public ResponseEntity<?> declineInvite(@RequestBody @Valid DeclineInviteRequest request,
                                            @AuthenticationPrincipal UserDetails principal) {
-        teamInviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
+        inviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
         return ResponseEntity.ok().build();
     }
 }

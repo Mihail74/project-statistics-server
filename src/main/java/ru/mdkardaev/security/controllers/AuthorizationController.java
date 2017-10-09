@@ -110,7 +110,7 @@ public class AuthorizationController {
                                                     .getExpiration()
                                                     .toInstant()
                                                     .toEpochMilli());
-        response.setUser(userService.getUser(login));
+        response.setUser(userService.getUserByLogin(login));
         return response;
     }
 

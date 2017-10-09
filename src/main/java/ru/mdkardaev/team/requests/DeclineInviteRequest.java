@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @ApiModel(value = "Request to decline an invitation to the team")
 @Data
-public class DeclineTeamInviteRequest {
+public class DeclineInviteRequest {
 
     @NotNull
     @ApiModelProperty(value = "Invite id", example = "1", required = true)

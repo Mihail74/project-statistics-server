@@ -18,7 +18,9 @@ import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.team.responses.TeamResponse;
+import ru.mdkardaev.team.services.InviteService;
 import ru.mdkardaev.team.services.TeamService;
+import ru.mdkardaev.user.services.UserService;
 
 import javax.validation.Valid;
 
@@ -29,6 +31,10 @@ public class TeamController {
 
     @Autowired
     private TeamService teamService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private InviteService inviteService;
 
     @RequestMapping(path = "/",
             method = RequestMethod.GET,
