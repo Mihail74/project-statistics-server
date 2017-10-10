@@ -39,9 +39,10 @@ public class InviteService {
 
         for (User user : users) {
             Invite invite = Invite.builder()
-                                  .team(team)
-                                  .user(user)
-                                  .build();
+                    .team(team)
+                    .user(user)
+                    .status(InviteStatus.NEW)
+                    .build();
             invites.add(invite);
         }
 
@@ -94,8 +95,8 @@ public class InviteService {
         List<Invite> invites = inviteRepository
                 .findByUser_IdAndStatus(userRepository.findByLogin(userLogin).getId(), status);
         return invites.stream()
-                      .map(e -> conversionService.convert(e, InviteDTO.class))
-                      .collect(Collectors.toList());
+                .map(e -> conversionService.convert(e, InviteDTO.class))
+                .collect(Collectors.toList());
     }
 
     public InviteDTO getInvite(Long id) {

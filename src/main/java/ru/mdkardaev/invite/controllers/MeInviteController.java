@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
+import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.invite.requests.AcceptInviteRequest;
 import ru.mdkardaev.invite.requests.DeclineInviteRequest;
 import ru.mdkardaev.invite.responses.GetMyInviteResponse;
@@ -37,7 +38,7 @@ public class MeInviteController {
             @ApiResponse(code = 200, message = "Invites"),
     })
     public ResponseEntity<?> getMyInvites(@AuthenticationPrincipal UserDetails principal) {
-        List<InviteDTO> invites = inviteService.getUserInvites(principal.getUsername(), null);
+        List<InviteDTO> invites = inviteService.getUserInvites(principal.getUsername(), InviteStatus.NEW);
         return ResponseEntity.ok(new GetMyInvitesResponse(invites));
     }
 
