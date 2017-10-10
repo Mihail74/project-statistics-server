@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class DBExceptionUtils {
 
     /**
-     * In case when cause of Exceptione is ConstraintViolationException with sqlState == conditionalSqlState,
+     * In case when cause of Exception is ConstraintViolationException with sqlState == conditionalSqlState,
      * then throws exception supplied by the exceptionSupplier
      */
     public void conditionThrowNewException(Exception e, SQLStates conditionalSqlState, Supplier<RuntimeException> exceptionSupplier) {

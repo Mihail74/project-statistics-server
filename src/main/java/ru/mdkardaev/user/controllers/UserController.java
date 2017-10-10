@@ -37,7 +37,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "Return users list", response = GetUsersResponse.class),
     })
     public ResponseEntity<?> getUsers(GetUsersRequest request, @AuthenticationPrincipal UserDetails principal) {
-        List<UserDTO> users = userService.getUsersWithoutUserWithLogin(principal.getUsername());
+        List<UserDTO> users = userService.getUsersExcludeUserWithLogin(principal.getUsername());
         return ResponseEntity.ok(new GetUsersResponse(users));
     }
 }

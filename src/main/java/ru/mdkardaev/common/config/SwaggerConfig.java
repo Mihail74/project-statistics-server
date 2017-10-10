@@ -25,7 +25,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .tags(new Tag(Tags.GAMES, "Games"),
-                      new Tag(Tags.SECURITY, "Register, SignIn, SignOut, Reresh"),
+                      new Tag(Tags.SECURITY, "Register, login, logout, reresh"),
                       new Tag(Tags.TEAMS, "Teams"),
                       new Tag(Tags.USERS, "Users")
                 )

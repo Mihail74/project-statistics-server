@@ -64,7 +64,7 @@ public class User {
     private Set<Team> teams;
 
     @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = Role.class)
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(joinColumns = {@JoinColumn(name = "user_id")},
             foreignKey = @ForeignKey(name = "fk_users"))
     private Set<Role> roles;

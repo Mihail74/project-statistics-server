@@ -16,7 +16,8 @@ public class JwtValidator {
     private JwtSettings jwtSettings;
 
     /**
-     * Validate token and return it's claims
+     * Validate token and return it's claims.
+     * throws exception if token expired
      */
     public Claims validateAndGetClaims(String token) throws BadCredentialsException, JwtExpiredTokenException {
         try {
@@ -31,6 +32,9 @@ public class JwtValidator {
         }
     }
 
+    /**
+     * return token claims
+     */
     public Claims getClaimsIncludeExpired(String token){
         try {
             return Jwts.parser().setSigningKey(jwtSettings.getTokenSigningKey()).parseClaimsJws(token).getBody();

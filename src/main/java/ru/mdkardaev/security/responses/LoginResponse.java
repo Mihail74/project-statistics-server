@@ -3,24 +3,20 @@ package ru.mdkardaev.security.responses;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.mdkardaev.user.dtos.UserDTO;
 
-@ApiModel(value = "SignIn response")
+@ApiModel(value = "Login response")
 @Data
-public class SignInResponse {
+@AllArgsConstructor
+public class LoginResponse {
 
     @ApiModelProperty(value = "Access token", required = true)
     private String accessToken;
 
-    @ApiModelProperty(value = "Access token expiredTime", required = true)
-    private Long accessTokenExpiredTime;
-
     @ApiModelProperty(value = "Refresh token", required = true)
     private String refreshToken;
-
-    @ApiModelProperty(value = "Refresh token expiredTime", required = true)
-    private Long refreshTokenExpiredTime;
 
     @ApiModelProperty(value = "Signed user", required = true)
     private UserDTO user;

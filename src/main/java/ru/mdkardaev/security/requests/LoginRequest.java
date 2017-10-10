@@ -4,9 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@ApiModel(value = "SignIn request")
+@ApiModel(value = "Login request")
 @Data
-public class SignInRequest {
+public class LoginRequest {
 
     @ApiModelProperty(value = "Login", example = "login", required = true)
     private String login;

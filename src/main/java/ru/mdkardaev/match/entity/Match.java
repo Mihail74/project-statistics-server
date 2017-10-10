@@ -8,6 +8,7 @@ import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.team.entity.Team;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "match")
@@ -22,19 +23,11 @@ public class Match {
     @SequenceGenerator(name = "idGenerator", sequenceName = "match_id_seq")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "team1_id", foreignKey = @ForeignKey(name = "fk_team2"))
-    private Team team1;
-
-    @OneToOne
-    @JoinColumn(name = "team2_id", foreignKey = @ForeignKey(name = "fk_team1"))
-    private Team team2;
-
-    @Column(name = "team1score", nullable = false)
-    private Integer team1Score;
-
-    @Column(name = "team2score", nullable = false)
-    private Integer team2Score;
+    @OneToMany
+    @JoinTable(name = "team_match",
+            joinColumns = {@JoinColumn(name = "match_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_match_id"))},
+            inverseJoinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_team_id"))})
+    private Set<Team> teams;
 
     @OneToOne
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))

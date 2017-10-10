@@ -13,13 +13,12 @@ import ru.mdkardaev.security.exceptions.BadCredentialsException;
 import ru.mdkardaev.security.jwt.JwtConstants;
 import ru.mdkardaev.security.jwt.JwtFactory;
 import ru.mdkardaev.security.jwt.JwtValidator;
-import ru.mdkardaev.security.requests.SignInRequest;
+import ru.mdkardaev.security.requests.LoginRequest;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.TokenRepository;
 import ru.mdkardaev.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -39,7 +38,7 @@ public class AuthorizationService {
     private JwtValidator jwtValidator;
 
     @Transactional
-    public TokenPair signIn(SignInRequest request) {
+    public TokenPair login(LoginRequest request) {
         User user = userRepository.findByLogin(request.getLogin());
 
         if (user == null
@@ -51,7 +50,7 @@ public class AuthorizationService {
     }
 
     @Transactional
-    public void signOut(String rawAccessToken) {
+    public void logout(Stringg rawAccessToken) {
         ru.mdkardaev.user.entity.Token accessToken = tokenRepository.findByRawToken(rawAccessToken);
         Long userId = accessToken.getUser().getId();
 
@@ -60,12 +59,12 @@ public class AuthorizationService {
 
         List<ru.mdkardaev.user.entity.Token> refreshTokensToDelete =
                 refreshTokens.stream()
-                        .filter(e -> {
-                            String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
-                                    .get(JwtConstants.CONNECTED_TOKEN);
-                            return accessToken.getId().equals(accessTokenId);
-                        })
-                        .collect(Collectors.toList());
+                             .filter(e -> {
+                                 String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
+                                                                             .get(JwtConstants.CONNECTED_TOKEN);
+                                 return accessToken.getId().equals(accessTokenId);
+                             })
+                             .collect(Collectors.toList());
 
         tokenRepository.delete(accessToken);
         tokenRepository.delete(refreshTokensToDelete);
@@ -78,17 +77,14 @@ public class AuthorizationService {
         String refreshTokenId = claims.getId();
         String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
         String userLogin = claims.getSubject();
-        TokenType tokenType = Optional.ofNullable(claims.get(JwtConstants.TOKEN_TYPE))
-                .map(Object::toString)
-                .map(TokenType::valueOf)
-                .orElse(null);
+        TokenType tokenType = ((TokenType) claims.get(JwtConstants.TOKEN_TYPE));
 
         User user = userRepository.findByLogin(userLogin);
 
         ru.mdkardaev.user.entity.Token refreshToken = tokenRepository.findOne(refreshTokenId);
 
-        if (refreshToken == null || tokenType != TokenType.REFRESH_TOKEN || user == null) {
-            throw new BadCredentialsException("Incorrect token type");
+        if (refreshToken == null || tokenType != TokenType.REFRESH_TOKEN) {
+            throw new BadCredentialsException("Incorrect token");
         }
 
         if (tokenRepository.exists(accessTokenId)) {
@@ -110,27 +106,27 @@ public class AuthorizationService {
 
         ru.mdkardaev.user.entity.Token accessToken =
                 ru.mdkardaev.user.entity.Token.builder()
-                        .id(accessJwt.getClaims().getId())
-                        .rawToken(accessJwt.getRawToken())
-                        .type(TokenType.ACCESS_TOKEN)
-                        .expiredTime(accessJwt.getClaims()
-                                             .getExpiration()
-                                             .toInstant()
-                                             .toEpochMilli())
-                        .user(user)
-                        .build();
+                                              .id(accessJwt.getClaims().getId())
+                                              .rawToken(accessJwt.getRawToken())
+                                              .type(TokenType.ACCESS_TOKEN)
+                                              .expiredTime(accessJwt.getClaims()
+                                                                    .getExpiration()
+                                                                    .toInstant()
+                                                                    .toEpochMilli())
+                                              .user(user)
+                                              .build();
 
         ru.mdkardaev.user.entity.Token refreshToken =
                 ru.mdkardaev.user.entity.Token.builder()
-                        .id(refreshJwt.getClaims().getId())
-                        .rawToken(refreshJwt.getRawToken())
-                        .type(TokenType.REFRESH_TOKEN)
-                        .expiredTime(refreshJwt.getClaims()
-                                             .getExpiration()
-                                             .toInstant()
-                                             .toEpochMilli())
-                        .user(user)
-                        .build();
+                                              .id(refreshJwt.getClaims().getId())
+                                              .rawToken(refreshJwt.getRawToken())
+                                              .type(TokenType.REFRESH_TOKEN)
+                                              .expiredTime(refreshJwt.getClaims()
+                                                                     .getExpiration()
+                                                                     .toInstant()
+                                                                     .toEpochMilli())
+                                              .user(user)
+                                              .build();
 
         tokenRepository.save(accessToken);
         tokenRepository.save(refreshToken);
