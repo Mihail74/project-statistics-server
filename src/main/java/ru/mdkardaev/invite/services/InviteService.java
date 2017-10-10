@@ -103,4 +103,11 @@ public class InviteService {
         return conversionService.convert(inviteRepository.findOne(id), InviteDTO.class);
     }
 
+    /**
+     * delete all invites to team with specified id
+     */
+    public void deleteInvites(Long id) {
+        List<Invite> invites = inviteRepository.findByTeam_id(id);
+        inviteRepository.delete(invites);
+    }
 }

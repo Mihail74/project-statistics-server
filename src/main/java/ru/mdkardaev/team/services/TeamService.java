@@ -98,4 +98,10 @@ public class TeamService {
         Team team = teamRepository.findOne(id);
         return conversionService.convert(team, TeamDTO.class);
     }
+
+    public void formTeam(Long id) {
+        Team team = teamRepository.findOne(id);
+        team.setFormingStatus(TeamFormingStatus.FORMED);
+        teamRepository.save(team);
+    }
 }
