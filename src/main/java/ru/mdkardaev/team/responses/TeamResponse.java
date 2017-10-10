@@ -4,8 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.mdkardaev.invite.dtos.InvitedUserDTO;
 import ru.mdkardaev.team.dtos.TeamDTO;
-import ru.mdkardaev.user.dtos.UserDTO;
 
 import java.util.List;
 
@@ -16,4 +16,6 @@ public class TeamResponse {
 
     @ApiModelProperty(value = "team", required = true)
     private TeamDTO team;
+
+    private List<InvitedUserDTO> invitedUsers;
 }

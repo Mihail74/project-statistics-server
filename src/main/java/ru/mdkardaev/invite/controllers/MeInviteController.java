@@ -9,17 +9,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.enums.InviteStatus;
-import ru.mdkardaev.invite.requests.AcceptInviteRequest;
 import ru.mdkardaev.invite.requests.DeclineInviteRequest;
 import ru.mdkardaev.invite.responses.GetMyInviteResponse;
 import ru.mdkardaev.invite.responses.GetMyInvitesResponse;
 import ru.mdkardaev.invite.services.InviteService;
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -49,21 +53,21 @@ public class MeInviteController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Invite"),
     })
-    public ResponseEntity<?> getMyInvite(@PathVariable("id") long id, @AuthenticationPrincipal UserDetails principal) {
+    public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails principal) {
         InviteDTO invite = inviteService.getInvite(id);
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
-    @RequestMapping(path = "/accept",
+    @RequestMapping(path = "/{id}/accept",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Accept invite to team")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Accept invite to team"),
     })
-    public ResponseEntity<?> acceptInvite(@RequestBody @Valid AcceptInviteRequest request,
+    public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
-        inviteService.acceptInvitation(request.getId(), principal.getUsername());
+        inviteService.acceptInvitation(id, principal.getUsername());
         return ResponseEntity.ok().build();
     }
 

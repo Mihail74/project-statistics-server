@@ -15,14 +15,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
+import ru.mdkardaev.invite.dtos.InvitedUserDTO;
+import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
+import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.team.responses.TeamResponse;
-import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.services.TeamService;
 import ru.mdkardaev.user.services.UserService;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/teams")
@@ -45,7 +49,11 @@ public class TeamController {
     })
     public ResponseEntity<?> getTeam(@RequestParam("id") Long id) {
         TeamDTO team = teamService.getTeam(id);
-        return ResponseEntity.ok(new TeamResponse(team));
+        List<InvitedUserDTO> invitedUsers = null;
+        if(team.getFormingStatus() == TeamFormingStatus.FORMING){
+            invitedUsers = inviteService.getUsersInvitedInTeam(id);
+        }
+        return ResponseEntity.ok(new TeamResponse(team, invitedUsers));
     }
 
 
@@ -63,6 +71,7 @@ public class TeamController {
         Long teamID = teamService.create(request, principal.getUsername());
 
         TeamDTO team = teamService.getTeam(teamID);
-        return ResponseEntity.ok(new TeamResponse(team));
+
+        return ResponseEntity.ok(new TeamResponse(team, inviteService.getUsersInvitedInTeam(teamID)));
     }
 }

@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
+import ru.mdkardaev.invite.dtos.InvitedUserDTO;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.invite.repository.InviteRepository;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
+import ru.mdkardaev.user.dtos.UserDTO;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -53,7 +55,7 @@ public class InviteService {
     public void acceptInvitation(Long inviteID, String userLogin) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite == null || invite.getStatus() != null) {
+        if (invite == null || invite.getStatus() != InviteStatus.NEW) {
             throw new InvalidParameterException("invalid parameters");
         }
 
@@ -109,5 +111,12 @@ public class InviteService {
     public void deleteInvites(Long id) {
         List<Invite> invites = inviteRepository.findByTeam_id(id);
         inviteRepository.delete(invites);
+    }
+
+    public List<InvitedUserDTO> getUsersInvitedInTeam(Long id) {
+        return inviteRepository.findByTeam_id(id).stream().map(e -> {
+            UserDTO user = conversionService.convert(e.getUser(), UserDTO.class);
+            return new InvitedUserDTO(user, e.getStatus());
+        }).collect(Collectors.toList());
     }
 }
