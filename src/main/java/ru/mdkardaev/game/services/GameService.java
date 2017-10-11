@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.exceptions.GameAlreadyExist;
-import ru.mdkardaev.game.exceptions.InvalidRequestParameter;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.game.requests.CreateGameRequest;
 
@@ -30,13 +28,9 @@ public class GameService {
     private ConversionService conversionService;
 
     /**
-     * return create game id
+     * return created game
      */
-    public Long create(CreateGameRequest request) {
-        if (StringUtils.isEmpty(request.getName())) {
-            throw new InvalidRequestParameter("name cannot be empty");
-        }
-
+    public GameDTO create(CreateGameRequest request) {
         Game game = Game.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -53,7 +47,7 @@ public class GameService {
             log.error(e.getMessage(), e);
             throw e;
         }
-        return game.getId();
+        return conversionService.convert(game, GameDTO.class);
     }
 
     public List<GameDTO> getGames() {
@@ -61,10 +55,5 @@ public class GameService {
                 .stream()
                 .map(e -> conversionService.convert(e, GameDTO.class))
                 .collect(Collectors.toList());
-    }
-
-    public GameDTO getGame(Long id) {
-        Game game = gameRepository.findOne(id);
-        return conversionService.convert(game, GameDTO.class);
     }
 }

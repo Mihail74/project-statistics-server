@@ -56,7 +56,6 @@ public class MeTeamController {
     public ResponseEntity<?> formTeam(@RequestBody @Valid FormTeamRequest request,
                                       @AuthenticationPrincipal UserDetails principal) {
         teamService.formTeam(request.getId());
-        inviteService.deleteInvites(request.getId());
         return ResponseEntity.ok().build();
     }
 }

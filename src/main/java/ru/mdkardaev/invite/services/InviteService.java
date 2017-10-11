@@ -7,13 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
-import ru.mdkardaev.invite.dtos.InvitedUserDTO;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.invite.repository.InviteRepository;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
-import ru.mdkardaev.user.dtos.UserDTO;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -36,8 +34,11 @@ public class InviteService {
     private ConversionService conversionService;
 
     @Transactional
-    public void inviteUsersToTeam(Collection<User> users, Team team) {
-        List<Invite> invites = new ArrayList<>(users.size());
+    public List<InviteDTO> inviteUsersToTeam(Collection<Long> userIDs, Long teamID) {
+        List<Invite> invites = new ArrayList<>(userIDs.size());
+
+        Team team = teamRepository.findOne(teamID);
+        List<User> users = userRepository.findAll(userIDs);
 
         for (User user : users) {
             Invite invite = Invite.builder()
@@ -48,7 +49,10 @@ public class InviteService {
             invites.add(invite);
         }
 
-        inviteRepository.save(invites);
+        return inviteRepository.save(invites)
+                .stream()
+                .map(e -> conversionService.convert(e, InviteDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -113,10 +117,10 @@ public class InviteService {
         inviteRepository.delete(invites);
     }
 
-    public List<InvitedUserDTO> getUsersInvitedInTeam(Long id) {
-        return inviteRepository.findByTeam_id(id).stream().map(e -> {
-            UserDTO user = conversionService.convert(e.getUser(), UserDTO.class);
-            return new InvitedUserDTO(user, e.getStatus());
-        }).collect(Collectors.toList());
+    public List<InviteDTO> getUsersInvitedInTeam(Long id) {
+        return inviteRepository.findByTeam_id(id)
+                .stream()
+                .map(e -> conversionService.convert(e, InviteDTO.class))
+                .collect(Collectors.toList());
     }
 }

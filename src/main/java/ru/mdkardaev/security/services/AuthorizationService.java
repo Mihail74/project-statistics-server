@@ -50,7 +50,7 @@ public class AuthorizationService {
     }
 
     @Transactional
-    public void logout(Stringg rawAccessToken) {
+    public void logout(String rawAccessToken) {
         ru.mdkardaev.user.entity.Token accessToken = tokenRepository.findByRawToken(rawAccessToken);
         Long userId = accessToken.getUser().getId();
 

@@ -30,6 +30,10 @@ public class Match {
     private Set<Team> teams;
 
     @OneToOne
+    @JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_team_winner"))
+    private Team winner;
+
+    @OneToOne
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))
     private Game game;
 

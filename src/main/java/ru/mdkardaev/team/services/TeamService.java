@@ -4,20 +4,20 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
-import ru.mdkardaev.common.exceptions.sql.SQLStates;
 import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
+import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
-import ru.mdkardaev.team.exceptions.TeamAlreadyExist;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
+import ru.mdkardaev.team.responses.TeamAndInvites;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -43,10 +43,16 @@ public class TeamService {
     @Autowired
     private DBExceptionUtils dbExceptionUtils;
 
-    /**
-     * return created team id
-     */
-    public Long create(CreateTeamRequest request, String leaderLogin) {
+
+    @Transactional
+    public TeamAndInvites createTeamAndInviteMembers(CreateTeamRequest request, String leaderLogin) {
+        Team team = createTeam(request, leaderLogin);
+        List<InviteDTO> invitesDTO = inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
+
+        return new TeamAndInvites(conversionService.convert(team, TeamDTO.class), invitesDTO);
+    }
+
+    private Team createTeam(CreateTeamRequest request, String leaderLogin) {
         Game game = gameRepository.findOne(request.getGameID());
         if (game == null) {
             throw new InvalidParameterException("Game with specified [name] doesn't exist");
@@ -61,34 +67,15 @@ public class TeamService {
                 .formingStatus(TeamFormingStatus.FORMING)
                 .build();
 
-        try {
-            team = teamRepository.save(team);
-        } catch (DataIntegrityViolationException e) {
-            dbExceptionUtils
-                    .conditionThrowNewException(e,
-                                                SQLStates.UNIQUE_VIOLATION,
-                                                () -> new TeamAlreadyExist(String.format(
-                                                        "Team with name: [%s] already exist.",
-                                                        request.getName())));
-            log.error(e.getMessage(), e);
-            throw e;
-        }
-
-        inviteService.inviteUsersToTeam(userRepository.findByIdIn(request.getMembersID()), team);
-
-        return team.getId();
+        return teamRepository.save(team);
     }
 
     /**
-     * returns teams when user with userLogin is member
+     * returns teams with formingStatus when user with userLogin is member
      */
     public List<TeamDTO> getUserTeams(String userLogin, TeamFormingStatus formingStatus) {
-        List<Team> teams;
-        if (formingStatus == null) {
-            teams = teamRepository.findByUsers_login(userLogin);
-        } else {
-            teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
-        }
+        List<Team> teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
+
         return teams.stream()
                 .map(e -> conversionService.convert(e, TeamDTO.class))
                 .collect(Collectors.toList());
@@ -99,9 +86,12 @@ public class TeamService {
         return conversionService.convert(team, TeamDTO.class);
     }
 
+    @Transactional
     public void formTeam(Long id) {
         Team team = teamRepository.findOne(id);
         team.setFormingStatus(TeamFormingStatus.FORMED);
+
+        inviteService.deleteInvites(team.getId());
         teamRepository.save(team);
     }
 }
