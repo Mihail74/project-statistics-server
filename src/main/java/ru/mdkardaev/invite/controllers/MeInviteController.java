@@ -10,19 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.enums.InviteStatus;
-import ru.mdkardaev.invite.requests.DeclineInviteRequest;
 import ru.mdkardaev.invite.responses.GetMyInviteResponse;
 import ru.mdkardaev.invite.responses.GetMyInvitesResponse;
 import ru.mdkardaev.invite.services.InviteService;
-
-import javax.validation.Valid;
 
 import java.util.List;
 
@@ -38,9 +34,7 @@ public class MeInviteController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get my invites to team")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Invites"),
-    })
+    @ApiResponse(code = 200, message = "My new invites")
     public ResponseEntity<?> getMyInvites(@AuthenticationPrincipal UserDetails principal) {
         List<InviteDTO> invites = inviteService.getUserInvites(principal.getUsername(), InviteStatus.NEW);
         return ResponseEntity.ok(new GetMyInvitesResponse(invites));
@@ -50,10 +44,9 @@ public class MeInviteController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get my invite to team")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Invite"),
-    })
-    public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails principal) {
+    @ApiResponse(code = 200, message = "Invite", response = GetMyInviteResponse.class)
+    public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id,
+                                         @AuthenticationPrincipal UserDetails principal) {
         InviteDTO invite = inviteService.getInvite(id);
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
@@ -63,7 +56,7 @@ public class MeInviteController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Accept invite to team")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Accept invite to team"),
+            @ApiResponse(code = 200, message = "Accept invite in team"),
     })
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
@@ -71,16 +64,14 @@ public class MeInviteController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(path = "/decline",
+    @RequestMapping(path = "{id}/decline",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Decline invite to team")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Decline invite to team"),
-    })
-    public ResponseEntity<?> declineInvite(@RequestBody @Valid DeclineInviteRequest request,
+    @ApiResponse(code = 200, message = "Decline invite in team")
+    public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
-        inviteService.acceptInvitation(request.getInviteID(), principal.getUsername());
+        inviteService.acceptInvitation(id, principal.getUsername());
         return ResponseEntity.ok().build();
     }
 }

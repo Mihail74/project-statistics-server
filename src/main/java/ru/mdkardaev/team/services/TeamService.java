@@ -7,7 +7,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
-import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.invite.dtos.InviteDTO;
@@ -35,13 +34,10 @@ public class TeamService {
     @Autowired
     private GameRepository gameRepository;
 
-
     @Autowired
     private InviteService inviteService;
     @Autowired
     private ConversionService conversionService;
-    @Autowired
-    private DBExceptionUtils dbExceptionUtils;
 
 
     @Transactional
@@ -52,22 +48,9 @@ public class TeamService {
         return new TeamAndInvites(conversionService.convert(team, TeamDTO.class), invitesDTO);
     }
 
-    private Team createTeam(CreateTeamRequest request, String leaderLogin) {
-        Game game = gameRepository.findOne(request.getGameID());
-        if (game == null) {
-            throw new InvalidParameterException("Game with specified [name] doesn't exist");
-        }
-
-        User leader = userRepository.findByLogin(leaderLogin);
-        Team team = Team.builder()
-                .name(request.getName())
-                .users(Sets.newHashSet(leader))
-                .leader(leader)
-                .game(game)
-                .formingStatus(TeamFormingStatus.FORMING)
-                .build();
-
-        return teamRepository.save(team);
+    public TeamDTO getTeam(Long id) {
+        Team team = teamRepository.findOne(id);
+        return conversionService.convert(team, TeamDTO.class);
     }
 
     /**
@@ -77,21 +60,35 @@ public class TeamService {
         List<Team> teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
 
         return teams.stream()
-                .map(e -> conversionService.convert(e, TeamDTO.class))
-                .collect(Collectors.toList());
+                    .map(e -> conversionService.convert(e, TeamDTO.class))
+                    .collect(Collectors.toList());
     }
 
-    public TeamDTO getTeam(Long id) {
-        Team team = teamRepository.findOne(id);
-        return conversionService.convert(team, TeamDTO.class);
-    }
 
     @Transactional
-    public void formTeam(Long id) {
+    public TeamDTO formTeam(Long id) {
         Team team = teamRepository.findOne(id);
         team.setFormingStatus(TeamFormingStatus.FORMED);
 
-        inviteService.deleteInvites(team.getId());
-        teamRepository.save(team);
+        inviteService.deleteInvitesInTeam(team.getId());
+        return conversionService.convert(teamRepository.save(team), TeamDTO.class);
+    }
+
+    private Team createTeam(CreateTeamRequest request, String leaderLogin) {
+        Game game = gameRepository.findOne(request.getGameID());
+        if (game == null) {
+            throw new InvalidParameterException("Game with specified [name] doesn't exist");
+        }
+
+        User leader = userRepository.findByLogin(leaderLogin);
+        Team team = Team.builder()
+                        .name(request.getName())
+                        .users(Sets.newHashSet(leader))
+                        .leader(leader)
+                        .game(game)
+                        .formingStatus(TeamFormingStatus.FORMING)
+                        .build();
+
+        return teamRepository.save(team);
     }
 }

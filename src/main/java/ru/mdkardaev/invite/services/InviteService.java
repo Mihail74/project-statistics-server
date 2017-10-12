@@ -42,17 +42,17 @@ public class InviteService {
 
         for (User user : users) {
             Invite invite = Invite.builder()
-                    .team(team)
-                    .user(user)
-                    .status(InviteStatus.NEW)
-                    .build();
+                                  .team(team)
+                                  .user(user)
+                                  .status(InviteStatus.NEW)
+                                  .build();
             invites.add(invite);
         }
 
         return inviteRepository.save(invites)
-                .stream()
-                .map(e -> conversionService.convert(e, InviteDTO.class))
-                .collect(Collectors.toList());
+                               .stream()
+                               .map(e -> conversionService.convert(e, InviteDTO.class))
+                               .collect(Collectors.toList());
     }
 
     @Transactional
@@ -98,9 +98,9 @@ public class InviteService {
     }
 
     public List<InviteDTO> getUserInvites(String userLogin, InviteStatus status) {
-        List<Invite> invites = inviteRepository
-                .findByUser_IdAndStatus(userRepository.findByLogin(userLogin).getId(), status);
-        return invites.stream()
+        return inviteRepository
+                .findByUser_LoginAndStatus(userLogin, status)
+                .stream()
                 .map(e -> conversionService.convert(e, InviteDTO.class))
                 .collect(Collectors.toList());
     }
@@ -112,15 +112,15 @@ public class InviteService {
     /**
      * delete all invites to team with specified id
      */
-    public void deleteInvites(Long id) {
+    public void deleteInvitesInTeam(Long id) {
         List<Invite> invites = inviteRepository.findByTeam_id(id);
         inviteRepository.delete(invites);
     }
 
     public List<InviteDTO> getUsersInvitedInTeam(Long id) {
         return inviteRepository.findByTeam_id(id)
-                .stream()
-                .map(e -> conversionService.convert(e, InviteDTO.class))
-                .collect(Collectors.toList());
+                               .stream()
+                               .map(e -> conversionService.convert(e, InviteDTO.class))
+                               .collect(Collectors.toList());
     }
 }

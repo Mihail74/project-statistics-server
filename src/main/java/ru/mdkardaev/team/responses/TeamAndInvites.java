@@ -14,8 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class TeamAndInvites {
 
+    public TeamAndInvites(TeamDTO team) {
+        this.team = team;
+    }
+
     @ApiModelProperty(value = "team", required = true)
     private TeamDTO team;
 
+    @ApiModelProperty(value = "Invited to team users")
     private List<InviteDTO> invitedUsers;
 }

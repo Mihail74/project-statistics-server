@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface InviteRepository extends JpaRepository<Invite, Long> {
 
-    List<Invite> findByUser_IdAndStatus(Long userID, InviteStatus status);
+    List<Invite> findByUser_LoginAndStatus(String login, InviteStatus status);
 
     List<Invite> findByTeam_id(Long teamID);
 }
