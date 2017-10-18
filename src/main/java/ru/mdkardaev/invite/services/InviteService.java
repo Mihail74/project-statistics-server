@@ -82,7 +82,7 @@ public class InviteService {
     public void declineInvitation(Long inviteID, String userLogin) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite == null || invite.getStatus() != null) {
+        if (invite == null || invite.getStatus() != InviteStatus.NEW) {
             throw new InvalidParameterException("invalid parameters");
         }
 

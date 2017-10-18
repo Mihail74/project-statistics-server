@@ -21,6 +21,6 @@ public class TeamAndInvites {
     @ApiModelProperty(value = "team", required = true)
     private TeamDTO team;
 
-    @ApiModelProperty(value = "Invited to team users")
-    private List<InviteDTO> invitedUsers;
+    @ApiModelProperty(value = "Invites to team")
+    private List<InviteDTO> invites;
 }

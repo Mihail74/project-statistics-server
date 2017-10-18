@@ -71,7 +71,7 @@ public class MeInviteController {
     @ApiResponse(code = 200, message = "Decline invite in team")
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
-        inviteService.acceptInvitation(id, principal.getUsername());
+        inviteService.declineInvitation(id, principal.getUsername());
         return ResponseEntity.ok().build();
     }
 }

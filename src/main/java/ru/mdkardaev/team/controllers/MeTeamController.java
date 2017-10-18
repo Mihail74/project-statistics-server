@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
-import ru.mdkardaev.team.requests.FormTeamRequest;
 import ru.mdkardaev.team.responses.GetMyTeamsResponse;
 import ru.mdkardaev.team.responses.TeamAndInvites;
 import ru.mdkardaev.team.services.TeamService;
@@ -39,14 +38,14 @@ public class MeTeamController {
         return ResponseEntity.ok(new GetMyTeamsResponse(userTeams));
     }
 
-    @RequestMapping(path = "/form",
+    @RequestMapping(path = "/{id}/form",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> formTeam(@RequestBody @Valid FormTeamRequest request,
+    public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
         //TODO: check principal is leader
-        TeamDTO team = teamService.formTeam(request.getId());
+        TeamDTO team = teamService.formTeam(id);
         return ResponseEntity.ok(new TeamAndInvites(team));
     }
 }
