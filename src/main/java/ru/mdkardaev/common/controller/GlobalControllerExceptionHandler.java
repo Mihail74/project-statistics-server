@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import ru.mdkardaev.security.exceptions.BadCredentialsException;
 
 @ControllerAdvice
 @Slf4j
@@ -19,7 +20,9 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleConflict(Exception e) throws Exception {
-        log.error(e.getMessage(), e);
+        if (!(e instanceof BadCredentialsException)) {
+            log.error(e.getMessage(), e);
+        }
 
         ResponseStatus responseStatus = AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class);
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;

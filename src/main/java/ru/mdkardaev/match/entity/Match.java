@@ -39,4 +39,7 @@ public class Match {
 
     @Column(name = "timestamp")
     private long timestamp;
+
+    private long winnerScore;
+    private long loserScore;
 }
