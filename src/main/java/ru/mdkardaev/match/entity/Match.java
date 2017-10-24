@@ -37,7 +37,6 @@ public class Match {
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))
     private Game game;
 
-    @Column(name = "timestamp")
     private long timestamp;
 
     private long winnerScore;
