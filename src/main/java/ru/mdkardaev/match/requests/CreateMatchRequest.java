@@ -9,13 +9,13 @@ import javax.validation.constraints.NotNull;
 
 import java.util.Set;
 
-@ApiModel(value = "Request on game creation")
+@ApiModel(value = "Request on match creation")
 @Data
 public class CreateMatchRequest {
 
-    @ApiModelProperty(value = "Participating teams 1 id", required = true)
+    @ApiModelProperty(value = "Participating teams and their scores", required = true)
     @NotEmpty
-    private Set<TeamScore> teamsAndScore;
+    private Set<TeamScore> teamsScore;
 
     @ApiModelProperty(value = "Winner team id", required = true)
     @NotNull
