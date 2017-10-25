@@ -16,6 +16,7 @@ import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.match.repository.MatchRepository;
 import ru.mdkardaev.match.repository.TeamMatchScoreRepository;
 import ru.mdkardaev.match.requests.CreateMatchRequest;
+import ru.mdkardaev.match.services.MatchService;
 import ru.mdkardaev.team.repository.TeamRepository;
 
 import javax.validation.Valid;
@@ -26,16 +27,7 @@ import javax.validation.Valid;
 public class MatchController {
 
     @Autowired
-    private MatchRepository matchRepository;
-
-    @Autowired
-    private TeamMatchScoreRepository teamMatchScoreRepository;
-
-    @Autowired
-    private TeamRepository teamRepository;
-
-    @Autowired
-    private GameRepository gameRepository;
+    private MatchService matchService;
 
     @RequestMapping(path = "/create",
             method = RequestMethod.POST,
@@ -44,35 +36,7 @@ public class MatchController {
     @ApiResponse(code = 200, message = "Match is successfully created")
     @Transactional
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateMatchRequest request) {
-
-//        Long gameID = request.getGameID();
-//        Long timestamp = request.getTimestamp();
-//        Long winnerTeamID = request.getWinnerTeamID();
-//
-//        Match match = new Match();
-//        match.setTimestamp(timestamp);
-//        match.setGame(gameRepository.findOne(gameID));
-//        match.setWinner(teamRepository.findOne(winnerTeamID));
-//
-//        match = matchRepository.save(match);
-//
-//
-//        for (TeamScore teamScore : request.getTeamsScore()) {
-//            Long teamID = teamScore.getTeamID();
-//            Long score = teamScore.getScore();
-//
-//            TeamMatchScore tms = new TeamMatchScore();
-//            tms.setMatch(match);
-//            tms.setScore(score);
-//            tms.setTeam(teamRepository.findOne(teamID));
-//
-//            TeamMatchScorePK pk = new TeamMatchScorePK();
-//            pk.setTeamID(teamID);
-//            pk.setMatchID(match.getId());
-//            tms.setPk(pk);
-//            teamMatchScoreRepository.save(tms);
-//        }
-
+        matchService.create(request);
         return ResponseEntity.ok().build();
     }
 }
