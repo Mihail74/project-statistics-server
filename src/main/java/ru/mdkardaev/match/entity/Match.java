@@ -7,7 +7,17 @@ import lombok.Setter;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.team.entity.Team;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import java.util.Set;
 
 @Entity
@@ -23,11 +33,8 @@ public class Match {
     @SequenceGenerator(name = "idGenerator", sequenceName = "match_id_seq")
     private Long id;
 
-    @OneToMany
-    @JoinTable(name = "team_match",
-            joinColumns = {@JoinColumn(name = "match_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_match_id"))},
-            inverseJoinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_team_id"))})
-    private Set<Team> teams;
+    @OneToMany(mappedBy = "pk.matchID")
+    private Set<TeamMatchScore> teamsMatchScore;
 
     @OneToOne
     @JoinColumn(name = "team_id", foreignKey = @ForeignKey(name = "fk_team_winner"))
@@ -38,7 +45,4 @@ public class Match {
     private Game game;
 
     private long timestamp;
-
-    private long winnerScore;
-    private long loserScore;
 }
