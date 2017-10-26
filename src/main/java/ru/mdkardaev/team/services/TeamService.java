@@ -69,6 +69,8 @@ public class TeamService {
     public TeamDTO formTeam(Long id) {
         Team team = teamRepository.findOne(id);
         team.setFormingStatus(TeamFormingStatus.FORMED);
+        team.setNumberOfWinMatches(0L);
+        team.setNumberOfMatches(0L);
 
         inviteService.deleteInvitesInTeam(team.getId());
         return conversionService.convert(teamRepository.save(team), TeamDTO.class);

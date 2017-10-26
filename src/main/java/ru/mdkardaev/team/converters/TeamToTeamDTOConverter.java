@@ -26,6 +26,7 @@ public class TeamToTeamDTOConverter implements Converter<Team, TeamDTO> {
                 .id(team.getId())
                 .name(team.getName())
                 .formingStatus(team.getFormingStatus())
+
                 .game(conversionService.convert(team.getGame(), GameDTO.class))
                 .users(team.getUsers()
                                .stream()

@@ -18,7 +18,6 @@ import ru.mdkardaev.team.repository.TeamRepository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -72,9 +71,9 @@ public class MatchService {
             teamMatchScoreRepository.save(teamMatchScore);
         }
         for (Team team : participantTeams) {
-            team.setNumberOfMatches(Optional.ofNullable(team.getNumberOfWinMatches()).orElse(0L) + 1);
+            team.setNumberOfMatches(team.getNumberOfWinMatches() + 1);
             if (team.getId().equals(winnerTeam.getId())) {
-                team.setNumberOfWinMatches(Optional.ofNullable(team.getNumberOfWinMatches()).orElse(0L) + 1);
+                team.setNumberOfWinMatches(team.getNumberOfWinMatches() + 1);
             }
         }
 

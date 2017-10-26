@@ -34,4 +34,10 @@ public class TeamDTO {
 
     @ApiModelProperty(value = "Forming status", required = true)
     private TeamFormingStatus formingStatus;
+
+    @ApiModelProperty(value = "Total number of matches", required = true)
+    private Long numberOfMatches;
+
+    @ApiModelProperty(value = "Total number of won matches", required = true)
+    private Long numberOfWinMatches;
 }
