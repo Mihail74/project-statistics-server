@@ -37,7 +37,9 @@ public class GameController {
     }
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    @ApiOperation(value = "Create game", response = CreateGameResponse.class)
+    @ApiOperation(value = "Create game",
+            response = CreateGameResponse.class,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateGameRequest request) {
         GameDTO game = gameService.create(request);
         return ResponseEntity.ok(new CreateGameResponse(game));

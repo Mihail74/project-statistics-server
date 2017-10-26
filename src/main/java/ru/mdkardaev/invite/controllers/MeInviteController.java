@@ -44,7 +44,9 @@ public class MeInviteController {
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
-    @RequestMapping(path = "/{id}/accept", method = RequestMethod.POST)
+    @RequestMapping(path = "/{id}/accept",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Accept invite to team", response = Void.class)
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
@@ -52,7 +54,9 @@ public class MeInviteController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(path = "{id}/decline", method = RequestMethod.POST)
+    @RequestMapping(path = "{id}/decline",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Decline invite to team", response = Void.class)
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {

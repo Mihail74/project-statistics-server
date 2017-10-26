@@ -23,8 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/me/teams",
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
 public class MeTeamController {
 
@@ -40,7 +39,7 @@ public class MeTeamController {
     }
 
     @ApiOperation(value = "Form team", response = Void.class)
-    @RequestMapping(path = "/{id}/form", method = RequestMethod.PUT)
+    @RequestMapping(path = "/{id}/form", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
         //TODO: check principal is leader

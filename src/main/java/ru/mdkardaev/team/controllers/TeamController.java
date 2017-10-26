@@ -28,8 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/teams",
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
 public class TeamController {
 
@@ -40,7 +39,7 @@ public class TeamController {
     @Autowired
     private InviteService inviteService;
 
-    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    @RequestMapping(path = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Create team",
             notes = "Create team and send invite for members from request",
             response = TeamAndInvites.class)
