@@ -21,7 +21,7 @@ public class CreateMatchRequest {
     @NotNull
     private Long winnerTeamID;
 
-    @ApiModelProperty(value = "Game id", required = true)
+    @ApiModelProperty(value = "Game ID", required = true)
     @NotNull
     private Long gameID;
 

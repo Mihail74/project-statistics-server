@@ -17,10 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 public class TeamDTO {
 
-    @ApiModelProperty(value = "id", example = "1", required = true)
+    @ApiModelProperty(value = "ID", example = "1", required = true)
     private Long id;
-    
-    @ApiModelProperty(value = "name", example = "football", required = true)
+
+    @ApiModelProperty(value = "Name", example = "football", required = true)
     private String name;
 
     @ApiModelProperty(value = "Team members", required = true)
@@ -32,5 +32,6 @@ public class TeamDTO {
     @ApiModelProperty(value = "Game", example = "football", required = true)
     private GameDTO game;
 
+    @ApiModelProperty(value = "Forming status", required = true)
     private TeamFormingStatus formingStatus;
 }

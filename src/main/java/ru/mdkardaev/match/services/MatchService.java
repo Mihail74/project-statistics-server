@@ -18,6 +18,7 @@ import ru.mdkardaev.team.repository.TeamRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,13 +44,14 @@ public class MatchService {
         Game game = gameRepository.findOne(request.getGameID());
 
         List<Long> participantTeamIDs = request.getTeamsScore()
-                                               .stream()
-                                               .map(TeamScore::getTeamID)
-                                               .collect(Collectors.toList());
+                .stream()
+                .map(TeamScore::getTeamID)
+                .collect(Collectors.toList());
 
-        Map<Long, Team> participantTeams = teamRepository.findAll(participantTeamIDs)
-                                                         .stream()
-                                                         .collect(Collectors.toMap(Team::getId, Function.identity()));
+        List<Team> participantTeams = teamRepository.findAll(participantTeamIDs);
+        Map<Long, Team> idTeamMap = participantTeams
+                .stream()
+                .collect(Collectors.toMap(Team::getId, Function.identity()));
 
         Match match = new Match();
         match.setTimestamp(request.getTimestamp());
@@ -59,7 +61,7 @@ public class MatchService {
         match = matchRepository.save(match);
 
         for (TeamScore teamScore : request.getTeamsScore()) {
-            Team team = participantTeams.get(teamScore.getTeamID());
+            Team team = idTeamMap.get(teamScore.getTeamID());
 
             TeamMatchScore teamMatchScore = new TeamMatchScore();
             teamMatchScore.setPk(TeamMatchScorePK.builder().matchID(match.getId()).teamID(team.getId()).build());
@@ -69,6 +71,13 @@ public class MatchService {
 
             teamMatchScoreRepository.save(teamMatchScore);
         }
-        //TODO: обновить элементы статистики
+        for (Team team : participantTeams) {
+            team.setNumberOfMatches(Optional.ofNullable(team.getNumberOfWinMatches()).orElse(0L) + 1);
+            if (team.getId().equals(winnerTeam.getId())) {
+                team.setNumberOfWinMatches(Optional.ofNullable(team.getNumberOfWinMatches()).orElse(0L) + 1);
+            }
+        }
+
+        teamRepository.save(participantTeams);
     }
 }

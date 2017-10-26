@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel("Team id and their score")
 public class TeamScore {
 
-    @ApiModelProperty(value = "team id", required = true)
+    @ApiModelProperty(value = "Team ID", required = true)
     @NotNull
     private Long teamID;
 

@@ -2,8 +2,6 @@ package ru.mdkardaev.user.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +19,15 @@ import ru.mdkardaev.user.services.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping(value = "api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = {SwaggerConfig.Tags.USERS})
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-
-    @RequestMapping(path = "/",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Return users list")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Return users list", response = GetUsersResponse.class),
-    })
+    @RequestMapping(path = "/", method = RequestMethod.GET)
+    @ApiOperation(value = "Get list of users", response = GetUsersResponse.class)
     public ResponseEntity<?> getUsers(GetUsersRequest request, @AuthenticationPrincipal UserDetails principal) {
         List<UserDTO> users = userService.getUsersExcludeUserWithLogin(principal.getUsername());
         return ResponseEntity.ok(new GetUsersResponse(users));

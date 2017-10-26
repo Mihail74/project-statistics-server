@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class GetUsersResponse {
 
-    @ApiModelProperty(value = "Users list", required = true)
+    @ApiModelProperty(value = "List of Users", required = true)
     private List<UserDTO> users;
 }

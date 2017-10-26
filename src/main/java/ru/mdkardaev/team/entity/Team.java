@@ -66,4 +66,8 @@ public class Team {
 
     @Enumerated(EnumType.STRING)
     private TeamFormingStatus formingStatus;
+
+    private Long numberOfMatches = 0L;
+
+    private Long numberOfWinMatches = 0L;
 }

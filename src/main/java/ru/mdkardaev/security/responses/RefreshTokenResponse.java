@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RefreshTokenResponse {
+
     @ApiModelProperty(value = "Access token", required = true)
     private String accessToken;
 

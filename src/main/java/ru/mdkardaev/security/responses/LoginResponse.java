@@ -18,6 +18,6 @@ public class LoginResponse {
     @ApiModelProperty(value = "Refresh token", required = true)
     private String refreshToken;
 
-    @ApiModelProperty(value = "Signed user", required = true)
+    @ApiModelProperty(value = "User info", required = true)
     private UserDTO user;
 }

@@ -10,12 +10,12 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class RegisterUserRequest {
 
     @NotEmpty
-    @ApiModelProperty(value = "Password", example = "password", required = true)
-    private String password;
-
-    @NotEmpty
     @ApiModelProperty(value = "Login", example = "login", required = true)
     private String login;
+
+    @NotEmpty
+    @ApiModelProperty(value = "Password", example = "password", required = true)
+    private String password;
 
     @NotEmpty
     @ApiModelProperty(value = "Name", example = "name", required = true)

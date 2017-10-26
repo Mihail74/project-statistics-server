@@ -12,12 +12,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class GameDTO {
 
-    @ApiModelProperty(value = "id", example = "1", required = true)
+    @ApiModelProperty(value = "ID", example = "1", required = true)
     private Long id;
 
-    @ApiModelProperty(value = "name", example = "football", required = true)
+    @ApiModelProperty(value = "Name", example = "football", required = true)
     private String name;
 
-    @ApiModelProperty(value = "description", example = "table football 2x2")
+    @ApiModelProperty(value = "Description", example = "table football 2x2")
     private String description;
 }

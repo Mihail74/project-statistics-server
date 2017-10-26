@@ -2,7 +2,6 @@ package ru.mdkardaev.team.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,9 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/teams")
+@RequestMapping(value = "api/teams",
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
 public class TeamController {
 
@@ -39,25 +40,19 @@ public class TeamController {
     @Autowired
     private InviteService inviteService;
 
-    @RequestMapping(path = "/create",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "Create team", notes = "Create team and send invite for members from request")
-    @ApiResponse(code = 200, message = "Team is successfully created", response = TeamAndInvites.class)
+    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    @ApiOperation(value = "Create team",
+            notes = "Create team and send invite for members from request",
+            response = TeamAndInvites.class)
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateTeamRequest request,
                                         @AuthenticationPrincipal UserDetails principal) {
-        TeamAndInvites teamAndInviteMembers = teamService.createTeamAndInviteMembers(request, principal.getUsername());
-
-        return ResponseEntity.ok(teamAndInviteMembers);
+        TeamAndInvites teamAndInvitedMembers = teamService.createTeamAndInviteMembers(request, principal.getUsername());
+        return ResponseEntity.ok(teamAndInvitedMembers);
     }
 
 
-    @RequestMapping(path = "/{id}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "Get team")
-    @ApiResponse(code = 200, message = "Team", response = TeamAndInvites.class)
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get team", response = TeamAndInvites.class)
     public ResponseEntity<?> getTeam(@PathVariable("id") Long id) {
         TeamDTO team = teamService.getTeam(id);
 

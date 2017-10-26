@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 public class RefreshTokenRequest {
 
-    @ApiModelProperty(value = "Raw presentation of refresh token", required = true)
-    private String rawRefreshToken;
+    @ApiModelProperty(value = "Refresh token", required = true)
+    private String refreshToken;
 }

@@ -8,11 +8,11 @@ import ru.mdkardaev.game.dtos.GameDTO;
 
 import java.util.List;
 
-@ApiModel(value = "Response for games list")
+@ApiModel(value = "Response for list of games")
 @Data
 @AllArgsConstructor
 public class GetGamesResponse {
 
-    @ApiModelProperty(value = "Games list", required = true)
+    @ApiModelProperty(value = "Games", required = true)
     private List<GameDTO> games;
 }

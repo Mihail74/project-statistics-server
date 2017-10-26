@@ -1,6 +1,7 @@
 package ru.mdkardaev.invite.dtos;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +15,15 @@ import ru.mdkardaev.user.dtos.UserDTO;
 @AllArgsConstructor
 public class InviteDTO {
 
+    @ApiModelProperty(value = "ID", example = "1", required = true)
     private Long id;
 
+    @ApiModelProperty(value = "Invited user", required = true)
     private UserDTO user;
 
+    @ApiModelProperty(value = "Team", example = "1", required = true)
     private TeamDTO team;
 
+    @ApiModelProperty(value = "Invite status", required = true)
     private InviteStatus status;
 }

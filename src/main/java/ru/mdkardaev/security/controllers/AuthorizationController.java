@@ -2,7 +2,6 @@ package ru.mdkardaev.security.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,16 +40,14 @@ public class AuthorizationController {
     @Autowired
     private UserRegistrationService userRegistrationService;
 
-    @ApiOperation(value = "Register user")
-    @ApiResponse(code = 200, message = "User is registered successfully", response = RegisterUserResponse.class)
+    @ApiOperation(value = "Register user", response = RegisterUserResponse.class)
     @RequestMapping(path = "api/auth/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterUserRequest request) {
         UserDTO user = userRegistrationService.register(request);
         return ResponseEntity.ok(new RegisterUserResponse(user));
     }
 
-    @ApiOperation(value = "Login")
-    @ApiResponse(code = 200, message = "Login is successful", response = LoginResponse.class)
+    @ApiOperation(value = "Login", response = LoginResponse.class)
     @RequestMapping(path = "api/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         TokenPair tokenPair = authorizationService.login(request);
@@ -60,8 +57,7 @@ public class AuthorizationController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Logout")
-    @ApiResponse(code = 200, message = "Logout is successful")
+    @ApiOperation(value = "Logout", response = Void.class)
     @RequestMapping(value = "api/auth/logout")
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -73,11 +69,10 @@ public class AuthorizationController {
     }
 
 
-    @ApiOperation(value = "refresh")
-    @ApiResponse(code = 200, message = "Tokens have been refreshed successful", response = RefreshTokenResponse.class)
+    @ApiOperation(value = "Refresh tokens", response = RefreshTokenResponse.class)
     @RequestMapping(value = "api/auth/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
-        TokenPair tokenPair = authorizationService.refresh(request.getRawRefreshToken());
+        TokenPair tokenPair = authorizationService.refresh(request.getRefreshToken());
 
         RefreshTokenResponse response = new RefreshTokenResponse(tokenPair.getAccessToken().getRawToken(),
                                                                  tokenPair.getRefreshToken().getRawToken());

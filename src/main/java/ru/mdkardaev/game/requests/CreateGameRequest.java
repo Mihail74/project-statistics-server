@@ -9,10 +9,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Data
 public class CreateGameRequest {
 
-    @ApiModelProperty(value = "game name", example = "football", required = true)
+    @ApiModelProperty(value = "Name", example = "football", required = true)
     @NotEmpty
     private String name;
 
-    @ApiModelProperty(value = "game description", example = "table football 2x2")
+    @ApiModelProperty(value = "Description", example = "table football 2x2")
     private String description;
 }

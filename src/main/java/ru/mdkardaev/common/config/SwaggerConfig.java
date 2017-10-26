@@ -24,11 +24,11 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .tags(new Tag(Tags.GAMES, "Games"),
-                      new Tag(Tags.SECURITY, "Register, login, logout, reresh"),
-                      new Tag(Tags.TEAMS, "Teams"),
-                      new Tag(Tags.USERS, "Users"),
-                      new Tag(Tags.MATCHES, "Matches")
+                .tags(new Tag(Tags.GAMES, "Operation with games"),
+                      new Tag(Tags.SECURITY, "Registration and login in system"),
+                      new Tag(Tags.TEAMS, "Operation with teams"),
+                      new Tag(Tags.USERS, "Operation with users"),
+                      new Tag(Tags.MATCHES, "operation with matches")
                 )
                 .securitySchemes(Collections.singletonList(apiKey()))
                 .securityContexts(Collections.singletonList(securityContext()))
