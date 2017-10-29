@@ -1,7 +1,6 @@
 package ru.mdkardaev.team.services;
 
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -21,59 +20,34 @@ import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Service that handles requests to team creation
+ */
 @Service
-@Slf4j
-public class TeamService {
+public class TeamCreationService {
 
     @Autowired
     private TeamRepository teamRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private GameRepository gameRepository;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private InviteService inviteService;
     @Autowired
     private ConversionService conversionService;
 
 
+    /**
+     * Create team with specified leader and create invites for members
+     */
     @Transactional
     public TeamAndInvites createTeamAndInviteMembers(CreateTeamRequest request, String leaderLogin) {
         Team team = createTeam(request, leaderLogin);
         List<InviteDTO> invitesDTO = inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
 
         return new TeamAndInvites(conversionService.convert(team, TeamDTO.class), invitesDTO);
-    }
-
-    public TeamDTO getTeam(Long id) {
-        Team team = teamRepository.findOne(id);
-        return conversionService.convert(team, TeamDTO.class);
-    }
-
-    /**
-     * returns teams with formingStatus when user with userLogin is member
-     */
-    public List<TeamDTO> getUserTeams(String userLogin, TeamFormingStatus formingStatus) {
-        List<Team> teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
-
-        return teams.stream()
-                    .map(e -> conversionService.convert(e, TeamDTO.class))
-                    .collect(Collectors.toList());
-    }
-
-
-    @Transactional
-    public TeamDTO formTeam(Long id) {
-        Team team = teamRepository.findOne(id);
-        team.setFormingStatus(TeamFormingStatus.FORMED);
-        team.setNumberOfWinMatches(0L);
-        team.setNumberOfMatches(0L);
-
-        inviteService.deleteInvitesInTeam(team.getId());
-        return conversionService.convert(teamRepository.save(team), TeamDTO.class);
     }
 
     private Team createTeam(CreateTeamRequest request, String leaderLogin) {
@@ -93,5 +67,4 @@ public class TeamService {
 
         return teamRepository.save(team);
     }
-
 }

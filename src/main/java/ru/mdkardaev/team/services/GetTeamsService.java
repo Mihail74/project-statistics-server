@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
+import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.requests.GetTeamsRequest;
 import ru.mdkardaev.team.specifications.TeamSpecifications;
@@ -24,7 +25,6 @@ public class GetTeamsService {
 
     @Autowired
     private TeamRepository teamRepository;
-
     @Autowired
     private ConversionService conversionService;
 
@@ -58,5 +58,16 @@ public class GetTeamsService {
                 .stream()
                 .map(e -> conversionService.convert(e, TeamDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * returns teams with specified formingStatus when user with userLogin is member
+     */
+    public List<TeamDTO> getUserTeams(String userLogin, TeamFormingStatus formingStatus) {
+        List<Team> teams = teamRepository.findByUsers_loginAndFormingStatus(userLogin, formingStatus);
+
+        return teams.stream()
+                    .map(e -> conversionService.convert(e, TeamDTO.class))
+                    .collect(Collectors.toList());
     }
 }

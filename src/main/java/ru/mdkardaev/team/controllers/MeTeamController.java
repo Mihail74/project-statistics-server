@@ -7,17 +7,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.responses.GetMyTeamsResponse;
 import ru.mdkardaev.team.responses.TeamAndInvites;
-import ru.mdkardaev.team.services.TeamService;
+import ru.mdkardaev.team.services.GetTeamsService;
+import ru.mdkardaev.team.services.UpdateTeamService;
 
 import java.util.List;
 
@@ -28,13 +25,15 @@ import java.util.List;
 public class MeTeamController {
 
     @Autowired
-    private TeamService teamService;
+    private GetTeamsService getTeamsService;
+    @Autowired
+    private UpdateTeamService updateTeamService;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get my teams", response = GetMyTeamsResponse.class)
     public ResponseEntity<?> getUserTeams(@RequestParam("formingStatus") TeamFormingStatus formingStatus,
                                           @AuthenticationPrincipal UserDetails principal) {
-        List<TeamDTO> userTeams = teamService.getUserTeams(principal.getUsername(), formingStatus);
+        List<TeamDTO> userTeams = getTeamsService.getUserTeams(principal.getUsername(), formingStatus);
         return ResponseEntity.ok(new GetMyTeamsResponse(userTeams));
     }
 
@@ -43,7 +42,7 @@ public class MeTeamController {
     public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
         //TODO: check principal is leader
-        TeamDTO team = teamService.formTeam(id);
+        TeamDTO team = updateTeamService.formTeam(id);
         return ResponseEntity.ok(new TeamAndInvites(team));
     }
 }

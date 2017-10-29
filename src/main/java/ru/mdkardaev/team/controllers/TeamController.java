@@ -17,8 +17,9 @@ import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.team.requests.GetTeamsRequest;
 import ru.mdkardaev.team.responses.GetTeamsResponse;
 import ru.mdkardaev.team.responses.TeamAndInvites;
+import ru.mdkardaev.team.services.GetTeamService;
 import ru.mdkardaev.team.services.GetTeamsService;
-import ru.mdkardaev.team.services.TeamService;
+import ru.mdkardaev.team.services.TeamCreationService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,7 +31,9 @@ import java.util.List;
 public class TeamController {
 
     @Autowired
-    private TeamService teamService;
+    private TeamCreationService teamCreationService;
+    @Autowired
+    private GetTeamService getTeamService;
     @Autowired
     private GetTeamsService getTeamsService;
     @Autowired
@@ -40,14 +43,16 @@ public class TeamController {
     @ApiOperation(value = "Create team",
             notes = "Create team and send invite for members from request",
             response = TeamAndInvites.class)
-    public ResponseEntity<?> createGame(@RequestBody @Valid CreateTeamRequest request,
+    public ResponseEntity<?> createTeam(@RequestBody @Valid CreateTeamRequest request,
                                         @AuthenticationPrincipal UserDetails principal) {
-        TeamAndInvites teamAndInvitedMembers = teamService.createTeamAndInviteMembers(request, principal.getUsername());
+        TeamAndInvites teamAndInvitedMembers = teamCreationService
+                .createTeamAndInviteMembers(request, principal.getUsername());
         return ResponseEntity.ok(teamAndInvitedMembers);
     }
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
-    @ApiOperation(value = "List of teams", notes = "List of teams that match the specified filters", response = GetTeamsResponse.class)
+    @ApiOperation(value = "List of teams", notes = "List of teams that match the specified filters",
+            response = GetTeamsResponse.class)
     public ResponseEntity<?> getTeams(GetTeamsRequest request) {
         List<TeamDTO> teams = getTeamsService.getTeams(request);
         return ResponseEntity.ok(new GetTeamsResponse(teams));
@@ -56,7 +61,7 @@ public class TeamController {
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Get team", response = TeamAndInvites.class)
     public ResponseEntity<?> getTeam(@PathVariable("id") Long id) {
-        TeamDTO team = teamService.getTeam(id);
+        TeamDTO team = getTeamService.getTeam(id);
 
         List<InviteDTO> invitedUsers = null;
         if (team.getFormingStatus() == TeamFormingStatus.FORMING) {
