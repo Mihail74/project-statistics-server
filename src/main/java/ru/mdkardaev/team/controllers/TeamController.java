@@ -7,23 +7,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
+import ru.mdkardaev.team.requests.GetTeamsRequest;
+import ru.mdkardaev.team.responses.GetTeamsResponse;
 import ru.mdkardaev.team.responses.TeamAndInvites;
+import ru.mdkardaev.team.services.GetTeamsService;
 import ru.mdkardaev.team.services.TeamService;
-import ru.mdkardaev.user.services.UserService;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 @RestController
@@ -35,7 +32,7 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
     @Autowired
-    private UserService userService;
+    private GetTeamsService getTeamsService;
     @Autowired
     private InviteService inviteService;
 
@@ -49,6 +46,12 @@ public class TeamController {
         return ResponseEntity.ok(teamAndInvitedMembers);
     }
 
+    @RequestMapping(path = "/", method = RequestMethod.GET)
+    @ApiOperation(value = "List of teams", notes = "List of teams that match the specified filters", response = GetTeamsResponse.class)
+    public ResponseEntity<?> getTeams(GetTeamsRequest request) {
+        List<TeamDTO> teams = getTeamsService.getTeams(request);
+        return ResponseEntity.ok(new GetTeamsResponse(teams));
+    }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Get team", response = TeamAndInvites.class)
