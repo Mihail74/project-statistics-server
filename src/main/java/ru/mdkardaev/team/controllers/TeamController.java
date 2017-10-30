@@ -20,6 +20,7 @@ import ru.mdkardaev.team.responses.TeamAndInvites;
 import ru.mdkardaev.team.services.GetTeamService;
 import ru.mdkardaev.team.services.GetTeamsService;
 import ru.mdkardaev.team.services.TeamCreationService;
+import ru.mdkardaev.team.specifications.TeamsFilters;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -54,7 +55,11 @@ public class TeamController {
     @ApiOperation(value = "List of teams", notes = "List of teams that match the specified filters",
             response = GetTeamsResponse.class)
     public ResponseEntity<?> getTeams(GetTeamsRequest request) {
-        List<TeamDTO> teams = getTeamsService.getTeams(request);
+        TeamsFilters filters = TeamsFilters.builder()
+                                           .gameID(request.getGameID())
+                                           .formingStatus(request.getFormingStatus())
+                                           .build();
+        List<TeamDTO> teams = getTeamsService.getTeams(filters);
         return ResponseEntity.ok(new GetTeamsResponse(teams));
     }
 

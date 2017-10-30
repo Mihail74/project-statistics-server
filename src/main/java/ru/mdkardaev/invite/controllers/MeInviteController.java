@@ -21,9 +21,9 @@ import ru.mdkardaev.invite.services.InviteService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/me/teams/invites",
+@RequestMapping(value = "api/me/invites",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-@Api(tags = {SwaggerConfig.Tags.TEAMS})
+@Api(tags = {SwaggerConfig.Tags.INVITES})
 public class MeInviteController {
 
     @Autowired

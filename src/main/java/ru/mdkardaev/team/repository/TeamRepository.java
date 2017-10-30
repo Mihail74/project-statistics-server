@@ -9,7 +9,4 @@ import java.util.List;
 
 public interface TeamRepository extends JpaRepository<Team, Long>, JpaSpecificationExecutor<Team> {
 
-    List<Team> findByUsers_login(String login);
-
-    List<Team> findByUsers_loginAndFormingStatus(String login, TeamFormingStatus formingStatus);
 }

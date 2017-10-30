@@ -15,6 +15,7 @@ import ru.mdkardaev.team.responses.GetMyTeamsResponse;
 import ru.mdkardaev.team.responses.TeamAndInvites;
 import ru.mdkardaev.team.services.GetTeamsService;
 import ru.mdkardaev.team.services.UpdateTeamService;
+import ru.mdkardaev.team.specifications.TeamsFilters;
 
 import java.util.List;
 
@@ -33,7 +34,11 @@ public class MeTeamController {
     @ApiOperation(value = "Get my teams", response = GetMyTeamsResponse.class)
     public ResponseEntity<?> getUserTeams(@RequestParam("formingStatus") TeamFormingStatus formingStatus,
                                           @AuthenticationPrincipal UserDetails principal) {
-        List<TeamDTO> userTeams = getTeamsService.getUserTeams(principal.getUsername(), formingStatus);
+        TeamsFilters filters = TeamsFilters.builder()
+                                           .memberUserLogin(principal.getUsername())
+                                           .formingStatus(formingStatus)
+                                           .build();
+        List<TeamDTO> userTeams = getTeamsService.getTeams(filters);
         return ResponseEntity.ok(new GetMyTeamsResponse(userTeams));
     }
 

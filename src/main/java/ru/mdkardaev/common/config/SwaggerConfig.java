@@ -28,7 +28,8 @@ public class SwaggerConfig {
                       new Tag(Tags.SECURITY, "Registration and login in system"),
                       new Tag(Tags.TEAMS, "Operation with teams"),
                       new Tag(Tags.USERS, "Operation with users"),
-                      new Tag(Tags.MATCHES, "operation with matches")
+                      new Tag(Tags.MATCHES, "operation with matches"),
+                      new Tag(Tags.INVITES, "Operation with invites")
                 )
                 .securitySchemes(Collections.singletonList(apiKey()))
                 .securityContexts(Collections.singletonList(securityContext()))
@@ -59,6 +60,7 @@ public class SwaggerConfig {
         public static final String GAMES = "Games";
         public static final String SECURITY = "Security";
         public static final String TEAMS = "Teams";
+        public static final String INVITES = "Invites";
         public static final String USERS = "Users";
         public static final String MATCHES = "Matches";
     }

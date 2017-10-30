@@ -3,17 +3,36 @@ package ru.mdkardaev.team.specifications;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import ru.mdkardaev.team.entity.Team;
-import ru.mdkardaev.team.enums.TeamFormingStatus;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
 
+/**
+ * Factory class for team specifications
+ */
 @UtilityClass
 public class TeamSpecifications {
 
-    public static Specification<Team> gameID(Long gameID) {
-        return (root, query, cb) -> cb.equal(root.get("game").get("id"), gameID);
-    }
+    /**
+     * Create specification for list of teams that match specified filters
+     */
+    public static Specification<Team> createGetTeamsSpecification(TeamsFilters filters) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-    public static Specification<Team> formingStatus(TeamFormingStatus formingStatus) {
-        return (root, query, cb) -> cb.equal(root.get("formingStatus"), formingStatus);
+            if (filters.getGameID() != null) {
+                predicates.add(cb.equal(root.get("game").get("id"), filters.getGameID()));
+            }
+            if (filters.getFormingStatus() != null) {
+                predicates.add(cb.equal(root.get("formingStatus"), filters.getFormingStatus()));
+            }
+            if (filters.getMemberUserLogin() != null) {
+                predicates.add(cb.equal(root.get("users").get("login"), filters.getMemberUserLogin()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
     }
 }
