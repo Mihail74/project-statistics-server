@@ -3,7 +3,9 @@ package ru.mdkardaev.team.specifications;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import ru.mdkardaev.team.entity.Team;
+import ru.mdkardaev.user.entity.User;
 
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,8 @@ public class TeamSpecifications {
                 predicates.add(cb.equal(root.get("formingStatus"), filters.getFormingStatus()));
             }
             if (filters.getMemberUserLogin() != null) {
-                predicates.add(cb.equal(root.get("users").get("login"), filters.getMemberUserLogin()));
+                Join<Team, User> users = root.join("users");
+                predicates.add(cb.equal(users.get("login"), filters.getMemberUserLogin()));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
