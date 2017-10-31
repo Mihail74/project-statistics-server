@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.user.dtos.UserDTO;
@@ -12,9 +13,8 @@ import ru.mdkardaev.user.dtos.UserDTO;
 import java.util.List;
 
 @ApiModel(value = "Team")
-@Data
+@Value
 @Builder
-@AllArgsConstructor
 public class TeamDTO {
 
     @ApiModelProperty(value = "ID", example = "1", required = true)

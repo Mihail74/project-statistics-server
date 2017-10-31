@@ -1,13 +1,11 @@
 package ru.mdkardaev.security.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 
 /**
  * Pair of access and refresh token
  */
-@AllArgsConstructor
-@Getter
+@Value
 public class TokenPair {
 
     private Token accessToken;

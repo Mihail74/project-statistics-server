@@ -1,14 +1,12 @@
 package ru.mdkardaev.security.dtos;
 
 import io.jsonwebtoken.Claims;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 
 /**
  * Class represents raw JWS and it's claims
  */
-@AllArgsConstructor
-@Getter
+@Value
 public class Token {
 
     private String rawToken;

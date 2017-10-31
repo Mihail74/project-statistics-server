@@ -35,5 +35,5 @@ public class Match {
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))
     private Game game;
 
-    private long timestamp;
+    private Long timestamp;
 }

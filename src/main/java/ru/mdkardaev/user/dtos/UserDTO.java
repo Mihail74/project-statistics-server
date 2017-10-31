@@ -5,11 +5,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 
 @ApiModel(value = "User")
-@Data
+@Value
 @Builder
-@AllArgsConstructor
 public class UserDTO {
 
     @ApiModelProperty(value = "ID", example = "1", required = true)
