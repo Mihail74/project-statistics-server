@@ -30,16 +30,17 @@ public class MeInviteController {
     private InviteService inviteService;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
-    @ApiOperation(value = "Get my invites to team", response = GetMyInvitesResponse.class)
+    @ApiOperation(value = "Get my invites", response = GetMyInvitesResponse.class)
     public ResponseEntity<?> getMyInvites(@AuthenticationPrincipal UserDetails principal) {
         List<InviteDTO> invites = inviteService.getUserInvites(principal.getUsername(), InviteStatus.NEW);
         return ResponseEntity.ok(new GetMyInvitesResponse(invites));
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get my invite to team", response = GetMyInviteResponse.class)
+    @ApiOperation(value = "Get my specified invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id,
                                          @AuthenticationPrincipal UserDetails principal) {
+        //TODO: invite for principal
         InviteDTO invite = inviteService.getInvite(id);
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
@@ -47,20 +48,20 @@ public class MeInviteController {
     @RequestMapping(path = "/{id}/accept",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "Accept invite to team", response = Void.class)
+    @ApiOperation(value = "Accept invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
-        inviteService.acceptInvitation(id, principal.getUsername());
-        return ResponseEntity.ok().build();
+        InviteDTO invite = inviteService.acceptInvitation(id, principal.getUsername());
+        return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
     @RequestMapping(path = "{id}/decline",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation(value = "Decline invite to team", response = Void.class)
+    @ApiOperation(value = "Decline invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
-        inviteService.declineInvitation(id, principal.getUsername());
-        return ResponseEntity.ok().build();
+        InviteDTO invite = inviteService.declineInvitation(id, principal.getUsername());
+        return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 }

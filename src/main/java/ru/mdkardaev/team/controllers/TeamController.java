@@ -52,12 +52,13 @@ public class TeamController {
     }
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
-    @ApiOperation(value = "List of teams", notes = "List of teams that match the specified filters",
+    @ApiOperation(value = "Get list of teams", notes = "List of teams that match the specified filters",
             response = GetTeamsResponse.class)
     public ResponseEntity<?> getTeams(GetTeamsRequest request) {
         TeamsFilters filters = TeamsFilters.builder()
                                            .gameID(request.getGameID())
                                            .formingStatus(request.getFormingStatus())
+                                           .memberID(request.getMemberID())
                                            .build();
         List<TeamDTO> teams = getTeamsService.getTeams(filters);
         return ResponseEntity.ok(new GetTeamsResponse(teams));
@@ -70,7 +71,7 @@ public class TeamController {
 
         List<InviteDTO> invitedUsers = null;
         if (team.getFormingStatus() == TeamFormingStatus.FORMING) {
-            invitedUsers = inviteService.getUsersInvitedInTeam(id);
+            invitedUsers = inviteService.getInvitesInTeam(id);
         }
 
         return ResponseEntity.ok(new TeamAndInvites(team, invitedUsers));

@@ -15,4 +15,7 @@ public class GetTeamsRequest {
 
     @ApiModelProperty("Team forming status")
     private TeamFormingStatus formingStatus;
+
+    @ApiModelProperty("User with the specified ID must be the team member")
+    private Long memberID;
 }

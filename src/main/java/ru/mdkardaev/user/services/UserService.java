@@ -30,14 +30,14 @@ public class UserService {
     private ConversionService conversionService;
 
     /**
-     * return user with specified login
+     * Return user with specified login
      */
     public UserDTO getUserByLogin(String login) {
         return conversionService.convert(userRepository.findByLogin(login), UserDTO.class);
     }
 
     /**
-     * return list of users exclude user with spicified login
+     * Return list of users exclude user with spicified login
      */
     public List<UserDTO> getUsersExcludeUserWithLogin(String login) {
         return userRepository.findAll()

@@ -13,6 +13,6 @@ import java.util.List;
 @ApiModel("Response for my invites")
 public class GetMyInvitesResponse {
 
-    @ApiModelProperty(value = "my invites", required = true)
+    @ApiModelProperty(value = "Invites", required = true)
     private List<InviteDTO> invites;
 }

@@ -12,5 +12,5 @@ import ru.mdkardaev.team.enums.TeamFormingStatus;
 public class TeamsFilters {
     private final Long gameID;
     private final TeamFormingStatus formingStatus;
-    private final String memberUserLogin;
+    private final Long memberID;
 }

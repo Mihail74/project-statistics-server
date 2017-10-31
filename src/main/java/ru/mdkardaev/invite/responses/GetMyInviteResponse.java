@@ -8,7 +8,7 @@ import ru.mdkardaev.invite.dtos.InviteDTO;
 
 @Data
 @AllArgsConstructor
-@ApiModel("Response for invite")
+@ApiModel("Invite container")
 public class GetMyInviteResponse {
 
     @ApiModelProperty(value = "invite", required = true)

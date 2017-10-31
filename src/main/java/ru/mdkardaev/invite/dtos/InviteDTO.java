@@ -9,7 +9,7 @@ import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.user.dtos.UserDTO;
 
-@ApiModel(value = "Invite to team")
+@ApiModel(value = "Invite in team")
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class InviteDTO {
     @ApiModelProperty(value = "ID", example = "1", required = true)
     private Long id;
 
-    @ApiModelProperty(value = "Invited user", required = true)
+    @ApiModelProperty(value = "Invited users", required = true)
     private UserDTO user;
 
     @ApiModelProperty(value = "Team", example = "1", required = true)

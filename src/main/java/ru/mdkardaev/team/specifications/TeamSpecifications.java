@@ -30,9 +30,9 @@ public class TeamSpecifications {
             if (filters.getFormingStatus() != null) {
                 predicates.add(cb.equal(root.get("formingStatus"), filters.getFormingStatus()));
             }
-            if (filters.getMemberUserLogin() != null) {
+            if (filters.getMemberID() != null) {
                 Join<Team, User> users = root.join("users");
-                predicates.add(cb.equal(users.get("login"), filters.getMemberUserLogin()));
+                predicates.add(cb.equal(users.get("id"), filters.getMemberID()));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

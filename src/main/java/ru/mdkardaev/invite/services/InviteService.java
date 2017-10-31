@@ -55,8 +55,11 @@ public class InviteService {
                                .collect(Collectors.toList());
     }
 
+    /**
+     * Accept invite and return updated
+     */
     @Transactional
-    public void acceptInvitation(Long inviteID, String userLogin) {
+    public InviteDTO acceptInvitation(Long inviteID, String userLogin) {
         Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite == null || invite.getStatus() != InviteStatus.NEW) {
@@ -75,11 +78,15 @@ public class InviteService {
         invite.setStatus(InviteStatus.ACCEPTED);
 
         teamRepository.save(team);
-        inviteRepository.save(invite);
+        Invite savedInvite = inviteRepository.save(invite);
+        return conversionService.convert(savedInvite, InviteDTO.class);
     }
 
+    /**
+     * Decline invite and return updated
+     */
     @Transactional
-    public void declineInvitation(Long inviteID, String userLogin) {
+    public InviteDTO declineInvitation(Long inviteID, String userLogin) {
         Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite == null || invite.getStatus() != InviteStatus.NEW) {
@@ -94,7 +101,8 @@ public class InviteService {
 
         invite.setStatus(InviteStatus.DECLINED);
 
-        inviteRepository.save(invite);
+        Invite savedInvite = inviteRepository.save(invite);
+        return conversionService.convert(savedInvite, InviteDTO.class);
     }
 
     public List<InviteDTO> getUserInvites(String userLogin, InviteStatus status) {
@@ -110,14 +118,17 @@ public class InviteService {
     }
 
     /**
-     * delete all invites to team with specified id
+     * Delete all invites to team with specified id
      */
     public void deleteInvitesInTeam(Long id) {
         List<Invite> invites = inviteRepository.findByTeam_id(id);
         inviteRepository.delete(invites);
     }
 
-    public List<InviteDTO> getUsersInvitedInTeam(Long id) {
+    /**
+     * Return invites in team
+     */
+    public List<InviteDTO> getInvitesInTeam(Long id) {
         return inviteRepository.findByTeam_id(id)
                                .stream()
                                .map(e -> conversionService.convert(e, InviteDTO.class))
