@@ -20,4 +20,10 @@ public class GameDTO {
 
     @ApiModelProperty(value = "Description", example = "table football 2x2")
     private String description;
+
+    @ApiModelProperty(value = "Score to win", required = true)
+    private Long scoreToWin;
+
+    @ApiModelProperty(value = "Team count in match", required = true)
+    private Long teamCountInMatch;
 }

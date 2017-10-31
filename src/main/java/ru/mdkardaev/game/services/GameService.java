@@ -32,9 +32,11 @@ public class GameService {
      */
     public GameDTO create(CreateGameRequest request) {
         Game game = Game.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .build();
+                        .name(request.getName())
+                        .description(request.getDescription())
+                        .scoreToWin(request.getScoreToWin())
+                        .teamCountInMatch(request.getTeamCountInMatch())
+                        .build();
         try {
             game = gameRepository.save(game);
         } catch (DataIntegrityViolationException e) {
@@ -52,8 +54,8 @@ public class GameService {
 
     public List<GameDTO> getGames() {
         return gameRepository.findAll()
-                .stream()
-                .map(e -> conversionService.convert(e, GameDTO.class))
-                .collect(Collectors.toList());
+                             .stream()
+                             .map(e -> conversionService.convert(e, GameDTO.class))
+                             .collect(Collectors.toList());
     }
 }

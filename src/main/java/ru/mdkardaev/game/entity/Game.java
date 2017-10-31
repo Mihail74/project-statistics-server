@@ -21,10 +21,14 @@ public class Game {
     @SequenceGenerator(name = "idGenerator", sequenceName = "game_id_seq")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description")
     private String description;
+
+    private Long scoreToWin;
+
+    private Long teamCountInMatch;
 
 }
