@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
 
-@ApiModel(value = "Request for teams list")
+@ApiModel(value = "Request for list of team")
 @Data
 public class GetTeamsRequest {
 

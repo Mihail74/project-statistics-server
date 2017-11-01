@@ -2,10 +2,12 @@ package ru.mdkardaev.match.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
+import ru.mdkardaev.match.dtos.MatchDTO;
 import ru.mdkardaev.match.entity.Match;
 import ru.mdkardaev.match.entity.TeamMatchScore;
 import ru.mdkardaev.match.entity.TeamMatchScorePK;
@@ -37,15 +39,22 @@ public class MatchService {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private ConversionService conversionService;
+
     @Transactional
-    public void create(CreateMatchRequest request) {
+    public MatchDTO create(CreateMatchRequest request) {
+        if (log.isTraceEnabled()) {
+            log.trace("create; request = {}", request);
+        }
+
         Team winnerTeam = teamRepository.findOne(request.getWinnerTeamID());
         Game game = gameRepository.findOne(request.getGameID());
 
         List<Long> participantTeamIDs = request.getTeamsScore()
-                .stream()
-                .map(TeamScore::getTeamID)
-                .collect(Collectors.toList());
+                                               .stream()
+                                               .map(TeamScore::getTeamID)
+                                               .collect(Collectors.toList());
 
         List<Team> participantTeams = teamRepository.findAll(participantTeamIDs);
         Map<Long, Team> idTeamMap = participantTeams
@@ -78,5 +87,31 @@ public class MatchService {
         }
 
         teamRepository.save(participantTeams);
+
+        log.trace("create; match with id = {} created", match.getId());
+        return convert(match);
+    }
+
+    public MatchDTO getMatch(Long id) {
+        log.trace("getMatch; id = {}", id);
+
+        return convert(matchRepository.findOne(id));
+    }
+
+    public List<MatchDTO> getMatches() {
+        log.trace("getMatches; enter");
+
+        List<MatchDTO> result = matchRepository
+                .findAll()
+                .stream()
+                .map(this::convert)
+                .collect(Collectors.toList());
+
+        log.trace("getMatches; return {} matches", result.size());
+        return result;
+    }
+
+    private MatchDTO convert(Match match) {
+        return conversionService.convert(match, MatchDTO.class);
     }
 }
