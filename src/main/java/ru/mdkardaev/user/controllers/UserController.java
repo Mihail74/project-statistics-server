@@ -2,6 +2,7 @@ package ru.mdkardaev.user.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = {SwaggerConfig.Tags.USERS})
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -29,7 +31,11 @@ public class UserController {
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of users", response = GetUsersResponse.class)
     public ResponseEntity<?> getUsers(GetUsersRequest request, @AuthenticationPrincipal UserDetails principal) {
+        log.debug("getUsers; request is {}", request);
+
         List<UserDTO> users = userService.getUsersExcludeUserWithLogin(principal.getUsername());
+
+        log.debug("getUsers; returns {} matches", users.size());
         return ResponseEntity.ok(new GetUsersResponse(users));
     }
 }

@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Service for operations with matches
+ */
 @Service
 @Slf4j
 public class MatchService {
@@ -44,8 +47,8 @@ public class MatchService {
 
     @Transactional
     public MatchDTO create(CreateMatchRequest request) {
-        if (log.isTraceEnabled()) {
-            log.trace("create; request = {}", request);
+        if (log.isDebugEnabled()) {
+            log.debug("create; request = {}", request);
         }
 
         Team winnerTeam = teamRepository.findOne(request.getWinnerTeamID());
@@ -88,12 +91,12 @@ public class MatchService {
 
         teamRepository.save(participantTeams);
 
-        log.trace("create; match with id = {} created", match.getId());
+        log.debug("create; match with id = {} created", match.getId());
         return convert(match);
     }
 
     public MatchDTO getMatch(Long id) {
-        log.trace("getMatch; id = {}", id);
+        log.debug("getMatch; id = {}", id);
 
         return convert(matchRepository.findOne(id));
     }

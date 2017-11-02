@@ -2,12 +2,17 @@ package ru.mdkardaev.team.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
@@ -23,12 +28,14 @@ import ru.mdkardaev.team.services.TeamCreationService;
 import ru.mdkardaev.team.specifications.TeamsFilters;
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/teams",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
+@Slf4j
 public class TeamController {
 
     @Autowired
@@ -46,8 +53,14 @@ public class TeamController {
             response = TeamAndInvites.class)
     public ResponseEntity<?> createTeam(@RequestBody @Valid CreateTeamRequest request,
                                         @AuthenticationPrincipal UserDetails principal) {
+        log.debug("createTeam; request is {}", request);
+
         TeamAndInvites teamAndInvitedMembers = teamCreationService
                 .createTeamAndInviteMembers(request, principal.getUsername());
+
+        log.debug("createTeam; team with id = {} created and sent invites for member",
+                  teamAndInvitedMembers.getTeam().getId());
+
         return ResponseEntity.ok(teamAndInvitedMembers);
     }
 
@@ -55,18 +68,24 @@ public class TeamController {
     @ApiOperation(value = "Get list of teams", notes = "List of teams that match the specified filters",
             response = GetTeamsResponse.class)
     public ResponseEntity<?> getTeams(GetTeamsRequest request) {
+        log.debug("getTeams; request is {}", request);
+
         TeamsFilters filters = TeamsFilters.builder()
-                                           .gameID(request.getGameID())
-                                           .formingStatus(request.getFormingStatus())
-                                           .memberID(request.getMemberID())
-                                           .build();
+                .gameID(request.getGameID())
+                .formingStatus(request.getFormingStatus())
+                .memberID(request.getMemberID())
+                .build();
         List<TeamDTO> teams = getTeamsService.getTeams(filters);
+
+        log.debug("getTeams; returns {} teams", teams.size());
         return ResponseEntity.ok(new GetTeamsResponse(teams));
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Get team", response = TeamAndInvites.class)
     public ResponseEntity<?> getTeam(@PathVariable("id") Long id) {
+        log.debug("getTeam; Get team with id = {}", id);
+
         TeamDTO team = getTeamService.getTeam(id);
 
         List<InviteDTO> invitedUsers = null;
@@ -74,6 +93,7 @@ public class TeamController {
             invitedUsers = inviteService.getInvitesInTeam(id);
         }
 
+        log.debug("getTeam; Team wih id = {} is returning", team.getId());
         return ResponseEntity.ok(new TeamAndInvites(team, invitedUsers));
     }
 }
