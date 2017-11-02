@@ -15,7 +15,7 @@ import java.util.Set;
 @Table(name = "match")
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 public class Match {
 
@@ -24,7 +24,7 @@ public class Match {
     @SequenceGenerator(name = "idGenerator", sequenceName = "match_id_seq")
     private Long id;
 
-    @OneToMany(mappedBy = "pk.matchID", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "match", fetch = FetchType.EAGER)
     private Set<TeamMatchScore> teamsMatchScore;
 
     @OneToOne
@@ -35,5 +35,5 @@ public class Match {
     @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_game"))
     private Game game;
 
-    private long timestamp;
+    private Long timestamp;
 }

@@ -2,6 +2,7 @@ package ru.mdkardaev.security.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import javax.validation.Valid;
 @RequestMapping(method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Slf4j
 public class AuthorizationController {
 
     @Autowired
@@ -43,17 +45,25 @@ public class AuthorizationController {
     @ApiOperation(value = "Register user", response = RegisterUserResponse.class)
     @RequestMapping(path = "api/auth/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterUserRequest request) {
+        log.debug("register; request is {}", request);
+
         UserDTO user = userRegistrationService.register(request);
+
+        log.debug("register; user with id = {} registered", user.getId());
         return ResponseEntity.ok(new RegisterUserResponse(user));
     }
 
     @ApiOperation(value = "Login", response = LoginResponse.class)
     @RequestMapping(path = "api/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        log.debug("login; user with login = {}", request.getLogin());
+
         TokenPair tokenPair = authorizationService.login(request);
         LoginResponse response = new LoginResponse(tokenPair.getAccessToken().getRawToken(),
                                                    tokenPair.getRefreshToken().getRawToken(),
                                                    userService.getUserByLogin(request.getLogin()));
+
+        log.debug("login; Login successful");
         return ResponseEntity.ok(response);
     }
 
@@ -72,10 +82,13 @@ public class AuthorizationController {
     @ApiOperation(value = "Refresh tokens", response = RefreshTokenResponse.class)
     @RequestMapping(value = "api/auth/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+        log.debug("refreshToken; enter");
         TokenPair tokenPair = authorizationService.refresh(request.getRefreshToken());
 
         RefreshTokenResponse response = new RefreshTokenResponse(tokenPair.getAccessToken().getRawToken(),
                                                                  tokenPair.getRefreshToken().getRawToken());
+
+        log.debug("refreshToken; refresh successful");
         return ResponseEntity.ok(response);
     }
 }

@@ -10,7 +10,7 @@ import ru.mdkardaev.team.enums.TeamFormingStatus;
 @Value
 @Builder
 public class TeamsFilters {
-    private final Long gameID;
-    private final TeamFormingStatus formingStatus;
-    private final Long memberID;
+    private Long gameID;
+    private TeamFormingStatus formingStatus;
+    private Long memberID;
 }

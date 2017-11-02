@@ -31,8 +31,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users",
-        uniqueConstraints = {@UniqueConstraint(name = "uq_users_login", columnNames = {"login"}),
-                @UniqueConstraint(name = "uq_users_name", columnNames = {"name"})})
+        uniqueConstraints = {@UniqueConstraint(name = "uq_users_login", columnNames = {"login"})})
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"login"})

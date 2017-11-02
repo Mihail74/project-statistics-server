@@ -2,6 +2,7 @@ package ru.mdkardaev.game.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,28 +21,40 @@ import javax.validation.Valid;
 
 import java.util.List;
 
+/**
+ * Rest controller for operations with games
+ */
 @RestController
 @RequestMapping(value = "/api/games",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = SwaggerConfig.Tags.GAMES)
+@Slf4j
 public class GameController {
 
     @Autowired
     private GameService gameService;
-
-    @RequestMapping(path = "/", method = RequestMethod.GET)
-    @ApiOperation(value = "Get list of games", response = GetGamesResponse.class)
-    public ResponseEntity<?> getGames() {
-        List<GameDTO> games = gameService.getGames();
-        return ResponseEntity.ok(new GetGamesResponse(games));
-    }
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     @ApiOperation(value = "Create game",
             response = CreateGameResponse.class,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createGame(@RequestBody @Valid CreateGameRequest request) {
+        log.info("createGame; request is {}", request);
+
         GameDTO game = gameService.create(request);
+
+        log.info("createGame; Game with id = {} created", game.getId());
         return ResponseEntity.ok(new CreateGameResponse(game));
+    }
+
+    @RequestMapping(path = "/", method = RequestMethod.GET)
+    @ApiOperation(value = "Get list of games", response = GetGamesResponse.class)
+    public ResponseEntity<?> getGames() {
+        log.debug("getGames; enter");
+
+        List<GameDTO> games = gameService.getGames();
+
+        log.debug("getGames; returns {} games", games.size());
+        return ResponseEntity.ok(new GetGamesResponse(games));
     }
 }

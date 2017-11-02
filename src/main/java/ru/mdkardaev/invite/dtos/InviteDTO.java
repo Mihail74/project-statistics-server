@@ -5,14 +5,14 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.user.dtos.UserDTO;
 
 @ApiModel(value = "Invite in team")
-@Data
+@Value
 @Builder
-@AllArgsConstructor
 public class InviteDTO {
 
     @ApiModelProperty(value = "ID", example = "1", required = true)
