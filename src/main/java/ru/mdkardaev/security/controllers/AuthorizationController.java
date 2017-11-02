@@ -56,7 +56,7 @@ public class AuthorizationController {
     @ApiOperation(value = "Login", response = LoginResponse.class)
     @RequestMapping(path = "api/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        log.debug("login; request is {}", request);
+        log.debug("login; user with login = {}", request.getLogin());
 
         TokenPair tokenPair = authorizationService.login(request);
         LoginResponse response = new LoginResponse(tokenPair.getAccessToken().getRawToken(),
@@ -82,7 +82,7 @@ public class AuthorizationController {
     @ApiOperation(value = "Refresh tokens", response = RefreshTokenResponse.class)
     @RequestMapping(value = "api/auth/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
-        log.debug("refreshToken; request is {}", request);
+        log.debug("refreshToken; enter");
         TokenPair tokenPair = authorizationService.refresh(request.getRefreshToken());
 
         RefreshTokenResponse response = new RefreshTokenResponse(tokenPair.getAccessToken().getRawToken(),

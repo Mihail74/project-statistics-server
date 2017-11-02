@@ -15,11 +15,15 @@ import ru.mdkardaev.match.repository.MatchRepository;
 import ru.mdkardaev.match.repository.TeamMatchScoreRepository;
 import ru.mdkardaev.match.requests.CreateMatchRequest;
 import ru.mdkardaev.match.requests.TeamScore;
+import ru.mdkardaev.match.specifications.MatchSpecifications;
+import ru.mdkardaev.match.specifications.MatchesFilters;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,6 +75,8 @@ public class MatchService {
 
         match = matchRepository.save(match);
 
+        Set<TeamMatchScore> teamMatchScores = new HashSet<>(request.getTeamsScore().size());
+
         for (TeamScore teamScore : request.getTeamsScore()) {
             Team team = idTeamMap.get(teamScore.getTeamID());
 
@@ -80,8 +86,11 @@ public class MatchService {
             teamMatchScore.setScore(teamScore.getScore());
             teamMatchScore.setTeam(team);
 
-            teamMatchScoreRepository.save(teamMatchScore);
+            teamMatchScores.add(teamMatchScoreRepository.save(teamMatchScore));
         }
+
+        match.setTeamsMatchScore(teamMatchScores);
+
         for (Team team : participantTeams) {
             team.setNumberOfMatches(team.getNumberOfWinMatches() + 1);
             if (team.getId().equals(winnerTeam.getId())) {
@@ -90,6 +99,7 @@ public class MatchService {
         }
 
         teamRepository.save(participantTeams);
+
 
         log.debug("create; match with id = {} created", match.getId());
         return convert(match);
@@ -101,11 +111,12 @@ public class MatchService {
         return convert(matchRepository.findOne(id));
     }
 
-    public List<MatchDTO> getMatches() {
+    public List<MatchDTO> getMatches(MatchesFilters filters) {
         log.trace("getMatches; enter");
 
         List<MatchDTO> result = matchRepository
-                .findAll()
+                .findAll(MatchSpecifications.createGetMatchesSpecification(filters),
+                         MatchSpecifications.createGetMatchesSort(filters))
                 .stream()
                 .map(this::convert)
                 .collect(Collectors.toList());

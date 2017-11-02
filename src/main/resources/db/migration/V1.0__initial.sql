@@ -23,8 +23,7 @@ CREATE TABLE users
   name varchar(255) NOT NULL,
   password varchar(255) NOT NULL,
   CONSTRAINT users_pkey PRIMARY KEY (id),
-  CONSTRAINT uq_users_login UNIQUE (login),
-  CONSTRAINT uq_users_name UNIQUE (name)
+  CONSTRAINT uq_users_login UNIQUE (login)
 );
 
 

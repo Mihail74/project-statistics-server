@@ -1,16 +1,14 @@
 package ru.mdkardaev.match.controllers;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.match.dtos.MatchDTO;
 import ru.mdkardaev.match.requests.CreateMatchRequest;
@@ -18,9 +16,9 @@ import ru.mdkardaev.match.requests.GetMatchesRequest;
 import ru.mdkardaev.match.responses.GetMatchResponse;
 import ru.mdkardaev.match.responses.GetMatchesResponse;
 import ru.mdkardaev.match.services.MatchService;
+import ru.mdkardaev.match.specifications.MatchesFilters;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 /**
@@ -52,7 +50,12 @@ public class MatchController {
     public ResponseEntity<?> get(GetMatchesRequest request) {
         log.debug("get; request is {}", request);
 
-        List<MatchDTO> matches = matchService.getMatches();
+        MatchesFilters filters = MatchesFilters.builder()
+                                               .teamID(request.getTeamID())
+                                               .sortField(request.getSortField())
+                                               .sortDirection(request.getSortDirection())
+                                               .build();
+        List<MatchDTO> matches = matchService.getMatches(filters);
 
         log.debug("get; returns {} matches", matches.size());
         return ResponseEntity.ok(new GetMatchesResponse(matches));

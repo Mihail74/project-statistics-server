@@ -16,7 +16,7 @@ import javax.persistence.MapsId;
 @Entity(name="team_match_score")
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"pk"})
 @NoArgsConstructor
 public class TeamMatchScore {
 

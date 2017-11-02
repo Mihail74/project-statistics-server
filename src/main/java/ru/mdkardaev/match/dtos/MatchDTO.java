@@ -3,6 +3,7 @@ package ru.mdkardaev.match.dtos;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.team.dtos.TeamOnlyNameDTO;
