@@ -44,3 +44,12 @@ dependencies {
 }
 
 compileJava.dependsOn(processResources)
+
+
+task copyScripts(type: Copy) {
+    from 'scripts'
+    into 'build/libs'
+    eachFile { println "Copied $it.file into 'build/libs'"}
+}
+
+build.finalizedBy(copyScripts)
