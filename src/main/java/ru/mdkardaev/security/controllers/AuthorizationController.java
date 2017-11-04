@@ -71,11 +71,13 @@ public class AuthorizationController {
     @ApiOperation(value = "Logout", response = Void.class)
     @RequestMapping(value = "/logout")
     public ResponseEntity<?> logout() {
+        log.debug("logout; enter");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String accessToken = (String) authentication.getCredentials();
 
         authorizationService.logout(accessToken);
 
+        log.debug("logout; logout successful");
         return ResponseEntity.ok().build();
     }
 

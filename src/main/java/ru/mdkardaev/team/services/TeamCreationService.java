@@ -44,24 +44,37 @@ public class TeamCreationService {
      */
     @Transactional
     public TeamAndInvites createTeamAndInviteMembers(CreateTeamRequest request, String leaderLogin) {
+        checkRequest(request);
         Team team = createTeam(request, leaderLogin);
         List<InviteDTO> invitesDTO = inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
 
         return new TeamAndInvites(conversionService.convert(team, TeamDTO.class), invitesDTO);
     }
 
-    private Team createTeam(CreateTeamRequest request, String leaderLogin) {
+    private void checkRequest(CreateTeamRequest request) {
         Game game = gameRepository.findOne(request.getGameID());
         if (game == null) {
-            throw new InvalidParameterException("Game with specified [name] doesn't exist");
+            throw new InvalidParameterException("gameID",
+                                                String.format("Game with id = [%d] doesn't exist",
+                                                              request.getGameID()));
         }
 
+        List<User> users = userRepository.findAll(request.getMembersID());
+        if (users.size() != request.getMembersID().size()) {
+            throw new InvalidParameterException("membersID", "Not all users with specified ids exist");
+        }
+    }
+
+    private Team createTeam(CreateTeamRequest request, String leaderLogin) {
+        Game game = gameRepository.findOne(request.getGameID());
+
         User leader = userRepository.findByLogin(leaderLogin);
+
         Team team = Team.builder()
                         .name(request.getName())
-                        .users(Sets.newHashSet(leader))
-                        .leader(leader)
                         .game(game)
+                        .leader(leader)
+                        .users(Sets.newHashSet(leader))
                         .formingStatus(TeamFormingStatus.FORMING)
                         .build();
 

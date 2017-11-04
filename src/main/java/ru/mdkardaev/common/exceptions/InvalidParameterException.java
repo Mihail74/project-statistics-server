@@ -1,15 +1,24 @@
 package ru.mdkardaev.common.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import lombok.Getter;
 
 /**
  * Exception is thrown when invalid parameter passed in request
  */
-@ResponseStatus(value = HttpStatus.CONFLICT, reason = "Invalid parameter[s]")
 public class InvalidParameterException extends RuntimeException {
 
-    public InvalidParameterException(String detailMessage) {
+    @Getter
+    private String parameter;
+
+    public InvalidParameterException(String parameter, String detailMessage) {
+        super(detailMessage);
+        this.parameter = parameter;
+    }
+
+    @Deprecated
+    public InvalidParameterException( String detailMessage) {
+
+        //TODO Удалить этот конструктор
         super(detailMessage);
     }
 }

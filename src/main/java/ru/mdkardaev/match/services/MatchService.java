@@ -51,9 +51,7 @@ public class MatchService {
 
     @Transactional
     public MatchDTO create(CreateMatchRequest request) {
-        if (log.isDebugEnabled()) {
-            log.debug("create; request = {}", request);
-        }
+        log.debug("create; request = {}", request);
 
         Team winnerTeam = teamRepository.findOne(request.getWinnerTeamID());
         Game game = gameRepository.findOne(request.getGameID());

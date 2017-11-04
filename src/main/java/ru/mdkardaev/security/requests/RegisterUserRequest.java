@@ -9,15 +9,15 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Data
 public class RegisterUserRequest {
 
-    @NotEmpty
     @ApiModelProperty(value = "Login", example = "login", required = true)
+    @NotEmpty
     private String login;
 
-    @NotEmpty
     @ApiModelProperty(value = "Password", example = "password", required = true)
+    @NotEmpty
     private String password;
 
-    @NotEmpty
     @ApiModelProperty(value = "Name", example = "name", required = true)
+    @NotEmpty
     private String name;
 }

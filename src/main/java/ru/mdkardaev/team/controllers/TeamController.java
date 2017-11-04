@@ -8,12 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
+import ru.mdkardaev.common.exceptions.EntityNotExistException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
@@ -28,7 +25,6 @@ import ru.mdkardaev.team.services.TeamCreationService;
 import ru.mdkardaev.team.specifications.TeamsFilters;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 @RestController
@@ -67,14 +63,14 @@ public class TeamController {
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of teams", notes = "List of teams that match the specified filters",
             response = GetTeamsResponse.class)
-    public ResponseEntity<?> getTeams(GetTeamsRequest request) {
+    public ResponseEntity<?> getTeams(@Valid GetTeamsRequest request) {
         log.debug("getTeams; request is {}", request);
 
         TeamsFilters filters = TeamsFilters.builder()
-                .gameID(request.getGameID())
-                .formingStatus(request.getFormingStatus())
-                .memberID(request.getMemberID())
-                .build();
+                                           .gameID(request.getGameID())
+                                           .formingStatus(request.getFormingStatus())
+                                           .memberID(request.getMemberID())
+                                           .build();
         List<TeamDTO> teams = getTeamsService.getTeams(filters);
 
         log.debug("getTeams; returns {} teams", teams.size());
@@ -87,6 +83,9 @@ public class TeamController {
         log.debug("getTeam; Get team with id = {}", id);
 
         TeamDTO team = getTeamService.getTeam(id);
+        if (team == null) {
+            throw new EntityNotExistException();
+        }
 
         List<InviteDTO> invitedUsers = null;
         if (team.getFormingStatus() == TeamFormingStatus.FORMING) {
