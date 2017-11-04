@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * An {@link AuthenticationProvider} implementation
- * that will use provided instance of JwtHolder to perform authentication.
+ * that will use provided instance of Authentication to perform authentication.
  */
 @Component
 public class TokenAuthenticationProvider implements AuthenticationProvider {

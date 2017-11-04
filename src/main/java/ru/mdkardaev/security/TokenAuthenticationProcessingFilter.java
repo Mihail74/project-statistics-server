@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Performs validation of provided JWT Token.
+ * Performs validation of provided Token.
  */
 public class TokenAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -63,7 +63,7 @@ public class TokenAuthenticationProcessingFilter extends AbstractAuthenticationP
     }
 
     /**
-     * Extract jwt from request header
+     * Extract token from request header
      */
     private String extractToken(HttpServletRequest request) throws AuthenticationServiceException {
         String rawJwt = request.getHeader(HttpHeaders.AUTHORIZATION);

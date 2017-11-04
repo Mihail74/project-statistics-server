@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * An {@link org.springframework.security.core.Authentication} implementation
- * that is designed for simple presentation of JwtHolder.
+ * that is designed for simple presentation of AuthenticationToken.
  */
 public class AuthenticationToken extends AbstractAuthenticationToken {
 

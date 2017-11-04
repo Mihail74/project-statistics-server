@@ -29,7 +29,8 @@ import javax.validation.Valid;
 
 @Api(tags = SwaggerConfig.Tags.SECURITY)
 @RestController
-@RequestMapping(method = RequestMethod.POST,
+@RequestMapping(value = "api/auth",
+        method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
@@ -43,7 +44,7 @@ public class AuthorizationController {
     private UserRegistrationService userRegistrationService;
 
     @ApiOperation(value = "Register user", response = RegisterUserResponse.class)
-    @RequestMapping(path = "api/auth/register")
+    @RequestMapping(path = "/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterUserRequest request) {
         log.debug("register; request is {}", request);
 
@@ -54,7 +55,7 @@ public class AuthorizationController {
     }
 
     @ApiOperation(value = "Login", response = LoginResponse.class)
-    @RequestMapping(path = "api/auth/login")
+    @RequestMapping(path = "/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         log.debug("login; user with login = {}", request.getLogin());
 
@@ -68,7 +69,7 @@ public class AuthorizationController {
     }
 
     @ApiOperation(value = "Logout", response = Void.class)
-    @RequestMapping(value = "api/auth/logout")
+    @RequestMapping(value = "/logout")
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String accessToken = (String) authentication.getCredentials();
@@ -80,7 +81,7 @@ public class AuthorizationController {
 
 
     @ApiOperation(value = "Refresh tokens", response = RefreshTokenResponse.class)
-    @RequestMapping(value = "api/auth/token/refresh")
+    @RequestMapping(value = "/token/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         log.debug("refreshToken; enter");
         TokenPair tokenPair = authorizationService.refresh(request.getRefreshToken());
