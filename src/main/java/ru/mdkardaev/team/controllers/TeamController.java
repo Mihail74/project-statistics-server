@@ -10,7 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
-import ru.mdkardaev.common.exceptions.EntityNotExistException;
+import ru.mdkardaev.common.exceptions.EntityNotFoundException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
@@ -21,6 +21,7 @@ import ru.mdkardaev.team.responses.GetTeamsResponse;
 import ru.mdkardaev.team.responses.TeamAndInvites;
 import ru.mdkardaev.team.services.GetTeamService;
 import ru.mdkardaev.team.services.GetTeamsService;
+import ru.mdkardaev.team.services.TeamCheckService;
 import ru.mdkardaev.team.services.TeamCreationService;
 import ru.mdkardaev.team.specifications.TeamsFilters;
 
@@ -28,7 +29,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/teams",
+@RequestMapping(value = "/api/teams",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
 @Slf4j
@@ -42,6 +43,8 @@ public class TeamController {
     private GetTeamsService getTeamsService;
     @Autowired
     private InviteService inviteService;
+    @Autowired
+    private TeamCheckService teamCheckService;
 
     @RequestMapping(path = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "Create team",
@@ -82,10 +85,9 @@ public class TeamController {
     public ResponseEntity<?> getTeam(@PathVariable("id") Long id) {
         log.debug("getTeam; Get team with id = {}", id);
 
+        teamCheckService.checkTeamExist(id);
+
         TeamDTO team = getTeamService.getTeam(id);
-        if (team == null) {
-            throw new EntityNotExistException();
-        }
 
         List<InviteDTO> invitedUsers = null;
         if (team.getFormingStatus() == TeamFormingStatus.FORMING) {

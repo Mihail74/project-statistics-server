@@ -60,6 +60,7 @@ public class AuthorizationController {
         log.debug("login; user with login = {}", request.getLogin());
 
         TokenPair tokenPair = authorizationService.login(request);
+
         LoginResponse response = new LoginResponse(tokenPair.getAccessToken().getRawToken(),
                                                    tokenPair.getRefreshToken().getRawToken(),
                                                    userService.getUserByLogin(request.getLogin()));

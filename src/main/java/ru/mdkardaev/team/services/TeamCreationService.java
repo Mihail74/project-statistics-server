@@ -38,7 +38,6 @@ public class TeamCreationService {
     @Autowired
     private ConversionService conversionService;
 
-
     /**
      * Create team with specified leader and create invites for members
      */
@@ -54,9 +53,7 @@ public class TeamCreationService {
     private void checkRequest(CreateTeamRequest request) {
         Game game = gameRepository.findOne(request.getGameID());
         if (game == null) {
-            throw new InvalidParameterException("gameID",
-                                                String.format("Game with id = [%d] doesn't exist",
-                                                              request.getGameID()));
+            throw new InvalidParameterException("gameID", String.format("Game with id = [%d] doesn't exist", request.getGameID()));
         }
 
         List<User> users = userRepository.findAll(request.getMembersID());

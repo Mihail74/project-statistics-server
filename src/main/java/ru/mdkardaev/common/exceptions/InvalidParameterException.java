@@ -3,7 +3,7 @@ package ru.mdkardaev.common.exceptions;
 import lombok.Getter;
 
 /**
- * Exception is thrown when invalid parameter passed in request
+ * Exception thrown when invalid parameter passed in request
  */
 public class InvalidParameterException extends RuntimeException {
 

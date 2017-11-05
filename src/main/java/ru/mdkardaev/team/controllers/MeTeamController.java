@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
+import ru.mdkardaev.common.exceptions.NoAccessException;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.responses.TeamAndInvites;
+import ru.mdkardaev.team.services.TeamCheckService;
+import ru.mdkardaev.team.services.TeamOwnerService;
 import ru.mdkardaev.team.services.UpdateTeamService;
 
 @RestController
@@ -24,13 +27,24 @@ public class MeTeamController {
 
     @Autowired
     private UpdateTeamService updateTeamService;
+    @Autowired
+    private TeamOwnerService teamOwnerService;
+    @Autowired
+    private TeamCheckService teamCheckService;
 
     @ApiOperation(value = "Form team", response = TeamAndInvites.class)
     @RequestMapping(path = "/{id}/form", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
-        //TODO: check principal is leader
+
+        teamCheckService.checkTeamExist(id);
+
+        if (!teamOwnerService.isLeaderTeam(principal.getUsername(), id)) {
+            throw new NoAccessException();
+        }
+
         TeamDTO team = updateTeamService.formTeam(id);
+
         return ResponseEntity.ok(new TeamAndInvites(team));
     }
 }
