@@ -81,11 +81,11 @@ public class TeamController {
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Get team", response = GetTeamResponse.class)
     public ResponseEntity<?> getTeam(@PathVariable("id") Long id) {
-        log.debug("getTeamAndInvites; Get team with id = {}", id);
+        log.debug("getTeam; Get team with id = {}", id);
 
-        TeamDTO team = getTeamService.getTeamAndInvites(id);
+        TeamDTO team = getTeamService.getTeam(id);
 
-        log.debug("getTeamAndInvites; Team wih id = {} is returning", team.getId());
+        log.debug("getTeam; Team wih id = {} is returning", team.getId());
         return ResponseEntity.ok(new GetTeamResponse(team));
     }
 

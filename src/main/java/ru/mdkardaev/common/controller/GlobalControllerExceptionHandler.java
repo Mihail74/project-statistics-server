@@ -2,6 +2,7 @@ package ru.mdkardaev.common.controller;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.exception.ConstraintViolationException;
 import org.postgresql.util.PSQLException;
@@ -60,12 +61,16 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
         }
 
         ResponseStatus responseStatusAnnotation = AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class);
+
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         String reason = e.getMessage();
 
         if (responseStatusAnnotation != null) {
             httpStatus = responseStatusAnnotation.code();
-            reason = responseStatusAnnotation.reason();
+            String annotationReason = responseStatusAnnotation.reason();
+            if (!StringUtils.isEmpty(annotationReason)) {
+                reason = annotationReason;
+            }
         }
 
         return ResponseEntity.status(httpStatus).body(new ErrorInfo(reason));

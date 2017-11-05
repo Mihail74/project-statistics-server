@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.mdkardaev.common.exceptions.EntityNotFoundException;
 import ru.mdkardaev.common.exceptions.NoAccessException;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
@@ -26,16 +25,16 @@ public class UpdateTeamService {
     private ConversionService conversionService;
     @Autowired
     private TeamOwnerService teamOwnerService;
+    @Autowired
+    private TeamCheckService teamCheckService;
 
     /**
      * Check that user with userLogin is leader of team with specified id and change formingStatus to {@link TeamFormingStatus#FORMED}
      */
     @Transactional
     public TeamDTO formTeam(Long id, String userLogin) {
-        Team team = teamRepository.findOne(id);
-        if (team == null) {
-            throw new EntityNotFoundException();
-        }
+        Team team =teamCheckService.checkAndGetTeam(id);
+
         if (!teamOwnerService.isLeaderTeam(userLogin, id)) {
             throw new NoAccessException();
         }

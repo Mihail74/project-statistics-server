@@ -25,7 +25,7 @@ public class InviteCheckService {
         Invite invite = inviteRepository.findOne(id);
 
         if (invite == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("Invite not found");
         }
     }
 

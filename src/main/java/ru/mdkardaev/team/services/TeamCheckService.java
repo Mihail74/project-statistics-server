@@ -3,6 +3,7 @@ package ru.mdkardaev.team.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.mdkardaev.common.exceptions.EntityNotFoundException;
+import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
 
 /**
@@ -15,13 +16,16 @@ public class TeamCheckService {
     private TeamRepository teamRepository;
 
     /**
-     * check that team with specified id exist
+     * check that team with specified id exist and return its
      *
      * @throws ru.mdkardaev.common.exceptions.EntityNotFoundException if team doesn't exist
+     * @return team with specified id
      */
-    public void checkTeamExist(Long id) {
-        if (teamRepository.findOne(id) == null) {
-            throw new EntityNotFoundException();
+    public Team checkAndGetTeam(Long id) {
+        Team team = teamRepository.findOne(id);
+        if (team == null) {
+            throw new EntityNotFoundException("Team not found");
         }
+        return team;
     }
 }

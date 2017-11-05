@@ -14,11 +14,4 @@ public class InvalidParameterException extends RuntimeException {
         super(detailMessage);
         this.parameter = parameter;
     }
-
-    @Deprecated
-    public InvalidParameterException( String detailMessage) {
-
-        //TODO Удалить этот конструктор
-        super(detailMessage);
-    }
 }

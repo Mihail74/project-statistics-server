@@ -1,16 +1,17 @@
 package ru.mdkardaev.invite.services;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mdkardaev.common.exceptions.EntityNotFoundException;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
+import ru.mdkardaev.invite.exceptions.WrongInviteStatusException;
 import ru.mdkardaev.invite.repository.InviteRepository;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
@@ -47,7 +48,7 @@ public class InviteService {
     public List<InviteDTO> inviteUsersToTeam(Collection<Long> userIDs, Long teamID) {
         List<Invite> invites = new ArrayList<>(CollectionUtils.size(userIDs));
 
-        Team team = teamRepository.findOne(teamID);
+        Team team = teamCheckService.checkAndGetTeam(teamID);
         List<User> users = userRepository.findAll(userIDs);
 
         for (User user : users) {
@@ -72,25 +73,23 @@ public class InviteService {
     public InviteDTO acceptInvitation(Long inviteID, String userLogin) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite == null || invite.getStatus() != InviteStatus.NEW) {
-            //TODO: нужен свой exception
-            throw new InvalidParameterException("Invite already accepted/declined");
+        if (invite.getStatus() != InviteStatus.NEW) {
+            throw new WrongInviteStatusException("Invite already accepted/declined");
         }
 
         User user = userRepository.findByLogin(userLogin);
         Team team = teamRepository.findOne(invite.getTeam().getId());
 
-        if (user == null || !user.getId().equals(invite.getUser().getId())
-                || team == null) {
-            //TODO нужен свой exception
-            throw new InvalidParameterException("invalid parameters");
+        if (team == null) {
+            throw new InvalidParameterException("teamID", "Team doesn't exist");
         }
 
         team.getUsers().add(user);
-        invite.setStatus(InviteStatus.ACCEPTED);
-
         teamRepository.save(team);
+
+        invite.setStatus(InviteStatus.ACCEPTED);
         Invite savedInvite = inviteRepository.save(invite);
+
         return conversionService.convert(savedInvite, InviteDTO.class);
     }
 
@@ -102,8 +101,7 @@ public class InviteService {
         Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite.getStatus() != InviteStatus.NEW) {
-            //TODO нужен свой exception
-            throw new InvalidParameterException("id", "Invite already accepted or declined");
+            throw new WrongInviteStatusException("Invite already accepted/declined");
         }
 
         invite.setStatus(InviteStatus.DECLINED);
@@ -143,7 +141,7 @@ public class InviteService {
      */
     @Transactional
     public List<InviteDTO> getInvitesInTeam(Long id) {
-        teamCheckService.checkTeamExist(id);
+        teamCheckService.checkAndGetTeam(id);
 
         return inviteRepository.findByTeam_id(id)
                                .stream()

@@ -21,18 +21,14 @@ public class GetTeamService {
     @Autowired
     private ConversionService conversionService;
     @Autowired
-    private InviteService inviteService;
+    private TeamCheckService teamCheckService;
 
     /**
      * Return team with specified ID.
      */
     @Transactional
-    public TeamDTO getTeamAndInvites(Long id) {
-        Team team = teamRepository.findOne(id);
-        if (team == null) {
-            throw new EntityNotFoundException();
-        }
-
+    public TeamDTO getTeam(Long id) {
+        Team team = teamCheckService.checkAndGetTeam(id);
         return conversionService.convert(team, TeamDTO.class);
     }
 }

@@ -4,9 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Exception thrown when requestet entity not found
+ * Exception thrown when requested entity not found
  */
-//TODO: http-status поменять
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Entity doesn't exist")
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class EntityNotFoundException extends RuntimeException {
+
+    public EntityNotFoundException(String message) {
+        super(message);
+    }
 }
