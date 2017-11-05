@@ -1,17 +1,21 @@
 package ru.mdkardaev.invite.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mdkardaev.common.exceptions.EntityNotFoundException;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
+import ru.mdkardaev.invite.exceptions.WrongInviteStatusException;
 import ru.mdkardaev.invite.repository.InviteRepository;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
+import ru.mdkardaev.team.services.TeamCheckService;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -32,12 +36,19 @@ public class InviteService {
     private InviteRepository inviteRepository;
     @Autowired
     private ConversionService conversionService;
+    @Autowired
+    private TeamCheckService teamCheckService;
 
+    /**
+     * Create invites in team for specified users
+     *
+     * @return created invites
+     */
     @Transactional
     public List<InviteDTO> inviteUsersToTeam(Collection<Long> userIDs, Long teamID) {
-        List<Invite> invites = new ArrayList<>(userIDs.size());
+        List<Invite> invites = new ArrayList<>(CollectionUtils.size(userIDs));
 
-        Team team = teamRepository.findOne(teamID);
+        Team team = teamCheckService.checkAndGetTeam(teamID);
         List<User> users = userRepository.findAll(userIDs);
 
         for (User user : users) {
@@ -62,23 +73,23 @@ public class InviteService {
     public InviteDTO acceptInvitation(Long inviteID, String userLogin) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite == null || invite.getStatus() != InviteStatus.NEW) {
-            throw new InvalidParameterException("invalid parameters");
+        if (invite.getStatus() != InviteStatus.NEW) {
+            throw new WrongInviteStatusException("Invite already accepted/declined");
         }
 
         User user = userRepository.findByLogin(userLogin);
         Team team = teamRepository.findOne(invite.getTeam().getId());
 
-        if (user == null || !user.getId().equals(invite.getUser().getId())
-                || team == null) {
-            throw new InvalidParameterException("invalid parameters");
+        if (team == null) {
+            throw new InvalidParameterException("teamID", "Team doesn't exist");
         }
 
         team.getUsers().add(user);
-        invite.setStatus(InviteStatus.ACCEPTED);
-
         teamRepository.save(team);
+
+        invite.setStatus(InviteStatus.ACCEPTED);
         Invite savedInvite = inviteRepository.save(invite);
+
         return conversionService.convert(savedInvite, InviteDTO.class);
     }
 
@@ -86,17 +97,11 @@ public class InviteService {
      * Decline invite and return updated
      */
     @Transactional
-    public InviteDTO declineInvitation(Long inviteID, String userLogin) {
+    public InviteDTO declineInvitation(Long inviteID) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite == null || invite.getStatus() != InviteStatus.NEW) {
-            throw new InvalidParameterException("invalid parameters");
-        }
-
-        User user = userRepository.findByLogin(userLogin);
-
-        if (!user.getId().equals(invite.getUser().getId())) {
-            throw new InvalidParameterException("invalid parameters");
+        if (invite.getStatus() != InviteStatus.NEW) {
+            throw new WrongInviteStatusException("Invite already accepted/declined");
         }
 
         invite.setStatus(InviteStatus.DECLINED);
@@ -105,6 +110,9 @@ public class InviteService {
         return conversionService.convert(savedInvite, InviteDTO.class);
     }
 
+    /**
+     * @return invites for specified user in specified status
+     */
     public List<InviteDTO> getUserInvites(String userLogin, InviteStatus status) {
         return inviteRepository
                 .findByUser_LoginAndStatus(userLogin, status)
@@ -113,6 +121,9 @@ public class InviteService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @return invite with specified id
+     */
     public InviteDTO getInvite(Long id) {
         return conversionService.convert(inviteRepository.findOne(id), InviteDTO.class);
     }
@@ -128,7 +139,10 @@ public class InviteService {
     /**
      * Return invites in team
      */
+    @Transactional
     public List<InviteDTO> getInvitesInTeam(Long id) {
+        teamCheckService.checkAndGetTeam(id);
+
         return inviteRepository.findByTeam_id(id)
                                .stream()
                                .map(e -> conversionService.convert(e, InviteDTO.class))

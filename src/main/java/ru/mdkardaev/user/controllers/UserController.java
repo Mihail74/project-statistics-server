@@ -20,7 +20,7 @@ import ru.mdkardaev.user.services.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = {SwaggerConfig.Tags.USERS})
 @Slf4j
 public class UserController {

@@ -29,7 +29,7 @@ import javax.validation.Valid;
 
 @Api(tags = SwaggerConfig.Tags.SECURITY)
 @RestController
-@RequestMapping(value = "api/auth",
+@RequestMapping(value = "/api/auth",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -60,6 +60,7 @@ public class AuthorizationController {
         log.debug("login; user with login = {}", request.getLogin());
 
         TokenPair tokenPair = authorizationService.login(request);
+
         LoginResponse response = new LoginResponse(tokenPair.getAccessToken().getRawToken(),
                                                    tokenPair.getRefreshToken().getRawToken(),
                                                    userService.getUserByLogin(request.getLogin()));
@@ -71,11 +72,13 @@ public class AuthorizationController {
     @ApiOperation(value = "Logout", response = Void.class)
     @RequestMapping(value = "/logout")
     public ResponseEntity<?> logout() {
+        log.debug("logout; enter");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String accessToken = (String) authentication.getCredentials();
 
         authorizationService.logout(accessToken);
 
+        log.debug("logout; logout successful");
         return ResponseEntity.ok().build();
     }
 

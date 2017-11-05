@@ -2,7 +2,7 @@ package ru.mdkardaev.common.exceptions.utils;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Component;
-import ru.mdkardaev.common.exceptions.sql.SQLStates;
+import ru.mdkardaev.common.exceptions.enums.SQLStates;
 
 import java.util.function.Supplier;
 

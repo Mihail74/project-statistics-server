@@ -13,14 +13,14 @@ import java.util.List;
 @Data
 public class CreateTeamRequest {
 
-    @NotEmpty
     @ApiModelProperty(value = "Name", example = "name", required = true)
+    @NotEmpty
     private String name;
 
     @ApiModelProperty(value = "List of member's id", example = "[1]")
     private List<Long> membersID;
 
-    @NotNull
     @ApiModelProperty(value = "Game ID", example = "1", required = true)
+    @NotNull
     private Long gameID;
 }

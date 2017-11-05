@@ -47,7 +47,7 @@ public class MatchController {
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get matches", notes = "List of matches that match the specified filters",
             response = GetMatchesResponse.class)
-    public ResponseEntity<?> get(GetMatchesRequest request) {
+    public ResponseEntity<?> get(@Valid GetMatchesRequest request) {
         log.debug("get; request is {}", request);
 
         MatchesFilters filters = MatchesFilters.builder()

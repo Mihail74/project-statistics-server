@@ -1,10 +1,12 @@
 package ru.mdkardaev.match.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mdkardaev.common.exceptions.EntityNotFoundException;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.match.dtos.MatchDTO;
@@ -51,12 +53,13 @@ public class MatchService {
 
     @Transactional
     public MatchDTO create(CreateMatchRequest request) {
-        if (log.isDebugEnabled()) {
-            log.debug("create; request = {}", request);
-        }
+        log.debug("create; request = {}", request);
+
+        checkCreateRequest(request);
 
         Team winnerTeam = teamRepository.findOne(request.getWinnerTeamID());
         Game game = gameRepository.findOne(request.getGameID());
+
 
         List<Long> participantTeamIDs = request.getTeamsScore()
                                                .stream()
@@ -127,5 +130,16 @@ public class MatchService {
 
     private MatchDTO convert(Match match) {
         return conversionService.convert(match, MatchDTO.class);
+    }
+
+    private void checkCreateRequest(CreateMatchRequest request) {
+        List<Long> teamsID = request.getTeamsScore().stream().map(TeamScore::getTeamID).collect(Collectors.toList());
+        List<Team> teams = teamRepository.findAll(teamsID);
+        if (CollectionUtils.size(teamsID) != CollectionUtils.size(teams)) {
+            throw new EntityNotFoundException("Not all teams found");
+        }
+        if (gameRepository.findOne(request.getGameID()) == null) {
+            throw new EntityNotFoundException("Game not found");
+        }
     }
 }

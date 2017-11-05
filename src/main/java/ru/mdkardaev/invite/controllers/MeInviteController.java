@@ -17,15 +17,18 @@ import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.invite.responses.GetMyInviteResponse;
 import ru.mdkardaev.invite.responses.GetMyInvitesResponse;
 import ru.mdkardaev.invite.services.InviteService;
+import ru.mdkardaev.invite.services.MeInviteService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/me/invites",
+@RequestMapping(value = "/api/me/invites",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.INVITES})
 public class MeInviteController {
 
+    @Autowired
+    private MeInviteService meInviteService;
     @Autowired
     private InviteService inviteService;
 
@@ -40,8 +43,9 @@ public class MeInviteController {
     @ApiOperation(value = "Get my specified invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id,
                                          @AuthenticationPrincipal UserDetails principal) {
-        //TODO: invite for principal
-        InviteDTO invite = inviteService.getInvite(id);
+
+        InviteDTO invite = meInviteService.checkAccessAndGetInvite(id, principal.getUsername());
+
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
@@ -51,7 +55,7 @@ public class MeInviteController {
     @ApiOperation(value = "Accept invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
-        InviteDTO invite = inviteService.acceptInvitation(id, principal.getUsername());
+        InviteDTO invite = meInviteService.checkAccessAndAcceptInvite(id, principal.getUsername());
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
@@ -61,7 +65,8 @@ public class MeInviteController {
     @ApiOperation(value = "Decline invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
-        InviteDTO invite = inviteService.declineInvitation(id, principal.getUsername());
+        InviteDTO invite = meInviteService.checkAccessAndDeclineInvite(id, principal.getUsername());
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
+
 }
