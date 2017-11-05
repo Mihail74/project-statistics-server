@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.common.exceptions.NoAccessException;
 import ru.mdkardaev.team.dtos.TeamDTO;
-import ru.mdkardaev.team.responses.TeamAndInvites;
+import ru.mdkardaev.team.responses.GetInvitesInTeamResponse;
 import ru.mdkardaev.team.services.TeamCheckService;
 import ru.mdkardaev.team.services.TeamOwnerService;
 import ru.mdkardaev.team.services.UpdateTeamService;
 
 @RestController
-@RequestMapping(value = "api/me/teams",
+@RequestMapping(value = "/api/me/teams",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.TEAMS})
 public class MeTeamController {
@@ -32,7 +32,7 @@ public class MeTeamController {
     @Autowired
     private TeamCheckService teamCheckService;
 
-    @ApiOperation(value = "Form team", response = TeamAndInvites.class)
+    @ApiOperation(value = "Form team", notes = "Only team leader can form team", response = GetInvitesInTeamResponse.class)
     @RequestMapping(path = "/{id}/form", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
@@ -45,6 +45,6 @@ public class MeTeamController {
 
         TeamDTO team = updateTeamService.formTeam(id);
 
-        return ResponseEntity.ok(new TeamAndInvites(team));
+        return ResponseEntity.ok(new GetInvitesInTeamResponse(team));
     }
 }

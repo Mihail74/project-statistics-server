@@ -1,6 +1,7 @@
 package ru.mdkardaev.team.services;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -8,14 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
-import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
-import ru.mdkardaev.team.responses.TeamAndInvites;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -40,14 +39,17 @@ public class TeamCreationService {
 
     /**
      * Create team with specified leader and create invites for members
+     * @return created team
      */
     @Transactional
-    public TeamAndInvites createTeamAndInviteMembers(CreateTeamRequest request, String leaderLogin) {
+    public TeamDTO createTeamAndInviteMembers(CreateTeamRequest request, String leaderLogin) {
         checkRequest(request);
-        Team team = createTeam(request, leaderLogin);
-        List<InviteDTO> invitesDTO = inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
 
-        return new TeamAndInvites(conversionService.convert(team, TeamDTO.class), invitesDTO);
+        Team team = createTeam(request, leaderLogin);
+
+        inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
+
+        return conversionService.convert(team, TeamDTO.class);
     }
 
     private void checkRequest(CreateTeamRequest request) {
@@ -57,7 +59,7 @@ public class TeamCreationService {
         }
 
         List<User> users = userRepository.findAll(request.getMembersID());
-        if (users.size() != request.getMembersID().size()) {
+        if (users.size() != CollectionUtils.size(request.getMembersID())) {
             throw new InvalidParameterException("membersID", "Not all users with specified ids exist");
         }
     }

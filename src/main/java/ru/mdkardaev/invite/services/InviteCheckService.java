@@ -1,0 +1,41 @@
+package ru.mdkardaev.invite.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.mdkardaev.common.exceptions.EntityNotFoundException;
+import ru.mdkardaev.common.exceptions.NoAccessException;
+import ru.mdkardaev.invite.entity.Invite;
+import ru.mdkardaev.invite.repository.InviteRepository;
+
+/**
+ * Service for check invite
+ */
+@Service
+public class InviteCheckService {
+
+    @Autowired
+    private InviteRepository inviteRepository;
+
+    /**
+     * @throws ru.mdkardaev.common.exceptions.EntityNotFoundException if invite doesn't exist
+     */
+    public void checkInviteExist(Long id) {
+        Invite invite = inviteRepository.findOne(id);
+
+        if (invite == null) {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    /**
+     * Check that invite belong to user with specified login.
+     *
+     * @throws ru.mdkardaev.common.exceptions.NoAccessException if invite doesn't belong to user with specified login
+     */
+    public void checkInviteBelongToUser(Long inviteID, String userLogin) {
+        Invite invite = inviteRepository.findOne(inviteID);
+        if (!invite.getUser().getLogin().equals(userLogin)) {
+            throw new NoAccessException();
+        }
+    }
+}

@@ -29,7 +29,7 @@ import javax.validation.Valid;
 
 @Api(tags = SwaggerConfig.Tags.SECURITY)
 @RestController
-@RequestMapping(value = "api/auth",
+@RequestMapping(value = "/api/auth",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
