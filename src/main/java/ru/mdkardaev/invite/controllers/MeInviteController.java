@@ -16,8 +16,8 @@ import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.invite.responses.GetMyInviteResponse;
 import ru.mdkardaev.invite.responses.GetMyInvitesResponse;
-import ru.mdkardaev.invite.services.InviteCheckService;
 import ru.mdkardaev.invite.services.InviteService;
+import ru.mdkardaev.invite.services.MeInviteService;
 
 import java.util.List;
 
@@ -28,9 +28,9 @@ import java.util.List;
 public class MeInviteController {
 
     @Autowired
-    private InviteService inviteService;
+    private MeInviteService meInviteService;
     @Autowired
-    private InviteCheckService inviteCheckService;
+    private InviteService inviteService;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get my invites", response = GetMyInvitesResponse.class)
@@ -43,10 +43,8 @@ public class MeInviteController {
     @ApiOperation(value = "Get my specified invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id,
                                          @AuthenticationPrincipal UserDetails principal) {
-        checkInviteAndAccess(id, principal.getUsername());
 
-        //TODO: need me invite service
-        InviteDTO invite = inviteService.getInvite(id);
+        InviteDTO invite = meInviteService.checkAccessAndGetInvite(id, principal.getUsername());
 
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
@@ -57,9 +55,7 @@ public class MeInviteController {
     @ApiOperation(value = "Accept invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
-        checkInviteAndAccess(id, principal.getUsername());
-
-        InviteDTO invite = inviteService.acceptInvitation(id, principal.getUsername());
+        InviteDTO invite = meInviteService.checkAccessAndAcceptInvite(id, principal.getUsername());
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
@@ -69,17 +65,8 @@ public class MeInviteController {
     @ApiOperation(value = "Decline invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
-        checkInviteAndAccess(id, principal.getUsername());
-
-        InviteDTO invite = inviteService.declineInvitation(id);
+        InviteDTO invite = meInviteService.checkAccessAndDeclineInvite(id, principal.getUsername());
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
-    /**
-     * Check invite exist and it's invite belong to user with specified login
-     */
-    private void checkInviteAndAccess(Long inviteID, String userLogin) {
-        inviteCheckService.checkInviteExist(inviteID);
-        inviteCheckService.checkInviteBelongToUser(inviteID, userLogin);
-    }
 }

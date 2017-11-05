@@ -15,6 +15,7 @@ import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.common.exceptions.NoAccessException;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.responses.GetInvitesInTeamResponse;
+import ru.mdkardaev.team.responses.GetTeamResponse;
 import ru.mdkardaev.team.services.TeamCheckService;
 import ru.mdkardaev.team.services.TeamOwnerService;
 import ru.mdkardaev.team.services.UpdateTeamService;
@@ -27,24 +28,12 @@ public class MeTeamController {
 
     @Autowired
     private UpdateTeamService updateTeamService;
-    @Autowired
-    private TeamOwnerService teamOwnerService;
-    @Autowired
-    private TeamCheckService teamCheckService;
 
     @ApiOperation(value = "Form team", notes = "Only team leader can form team", response = GetInvitesInTeamResponse.class)
     @RequestMapping(path = "/{id}/form", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
-
-        teamCheckService.checkTeamExist(id);
-
-        if (!teamOwnerService.isLeaderTeam(principal.getUsername(), id)) {
-            throw new NoAccessException();
-        }
-
-        TeamDTO team = updateTeamService.formTeam(id);
-
-        return ResponseEntity.ok(new GetInvitesInTeamResponse(team));
+        TeamDTO team = updateTeamService.formTeam(id, principal.getUsername());
+        return ResponseEntity.ok(new GetTeamResponse(team));
     }
 }

@@ -73,7 +73,8 @@ public class InviteService {
         Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite == null || invite.getStatus() != InviteStatus.NEW) {
-            throw new InvalidParameterException("invalid parameters");
+            //TODO: нужен свой exception
+            throw new InvalidParameterException("Invite already accepted/declined");
         }
 
         User user = userRepository.findByLogin(userLogin);
@@ -81,6 +82,7 @@ public class InviteService {
 
         if (user == null || !user.getId().equals(invite.getUser().getId())
                 || team == null) {
+            //TODO нужен свой exception
             throw new InvalidParameterException("invalid parameters");
         }
 
@@ -100,6 +102,7 @@ public class InviteService {
         Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite.getStatus() != InviteStatus.NEW) {
+            //TODO нужен свой exception
             throw new InvalidParameterException("id", "Invite already accepted or declined");
         }
 
@@ -138,6 +141,7 @@ public class InviteService {
     /**
      * Return invites in team
      */
+    @Transactional
     public List<InviteDTO> getInvitesInTeam(Long id) {
         teamCheckService.checkTeamExist(id);
 
