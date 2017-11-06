@@ -5,5 +5,6 @@ package ru.mdkardaev.user.roles;
  */
 public enum Role {
     USER,
-    ADMIN;
+    ADMIN,
+    ACTUATOR; //for spring-boot-actuator
 }
