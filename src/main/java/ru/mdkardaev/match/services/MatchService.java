@@ -7,6 +7,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.EntityNotFoundException;
+import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.match.dtos.MatchDTO;
@@ -57,8 +58,14 @@ public class MatchService {
 
         checkCreateRequest(request);
 
-        Team winnerTeam = teamRepository.findOne(request.getWinnerTeamID());
         Game game = gameRepository.findOne(request.getGameID());
+
+        Long winnerTeamID = request.getTeamsScore()
+                                   .stream()
+                                   .filter(e -> e.getScore().equals(game.getScoreToWin()))
+                                   .map(TeamScore::getTeamID)
+                                   .findFirst()
+                                   .get();
 
 
         List<Long> participantTeamIDs = request.getTeamsScore()
@@ -67,6 +74,7 @@ public class MatchService {
                                                .collect(Collectors.toList());
 
         List<Team> participantTeams = teamRepository.findAll(participantTeamIDs);
+
         Map<Long, Team> idTeamMap = participantTeams
                 .stream()
                 .collect(Collectors.toMap(Team::getId, Function.identity()));
@@ -74,7 +82,7 @@ public class MatchService {
         Match match = new Match();
         match.setTimestamp(request.getTimestamp());
         match.setGame(game);
-        match.setWinner(winnerTeam);
+        match.setWinner(idTeamMap.get(winnerTeamID));
 
         match = matchRepository.save(match);
 
@@ -95,8 +103,8 @@ public class MatchService {
         match.setTeamsMatchScore(teamMatchScores);
 
         for (Team team : participantTeams) {
-            team.setNumberOfMatches(team.getNumberOfWinMatches() + 1);
-            if (team.getId().equals(winnerTeam.getId())) {
+            team.setNumberOfMatches(team.getNumberOfMatches() + 1);
+            if (team.getId().equals(winnerTeamID)) {
                 team.setNumberOfWinMatches(team.getNumberOfWinMatches() + 1);
             }
         }
@@ -133,13 +141,35 @@ public class MatchService {
     }
 
     private void checkCreateRequest(CreateMatchRequest request) {
-        List<Long> teamsID = request.getTeamsScore().stream().map(TeamScore::getTeamID).collect(Collectors.toList());
+        List<Long> teamsID = request.getTeamsScore().stream().map(TeamScore::getTeamID).distinct().collect(Collectors.toList());
+
         List<Team> teams = teamRepository.findAll(teamsID);
-        if (CollectionUtils.size(teamsID) != CollectionUtils.size(teams)) {
-            throw new EntityNotFoundException("Not all teams found");
-        }
-        if (gameRepository.findOne(request.getGameID()) == null) {
+        Game game = gameRepository.findOne(request.getGameID());
+
+        if (game == null) {
             throw new EntityNotFoundException("Game not found");
+        }
+
+        if (CollectionUtils.size(request.getTeamsScore()) != CollectionUtils.size(teams)) {
+            throw new EntityNotFoundException("Not all teams found or has duplicate teams");
+        }
+
+        if (CollectionUtils.size(teamsID) != game.getTeamCountInMatch()) {
+            throw new InvalidParameterException("teamID [count]", "Incorrect team count for specified game");
+        }
+
+        Long scoreToWin = game.getScoreToWin();
+
+        boolean isAllTeamHaveCorrectScore = request.getTeamsScore().stream().allMatch(e -> e.getScore() >= 0 && e.getScore() <= scoreToWin);
+
+        if (!isAllTeamHaveCorrectScore) {
+            throw new InvalidParameterException("score", String.format("Some team has incorrect score. Score must be between 0 and %d", scoreToWin));
+        }
+
+        boolean isOnlyOneWinner = request.getTeamsScore().stream().filter(e -> e.getScore().equals(game.getScoreToWin())).count() == 1;
+
+        if (!isOnlyOneWinner) {
+            throw new InvalidParameterException("score", "More than one winner. Winner must be only one.");
         }
     }
 }
