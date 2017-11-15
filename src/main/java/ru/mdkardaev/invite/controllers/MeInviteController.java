@@ -62,8 +62,7 @@ public class MeInviteController {
     }
 
     @RequestMapping(path = "/{id}/accept",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.POST)
     @ApiOperation(value = "Accept invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
@@ -72,8 +71,7 @@ public class MeInviteController {
     }
 
     @RequestMapping(path = "{id}/decline",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.POST)
     @ApiOperation(value = "Decline invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
