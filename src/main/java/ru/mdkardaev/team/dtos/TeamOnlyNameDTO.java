@@ -11,6 +11,6 @@ public class TeamOnlyNameDTO {
     @ApiModelProperty(value = "ID", example = "1", required = true)
     private Long id;
 
-    @ApiModelProperty(value = "Name", example = "football", required = true)
+    @ApiModelProperty(value = "Name", example = "name", required = true)
     private String name;
 }

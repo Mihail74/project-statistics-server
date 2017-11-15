@@ -2,6 +2,7 @@ package ru.mdkardaev.invite.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +14,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
-import ru.mdkardaev.invite.enums.InviteStatus;
+import ru.mdkardaev.invite.requests.GetInvitesRequest;
 import ru.mdkardaev.invite.responses.GetMyInviteResponse;
 import ru.mdkardaev.invite.responses.GetMyInvitesResponse;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.invite.services.MeInviteService;
+import ru.mdkardaev.invite.specifiations.InvitesFilter;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/me/invites",
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Api(tags = {SwaggerConfig.Tags.INVITES})
+@Slf4j
 public class MeInviteController {
 
     @Autowired
@@ -34,8 +38,16 @@ public class MeInviteController {
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get my invites", response = GetMyInvitesResponse.class)
-    public ResponseEntity<?> getMyInvites(@AuthenticationPrincipal UserDetails principal) {
-        List<InviteDTO> invites = inviteService.getUserInvites(principal.getUsername(), InviteStatus.NEW);
+    public ResponseEntity<?> getMyInvites(@Valid GetInvitesRequest request, @AuthenticationPrincipal UserDetails principal) {
+        log.debug("getMyInvites; request is {}", request);
+
+        InvitesFilter filters = InvitesFilter.builder()
+                                             .userID(Long.valueOf(principal.getUsername()))
+                                             .inviteStatus(request.getStatus())
+                                             .build();
+        List<InviteDTO> invites = inviteService.getUserInvites(filters);
+
+        log.debug("getMyInvites; returns {} teams", invites.size());
         return ResponseEntity.ok(new GetMyInvitesResponse(invites));
     }
 
@@ -44,7 +56,7 @@ public class MeInviteController {
     public ResponseEntity<?> getMyInvite(@PathVariable("id") Long id,
                                          @AuthenticationPrincipal UserDetails principal) {
 
-        InviteDTO invite = meInviteService.checkAccessAndGetInvite(id, principal.getUsername());
+        InviteDTO invite = meInviteService.checkAccessAndGetInvite(id, Long.valueOf(principal.getUsername()));
 
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
@@ -55,7 +67,7 @@ public class MeInviteController {
     @ApiOperation(value = "Accept invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> acceptInvite(@PathVariable("id") Long id,
                                           @AuthenticationPrincipal UserDetails principal) {
-        InviteDTO invite = meInviteService.checkAccessAndAcceptInvite(id, principal.getUsername());
+        InviteDTO invite = meInviteService.checkAccessAndAcceptInvite(id, Long.valueOf(principal.getUsername()));
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 
@@ -65,7 +77,7 @@ public class MeInviteController {
     @ApiOperation(value = "Decline invite", response = GetMyInviteResponse.class)
     public ResponseEntity<?> declineInvite(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails principal) {
-        InviteDTO invite = meInviteService.checkAccessAndDeclineInvite(id, principal.getUsername());
+        InviteDTO invite = meInviteService.checkAccessAndDeclineInvite(id, Long.valueOf(principal.getUsername()));
         return ResponseEntity.ok(new GetMyInviteResponse(invite));
     }
 

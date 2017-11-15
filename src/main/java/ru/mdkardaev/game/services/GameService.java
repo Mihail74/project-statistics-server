@@ -33,6 +33,7 @@ public class GameService {
                         .description(request.getDescription())
                         .scoreToWin(request.getScoreToWin())
                         .teamCountInMatch(request.getTeamCountInMatch())
+                        .memberCountInTeam(request.getMemberCountInTeam())
                         .build();
 
         game = gameRepository.save(game);

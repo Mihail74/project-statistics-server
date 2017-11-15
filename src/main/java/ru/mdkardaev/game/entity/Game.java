@@ -31,4 +31,5 @@ public class Game {
 
     private Long teamCountInMatch;
 
+    private Long memberCountInTeam;
 }

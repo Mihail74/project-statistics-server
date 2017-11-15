@@ -12,5 +12,5 @@ import java.util.List;
 public class GetMatchesResponse {
 
     @ApiModelProperty(value = "Matches", required = true)
-    private List<MatchDTO> matchess;
+    private List<MatchDTO> matches;
 }

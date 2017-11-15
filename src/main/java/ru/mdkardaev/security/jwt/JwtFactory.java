@@ -65,7 +65,7 @@ public class JwtFactory {
 
         Claims claims = Jwts.claims()
                             .setId(UUID.randomUUID().toString())
-                            .setSubject(user.getLogin())
+                            .setSubject(String.valueOf(user.getId()))
                             .setIssuer(settings.getTokenIssuer())
                             .setIssuedAt(Date.from(currentTime.atZone(ZoneId.systemDefault()).toInstant()))
                             .setExpiration(Date.from(expirationTime));

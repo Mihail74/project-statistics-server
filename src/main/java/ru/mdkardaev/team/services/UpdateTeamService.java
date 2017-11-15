@@ -32,10 +32,10 @@ public class UpdateTeamService {
      * Check that user with userLogin is leader of team with specified id and change formingStatus to {@link TeamFormingStatus#FORMED}
      */
     @Transactional
-    public TeamDTO formTeam(Long id, String userLogin) {
-        Team team =teamCheckService.checkAndGetTeam(id);
+    public TeamDTO formTeam(Long id, Long userID) {
+        Team team = teamCheckService.checkAndGetTeam(id);
 
-        if (!teamOwnerService.isLeaderTeam(userLogin, id)) {
+        if (!teamOwnerService.isLeaderTeam(userID, id)) {
             throw new NoAccessException();
         }
 

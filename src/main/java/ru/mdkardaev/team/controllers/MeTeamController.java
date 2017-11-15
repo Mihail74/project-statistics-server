@@ -30,10 +30,10 @@ public class MeTeamController {
     private UpdateTeamService updateTeamService;
 
     @ApiOperation(value = "Form team", notes = "Only team leader can form team", response = GetInvitesInTeamResponse.class)
-    @RequestMapping(path = "/{id}/form", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/{id}/form", method = RequestMethod.POST)
     public ResponseEntity<?> formTeam(@PathVariable("id") Long id,
                                       @AuthenticationPrincipal UserDetails principal) {
-        TeamDTO team = updateTeamService.formTeam(id, principal.getUsername());
+        TeamDTO team = updateTeamService.formTeam(id, Long.valueOf(principal.getUsername()));
         return ResponseEntity.ok(new GetTeamResponse(team));
     }
 }

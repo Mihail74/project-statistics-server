@@ -26,4 +26,7 @@ public class GameDTO {
 
     @ApiModelProperty(value = "Team count in match", required = true)
     private Long teamCountInMatch;
+
+    @ApiModelProperty(value = "Member count in team", required = true)
+    private Long memberCountInTeam;
 }

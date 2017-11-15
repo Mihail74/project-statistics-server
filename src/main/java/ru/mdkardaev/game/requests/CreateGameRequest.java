@@ -28,4 +28,9 @@ public class CreateGameRequest {
     @NotNull
     @Min(2)
     private Long teamCountInMatch;
+
+    @ApiModelProperty(value = "Member count in team", example = "2", required = true)
+    @NotNull
+    @Min(1)
+    private Long memberCountInTeam;
 }

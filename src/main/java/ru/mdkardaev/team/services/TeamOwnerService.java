@@ -19,8 +19,8 @@ public class TeamOwnerService {
      *
      * @return Is user with specified login is leader of team with specified id?
      */
-    public boolean isLeaderTeam(String leaderLogin, Long teamID) {
+    public boolean isLeaderTeam(Long userID, Long teamID) {
         Team team = teamRepository.findOne(teamID);
-        return team.getLeader().getLogin().equals(leaderLogin);
+        return team.getLeader().getId().equals(userID);
     }
 }

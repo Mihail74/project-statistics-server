@@ -30,9 +30,7 @@ import javax.validation.Valid;
 @Api(tags = SwaggerConfig.Tags.SECURITY)
 @RestController
 @RequestMapping(value = "/api/auth",
-        method = RequestMethod.POST,
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        method = RequestMethod.POST)
 @Slf4j
 public class AuthorizationController {
 
@@ -44,7 +42,9 @@ public class AuthorizationController {
     private UserRegistrationService userRegistrationService;
 
     @ApiOperation(value = "Register user", response = RegisterUserResponse.class)
-    @RequestMapping(path = "/register")
+    @RequestMapping(path = "/register",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> register(@RequestBody @Valid RegisterUserRequest request) {
         log.debug("register; request is {}", request);
 
@@ -55,7 +55,9 @@ public class AuthorizationController {
     }
 
     @ApiOperation(value = "Login", response = LoginResponse.class)
-    @RequestMapping(path = "/login")
+    @RequestMapping(path = "/login",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         log.debug("login; user with login = {}", request.getLogin());
 
@@ -84,7 +86,9 @@ public class AuthorizationController {
 
 
     @ApiOperation(value = "Refresh tokens", response = RefreshTokenResponse.class)
-    @RequestMapping(value = "/token/refresh")
+    @RequestMapping(value = "/token/refresh",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         log.debug("refreshToken; enter");
         TokenPair tokenPair = authorizationService.refresh(request.getRefreshToken());

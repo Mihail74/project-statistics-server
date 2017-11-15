@@ -30,14 +30,14 @@ public class InviteCheckService {
     }
 
     /**
-     * Check that invite belong to user with specified login.
+     * Check that invite belong to user with specified id.
      *
      * @throws ru.mdkardaev.common.exceptions.NoAccessException if invite doesn't belong to user with specified login
      */
     @Transactional
-    public void checkInviteBelongToUser(Long inviteID, String userLogin) {
+    public void checkInviteBelongToUser(Long inviteID, Long userID) {
         Invite invite = inviteRepository.findOne(inviteID);
-        if (!invite.getUser().getLogin().equals(userLogin)) {
+        if (!invite.getUser().getId().equals(userID)) {
             throw new NoAccessException();
         }
     }

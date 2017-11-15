@@ -12,6 +12,7 @@ CREATE TABLE games
   name varchar(255) NOT NULL,
   score_to_win bigint,
   team_count_in_match bigint,
+  member_count_in_team bigint,
   CONSTRAINT games_pkey PRIMARY KEY (id),
   CONSTRAINT uq_game_name UNIQUE (name)
 );

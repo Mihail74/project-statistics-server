@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<?> getUsers(GetUsersRequest request, @AuthenticationPrincipal UserDetails principal) {
         log.debug("getUsers; request is {}", request);
 
-        List<UserDTO> users = userService.getUsersExcludeUserWithLogin(principal.getUsername());
+        List<UserDTO> users = userService.getUsersExcludeUserWithID(Long.valueOf(principal.getUsername()));
 
         log.debug("getUsers; returns {} matches", users.size());
         return ResponseEntity.ok(new GetUsersResponse(users));

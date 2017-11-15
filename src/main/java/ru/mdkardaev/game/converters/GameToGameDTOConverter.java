@@ -15,6 +15,7 @@ public class GameToGameDTOConverter implements Converter<Game, GameDTO> {
                       .description(from.getDescription())
                       .scoreToWin(from.getScoreToWin())
                       .teamCountInMatch(from.getTeamCountInMatch())
+                      .memberCountInTeam(from.getMemberCountInTeam())
                       .build();
     }
 }

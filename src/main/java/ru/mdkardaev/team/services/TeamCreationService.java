@@ -42,10 +42,10 @@ public class TeamCreationService {
      * @return created team
      */
     @Transactional
-    public TeamDTO createTeamAndInviteMembers(CreateTeamRequest request, String leaderLogin) {
+    public TeamDTO createTeamAndInviteMembers(CreateTeamRequest request, Long userID) {
         checkRequest(request);
 
-        Team team = createTeam(request, leaderLogin);
+        Team team = createTeam(request, userID);
 
         inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
 
@@ -64,10 +64,10 @@ public class TeamCreationService {
         }
     }
 
-    private Team createTeam(CreateTeamRequest request, String leaderLogin) {
+    private Team createTeam(CreateTeamRequest request, Long userID) {
         Game game = gameRepository.findOne(request.getGameID());
 
-        User leader = userRepository.findByLogin(leaderLogin);
+        User leader = userRepository.findOne(userID);
 
         Team team = Team.builder()
                         .name(request.getName())

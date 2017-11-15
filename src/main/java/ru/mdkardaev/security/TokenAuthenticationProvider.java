@@ -31,14 +31,14 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 
         Claims claims = jwtValidator.validateAndGetClaims(rawAccessToken);
 
-        String subject = claims.getSubject();
+        String userID = claims.getSubject();
         List<String> roles = (List<String>) claims.get(JwtConstants.USER_ROLES, List.class);
 
         List<GrantedAuthority> authorities = roles.stream()
                                                   .map(SimpleGrantedAuthority::new)
                                                   .collect(Collectors.toList());
 
-        User userDetails = new User(subject, "******", authorities);
+        User userDetails = new User(userID, "******", authorities);
         userDetails.eraseCredentials();
 
         return new AuthenticationToken(rawAccessToken, userDetails);

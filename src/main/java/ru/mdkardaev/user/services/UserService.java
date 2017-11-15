@@ -27,12 +27,12 @@ public class UserService {
     }
 
     /**
-     * Return list of users exclude user with spicified login
+     * Return list of users exclude user with specified id
      */
-    public List<UserDTO> getUsersExcludeUserWithLogin(String login) {
+    public List<UserDTO> getUsersExcludeUserWithID(Long userID) {
         return userRepository.findAll()
                              .stream()
-                             .filter(e -> !e.getLogin().equals(login))
+                             .filter(e -> !e.getId().equals(userID))
                              .map(e -> conversionService.convert(e, UserDTO.class))
                              .collect(Collectors.toList());
     }

@@ -17,38 +17,38 @@ public class MeInviteService {
     private InviteCheckService inviteCheckService;
 
     /**
-     * Check invite with specified id belongs to user with specified login and return its
+     * Check invite with specified id belongs to user with specified is and return its
      */
     @Transactional
-    public InviteDTO checkAccessAndGetInvite(Long inviteID, String userLogin) {
-        checkInviteAndAccess(inviteID, userLogin);
+    public InviteDTO checkAccessAndGetInvite(Long inviteID, Long userID) {
+        checkInviteAndAccess(inviteID, userID);
         return inviteService.getInvite(inviteID);
     }
 
 
     /**
-     * Check invite with specified id belongs to user with specified login and accept its
+     * Check invite with specified id belongs to user with specified id and accept its
      */
     @Transactional
-    public InviteDTO checkAccessAndAcceptInvite(Long inviteID, String userLogin){
-        checkInviteAndAccess(inviteID, userLogin);
-        return inviteService.acceptInvitation(inviteID, userLogin);
+    public InviteDTO checkAccessAndAcceptInvite(Long inviteID, Long userID){
+        checkInviteAndAccess(inviteID, userID);
+        return inviteService.acceptInvitation(inviteID, userID);
     }
 
     /**
-     * Check invite with specified id belongs to user with specified login and accept its
+     * Check invite with specified id belongs to user with specified id and accept its
      */
     @Transactional
-    public InviteDTO checkAccessAndDeclineInvite(Long inviteID, String userLogin){
-        checkInviteAndAccess(inviteID, userLogin);
+    public InviteDTO checkAccessAndDeclineInvite(Long inviteID, Long userID){
+        checkInviteAndAccess(inviteID, userID);
         return inviteService.declineInvitation(inviteID);
     }
 
     /**
-     * Check invite exist and it's invite belong to user with specified login
+     * Check invite exist and it's invite belong to user with specified id
      */
-    private void checkInviteAndAccess(Long inviteID, String userLogin) {
+    private void checkInviteAndAccess(Long inviteID, Long userID) {
         inviteCheckService.checkInviteExist(inviteID);
-        inviteCheckService.checkInviteBelongToUser(inviteID, userLogin);
+        inviteCheckService.checkInviteBelongToUser(inviteID, userID);
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.common.exceptions.EntityNotFoundException;
@@ -13,9 +14,13 @@ import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
 import ru.mdkardaev.invite.exceptions.WrongInviteStatusException;
 import ru.mdkardaev.invite.repository.InviteRepository;
+import ru.mdkardaev.invite.specifiations.InviteSpecifications;
+import ru.mdkardaev.invite.specifiations.InvitesFilter;
+import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.services.TeamCheckService;
+import ru.mdkardaev.team.specifications.TeamSpecifications;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -70,14 +75,14 @@ public class InviteService {
      * Accept invite and return updated
      */
     @Transactional
-    public InviteDTO acceptInvitation(Long inviteID, String userLogin) {
+    public InviteDTO acceptInvitation(Long inviteID, Long userID) {
         Invite invite = inviteRepository.findOne(inviteID);
 
         if (invite.getStatus() != InviteStatus.NEW) {
             throw new WrongInviteStatusException("Invite already accepted/declined");
         }
 
-        User user = userRepository.findByLogin(userLogin);
+        User user = userRepository.findOne(userID);
         Team team = teamRepository.findOne(invite.getTeam().getId());
 
         if (team == null) {
@@ -111,14 +116,14 @@ public class InviteService {
     }
 
     /**
-     * @return invites for specified user in specified status
+     * @return invites for specified filter
      */
-    public List<InviteDTO> getUserInvites(String userLogin, InviteStatus status) {
-        return inviteRepository
-                .findByUser_LoginAndStatus(userLogin, status)
-                .stream()
-                .map(e -> conversionService.convert(e, InviteDTO.class))
-                .collect(Collectors.toList());
+    public List<InviteDTO> getUserInvites(InvitesFilter filters) {
+        Specification<Invite> specification = InviteSpecifications.createGetInviteSpecification(filters);
+        return inviteRepository.findAll(specification)
+                             .stream()
+                             .map(e -> conversionService.convert(e, InviteDTO.class))
+                             .collect(Collectors.toList());
     }
 
     /**

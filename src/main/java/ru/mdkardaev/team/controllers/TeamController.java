@@ -54,7 +54,7 @@ public class TeamController {
                                         @AuthenticationPrincipal UserDetails principal) {
         log.debug("createTeam; request is {}", request);
 
-        TeamDTO team = teamCreationService.createTeamAndInviteMembers(request, principal.getUsername());
+        TeamDTO team = teamCreationService.createTeamAndInviteMembers(request, Long.valueOf(principal.getUsername()));
 
         log.debug("createTeam; team with id = {} created", team.getId());
 
