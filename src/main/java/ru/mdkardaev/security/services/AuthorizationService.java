@@ -76,10 +76,10 @@ public class AuthorizationService {
 
         String refreshTokenId = claims.getId();
         String accessTokenId = (String) claims.get(JwtConstants.CONNECTED_TOKEN);
-        String userLogin = claims.getSubject();
+        Long userID = Long.valueOf(claims.getSubject());
         TokenType tokenType = TokenType.valueOf(claims.get(JwtConstants.TOKEN_TYPE).toString());
 
-        User user = userRepository.findByLogin(userLogin);
+        User user = userRepository.findOne(userID);
 
         ru.mdkardaev.user.entity.Token refreshToken = tokenRepository.findOne(refreshTokenId);
 
