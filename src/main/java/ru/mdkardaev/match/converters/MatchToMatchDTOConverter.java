@@ -9,7 +9,7 @@ import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.match.dtos.MatchDTO;
 import ru.mdkardaev.match.dtos.TeamMatchScoreDTO;
 import ru.mdkardaev.match.entity.Match;
-import ru.mdkardaev.team.dtos.TeamOnlyNameDTO;
+import ru.mdkardaev.team.dtos.TeamOnlyUsersDTO;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class MatchToMatchDTOConverter implements Converter<Match, MatchDTO> {
         Set<TeamMatchScoreDTO> teamsMatchScore
                 = from.getTeamsMatchScore()
                       .stream()
-                      .map(e -> new TeamMatchScoreDTO(conversionService.convert(e.getTeam(), TeamOnlyNameDTO.class),
+                      .map(e -> new TeamMatchScoreDTO(conversionService.convert(e.getTeam(), TeamOnlyUsersDTO.class),
                                                       e.getScore()))
                       .collect(Collectors.toSet());
 
@@ -34,7 +34,7 @@ public class MatchToMatchDTOConverter implements Converter<Match, MatchDTO> {
                        .id(from.getId())
                        .timestamp(from.getTimestamp())
                        .game(conversionService.convert(from.getGame(), GameDTO.class))
-                       .winnerTeam(conversionService.convert(from.getWinner(), TeamOnlyNameDTO.class))
+                       .winnerTeam(conversionService.convert(from.getWinner(), TeamOnlyUsersDTO.class))
                        .teamsMatchScore(teamsMatchScore)
                        .build();
     }

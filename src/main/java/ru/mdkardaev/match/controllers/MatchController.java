@@ -1,14 +1,19 @@
 package ru.mdkardaev.match.controllers;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.match.dtos.MatchDTO;
 import ru.mdkardaev.match.requests.CreateMatchRequest;
@@ -47,13 +52,16 @@ public class MatchController {
     @RequestMapping(path = "/", method = RequestMethod.GET)
     @ApiOperation(value = "Get matches", notes = "List of matches that match the specified filters",
             response = GetMatchesResponse.class)
-    public ResponseEntity<?> get(@Valid GetMatchesRequest request) {
+    public ResponseEntity<?> get(@Valid GetMatchesRequest request, @AuthenticationPrincipal UserDetails principal) {
         log.debug("get; request is {}", request);
+
+        Long userID = Long.valueOf(principal.getUsername());
 
         MatchesFilters filters = MatchesFilters.builder()
                                                .teamID(request.getTeamID())
                                                .sortField(request.getSortField())
                                                .sortDirection(request.getSortDirection())
+                                               .requiredTeamMemberUserID(BooleanUtils.isTrue(request.getOnlyMyMatches()) ? userID : null)
                                                .build();
         List<MatchDTO> matches = matchService.getMatches(filters);
 

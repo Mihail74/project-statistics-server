@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 public class MatchesFilters {
 
     private Long teamID;
+    private Long requiredTeamMemberUserID;
 
     //sort order
     private SortField sortField;

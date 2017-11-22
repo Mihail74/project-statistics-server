@@ -5,6 +5,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import ru.mdkardaev.match.entity.Match;
 import ru.mdkardaev.match.entity.TeamMatchScore;
+import ru.mdkardaev.team.entity.Team;
+import ru.mdkardaev.user.entity.User;
 
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
@@ -27,6 +29,13 @@ public class MatchSpecifications {
             if (filters.getTeamID() != null) {
                 Join<Match, TeamMatchScore> teamsMatchScore = root.join("teamsMatchScore");
                 predicates.add(cb.equal(teamsMatchScore.get("pk").get("teamID"), filters.getTeamID()));
+            }
+
+            if (filters.getRequiredTeamMemberUserID() != null) {
+                Join<Match, TeamMatchScore> teamsMatchScore = root.join("teamsMatchScore");
+                Join<TeamMatchScore, Team> team = teamsMatchScore.join("team");
+                Join<Team, User> users = team.join("users");
+                predicates.add(cb.equal(users.get("id"), filters.getRequiredTeamMemberUserID()));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

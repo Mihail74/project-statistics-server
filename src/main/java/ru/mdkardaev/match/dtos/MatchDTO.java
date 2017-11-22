@@ -3,10 +3,9 @@ package ru.mdkardaev.match.dtos;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 import ru.mdkardaev.game.dtos.GameDTO;
-import ru.mdkardaev.team.dtos.TeamOnlyNameDTO;
+import ru.mdkardaev.team.dtos.TeamOnlyUsersDTO;
 
 import java.util.Set;
 
@@ -22,7 +21,7 @@ public class MatchDTO {
     private Set<TeamMatchScoreDTO> teamsMatchScore;
 
     @ApiModelProperty(value = "Winner team", required = true)
-    private TeamOnlyNameDTO winnerTeam;
+    private TeamOnlyUsersDTO winnerTeam;
 
     @ApiModelProperty(value = "Game", required = true)
     private GameDTO game;

@@ -15,6 +15,9 @@ public class GetMatchesRequest {
     @ApiModelProperty("Required participant team ID")
     private Long teamID;
 
+    @ApiModelProperty("Flag indicates returns only matches, where user who made the request is member of participant team")
+    private Boolean onlyMyMatches;
+
 
     @ApiModelProperty("Sort field")
     private SortField sortField;
