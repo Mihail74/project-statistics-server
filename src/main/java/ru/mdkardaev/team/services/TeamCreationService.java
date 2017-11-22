@@ -60,7 +60,7 @@ public class TeamCreationService {
 
         List<User> users = userRepository.findAll(request.getMembersID());
         if (users.size() != CollectionUtils.size(request.getMembersID())) {
-            throw new InvalidParameterException("membersID", "Not all users with specified ids exist");
+            throw new InvalidParameterException("membersID", "Not all users with specified ids exist or some user is selected more than one time");
         }
     }
 

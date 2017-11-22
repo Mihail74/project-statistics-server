@@ -22,6 +22,7 @@ import ru.mdkardaev.match.specifications.MatchSpecifications;
 import ru.mdkardaev.match.specifications.MatchesFilters;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
+import ru.mdkardaev.user.entity.User;
 
 import java.util.HashSet;
 import java.util.List;
@@ -156,6 +157,13 @@ public class MatchService {
 
         if (CollectionUtils.size(teamsID) != game.getTeamCountInMatch()) {
             throw new InvalidParameterException("teamID [count]", "Incorrect team count for specified game");
+        }
+
+        List<User> users = teams.stream().flatMap(e -> e.getUsers().stream()).collect(Collectors.toList());
+        long uniqueUsers = users.stream().map(User::getId).distinct().count();
+
+        if(CollectionUtils.size(users) != uniqueUsers){
+            throw new InvalidParameterException("teamID [teamsScore]", "Incorrect team. Some team have common member");
         }
 
         Long scoreToWin = game.getScoreToWin();
