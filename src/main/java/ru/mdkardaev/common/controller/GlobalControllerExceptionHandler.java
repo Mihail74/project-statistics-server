@@ -1,6 +1,5 @@
 package ru.mdkardaev.common.controller;
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,10 +19,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.mdkardaev.common.exceptions.InvalidParameterException;
+import ru.mdkardaev.common.responses.ErrorInfo;
+import ru.mdkardaev.common.responses.ErrorResponse;
 import ru.mdkardaev.security.exceptions.BadCredentialsException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @ControllerAdvice
 @Slf4j
@@ -37,21 +37,20 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,
                                                                   WebRequest request) {
-        Map<String, String> errorFieldCauses = new HashMap<>();
+
+        List<ErrorInfo> errors = new ArrayList<>(ex.getBindingResult().getAllErrors().size());
 
         for (ObjectError bindingError : ex.getBindingResult().getAllErrors()) {
             FieldError fieldError = (FieldError) bindingError;
-            errorFieldCauses.put(fieldError.getField(), fieldError.getDefaultMessage());
+            errors.add(new ErrorInfo(fieldError.getField(), fieldError.getDefaultMessage()));
         }
 
-        return ResponseEntity.badRequest().body(new ErrorInfo(errorFieldCauses));
+        return ResponseEntity.badRequest().body(new ErrorResponse(errors));
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception.class)//TODO: поменять здесь на мой класс
     public ResponseEntity<?> handleException(Exception e) throws Exception {
-        if (e instanceof DataIntegrityViolationException) {
-            return handlerDataIntegrityViolationException((DataIntegrityViolationException) e);
-        } else if (e instanceof InvalidParameterException) {
+        if (e instanceof InvalidParameterException) {
             return handlerInvalidParameterException((InvalidParameterException) e);
         }
 
@@ -73,34 +72,32 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
             }
         }
 
-        return ResponseEntity.status(httpStatus).body(new ErrorInfo(reason));
+        //TODO: сделать свой класс ошибок, который будет возвращать code + причину. Убрать аннотации и использовать i18n по месту бросания exception'a
+        return ResponseEntity.status(httpStatus).body(reason);
     }
 
 
     /**
      * Handles db exceptions
      */
+    @ExceptionHandler(DataIntegrityViolationException.class)
     private ResponseEntity<?> handlerDataIntegrityViolationException(DataIntegrityViolationException e) {
-        Object errorCause = e.getMessage();
+        Object resultBody = e.getMessage();
         if (e.getCause() instanceof ConstraintViolationException) {
             //return sqlState - detail message
             PSQLException cause = (PSQLException) e.getCause().getCause();
-            errorCause = Pair.of(cause.getSQLState(), cause.getMessage());
+            resultBody = constructSingleErrorResponse(cause.getSQLState(), cause.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorInfo(errorCause));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(resultBody);
     }
 
     private ResponseEntity<?> handlerInvalidParameterException(InvalidParameterException e) {
-        //TODO подумать, какой код ошибки должен быть в случаях, когда один из аргументов валиден, но не может быть принят из-за ограничений в системе
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Pair.of(e.getParameter(), e.getMessage()));
     }
 
-    /**
-     * Class for describe error
-     */
-    @Value
-    private class ErrorInfo {
+    private ErrorResponse constructSingleErrorResponse(Object code, String title) {
+        return new ErrorResponse(Collections.singletonList(new ErrorInfo(String.valueOf(code), title)));
 
-        private Object cause;
     }
+
 }

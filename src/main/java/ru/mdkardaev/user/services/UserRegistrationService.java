@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.security.requests.RegisterUserRequest;
 import ru.mdkardaev.user.dtos.UserDTO;
 import ru.mdkardaev.user.entity.User;
@@ -23,8 +22,6 @@ public class UserRegistrationService {
     private UserRepository userRepository;
     @Autowired
     private ConversionService conversionService;
-    @Autowired
-    private DBExceptionUtils dbExceptionUtils;
     @Autowired
     private PasswordEncoder passwordEncoder;
 

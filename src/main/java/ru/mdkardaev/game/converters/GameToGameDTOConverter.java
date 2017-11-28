@@ -7,6 +7,7 @@ import ru.mdkardaev.game.entity.Game;
 
 @Component
 public class GameToGameDTOConverter implements Converter<Game, GameDTO> {
+
     @Override
     public GameDTO convert(Game from) {
         return GameDTO.builder()

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
-import ru.mdkardaev.common.exceptions.utils.DBExceptionUtils;
 import ru.mdkardaev.game.dtos.GameDTO;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
@@ -17,8 +16,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameService {
 
-    @Autowired
-    private DBExceptionUtils dbExceptionUtils;
     @Autowired
     private GameRepository gameRepository;
     @Autowired
