@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
-import ru.mdkardaev.common.exceptions.NoAccessException;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.responses.GetInvitesInTeamResponse;
 import ru.mdkardaev.team.responses.GetTeamResponse;
-import ru.mdkardaev.team.services.TeamCheckService;
-import ru.mdkardaev.team.services.TeamOwnerService;
 import ru.mdkardaev.team.services.UpdateTeamService;
 
 @RestController

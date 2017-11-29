@@ -1,4 +1,4 @@
-package ru.mdkardaev.common.responses;
+package ru.mdkardaev.exceptions.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +14,5 @@ import java.util.List;
 @AllArgsConstructor
 public class ErrorResponse {
     
-    private List<ErrorInfo> errors;
+    private List<ErrorDescription> errors;
 }

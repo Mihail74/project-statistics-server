@@ -27,9 +27,12 @@ public class Game {
     @Column(name = "description")
     private String description;
 
+    @Column(nullable = false)
     private Long scoreToWin;
 
+    @Column(nullable = false)
     private Long teamCountInMatch;
 
+    @Column(nullable = false)
     private Long memberCountInTeam;
 }

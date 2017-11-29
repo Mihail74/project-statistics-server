@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.mdkardaev.common.exceptions.InvalidParameterException;
+import ru.mdkardaev.exceptions.InvalidParametersException;
+import ru.mdkardaev.exceptions.factory.ErrorDescriptionFactory;
+import ru.mdkardaev.exceptions.responses.ErrorDescription;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
+import ru.mdkardaev.i18n.services.Messages;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
@@ -18,6 +21,7 @@ import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,46 +40,66 @@ public class TeamCreationService {
     private InviteService inviteService;
     @Autowired
     private ConversionService conversionService;
+    @Autowired
+    private ErrorDescriptionFactory errorDescriptionFactory;
+    @Autowired
+    private Messages messages;
 
     /**
      * Create team with specified leader and create invites for members
+     *
      * @return created team
      */
     @Transactional
-    public TeamDTO createTeamAndInviteMembers(CreateTeamRequest request, Long userID) {
-        checkRequest(request);
+    public TeamDTO createTeamAndInviteMembers(CreateTeamRequest request, Long leaderID) {
+        checkRequest(request, leaderID);
 
-        Team team = createTeam(request, userID);
+        Team team = createTeam(request, leaderID);
 
         inviteService.inviteUsersToTeam(request.getMembersID(), team.getId());
 
         return conversionService.convert(team, TeamDTO.class);
     }
 
-    private void checkRequest(CreateTeamRequest request) {
+    private void checkRequest(CreateTeamRequest request, Long leaderID) {
         Game game = gameRepository.findOne(request.getGameID());
         if (game == null) {
-            throw new InvalidParameterException("gameID", String.format("Game with id = [%d] doesn't exist", request.getGameID()));
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("gameID",
+                                                 messages.getMessage("game.errors.notFound", request.getGameID()));
+            throw new InvalidParametersException(error);
         }
 
         List<User> users = userRepository.findAll(request.getMembersID());
-        if (users.size() != CollectionUtils.size(request.getMembersID())) {
-            throw new InvalidParameterException("membersID", "Not all users with specified ids exist or some user is selected more than one time");
+        int membersCountInTeam = users.size() + 1; //+1 leader
+
+        if (users.size() != CollectionUtils.size(request.getMembersID())
+                || request.getMembersID().contains(leaderID)) {
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("membersID",
+                                                 messages.getMessage("team.errors.incorrectMembersCount"));
+            throw new InvalidParametersException(error);
+        } else if (game.getMemberCountInTeam().intValue() != membersCountInTeam) {
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("membersID",
+                                                 messages.getMessage("team.errors.incorrectMembersInTeamCount"));
+            throw new InvalidParametersException(error);
+
         }
     }
 
-    private Team createTeam(CreateTeamRequest request, Long userID) {
+    private Team createTeam(CreateTeamRequest request, Long leaderID) {
         Game game = gameRepository.findOne(request.getGameID());
 
-        User leader = userRepository.findOne(userID);
+        User leader = userRepository.findOne(leaderID);
 
         Team team = Team.builder()
-                        .name(request.getName())
-                        .game(game)
-                        .leader(leader)
-                        .users(Sets.newHashSet(leader))
-                        .formingStatus(TeamFormingStatus.FORMING)
-                        .build();
+                .name(request.getName())
+                .game(game)
+                .leader(leader)
+                .users(Sets.newHashSet(leader))
+                .formingStatus(TeamFormingStatus.FORMING)
+                .build();
 
         return teamRepository.save(team);
     }

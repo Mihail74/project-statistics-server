@@ -1,4 +1,4 @@
-package ru.mdkardaev.common.services.i18n;
+package ru.mdkardaev.i18n.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

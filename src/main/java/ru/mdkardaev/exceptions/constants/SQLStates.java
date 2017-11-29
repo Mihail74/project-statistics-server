@@ -1,4 +1,4 @@
-package ru.mdkardaev.common.exceptions.enums;
+package ru.mdkardaev.exceptions.constants;
 
 import lombok.Getter;
 

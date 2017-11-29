@@ -10,9 +10,9 @@ CREATE TABLE games
   id bigint NOT NULL,
   description varchar(255),
   name varchar(255) NOT NULL,
-  score_to_win bigint,
-  team_count_in_match bigint,
-  member_count_in_team bigint,
+  score_to_win bigint NOT NULL,
+  team_count_in_match bigint NOT NULL,
+  member_count_in_team bigint NOT NULL,
   CONSTRAINT games_pkey PRIMARY KEY (id),
   CONSTRAINT uq_game_name UNIQUE (name)
 );

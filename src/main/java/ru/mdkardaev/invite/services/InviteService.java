@@ -7,8 +7,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.mdkardaev.common.exceptions.EntityNotFoundException;
-import ru.mdkardaev.common.exceptions.InvalidParameterException;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
@@ -16,11 +14,9 @@ import ru.mdkardaev.invite.exceptions.WrongInviteStatusException;
 import ru.mdkardaev.invite.repository.InviteRepository;
 import ru.mdkardaev.invite.specifiations.InviteSpecifications;
 import ru.mdkardaev.invite.specifiations.InvitesFilter;
-import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.team.services.TeamCheckService;
-import ru.mdkardaev.team.specifications.TeamSpecifications;
 import ru.mdkardaev.user.entity.User;
 import ru.mdkardaev.user.repository.UserRepository;
 
@@ -86,7 +82,8 @@ public class InviteService {
         Team team = teamRepository.findOne(invite.getTeam().getId());
 
         if (team == null) {
-            throw new InvalidParameterException("teamID", "Team doesn't exist");
+            //TODO:
+//            throw new InvalidParameterException("teamID", "Team doesn't exist");
         }
 
         team.getUsers().add(user);

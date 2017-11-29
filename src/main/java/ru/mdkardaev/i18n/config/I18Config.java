@@ -1,4 +1,4 @@
-package ru.mdkardaev.common.config;
+package ru.mdkardaev.i18n.config;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
