@@ -3,13 +3,13 @@ package ru.mdkardaev.security.services;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.security.dtos.Token;
 import ru.mdkardaev.security.dtos.TokenPair;
 import ru.mdkardaev.security.dtos.TokenType;
-import ru.mdkardaev.security.exceptions.BadCredentialsException;
 import ru.mdkardaev.security.jwt.JwtConstants;
 import ru.mdkardaev.security.jwt.JwtFactory;
 import ru.mdkardaev.security.jwt.JwtValidator;
@@ -59,12 +59,12 @@ public class AuthorizationService {
 
         List<ru.mdkardaev.user.entity.Token> refreshTokensToDelete =
                 refreshTokens.stream()
-                             .filter(e -> {
-                                 String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
-                                                                             .get(JwtConstants.CONNECTED_TOKEN);
-                                 return accessToken.getId().equals(accessTokenId);
-                             })
-                             .collect(Collectors.toList());
+                        .filter(e -> {
+                            String accessTokenId = (String) jwtValidator.getClaimsIncludeExpired(e.getRawToken())
+                                    .get(JwtConstants.CONNECTED_TOKEN);
+                            return accessToken.getId().equals(accessTokenId);
+                        })
+                        .collect(Collectors.toList());
 
         tokenRepository.delete(accessToken);
         tokenRepository.delete(refreshTokensToDelete);
@@ -106,27 +106,27 @@ public class AuthorizationService {
 
         ru.mdkardaev.user.entity.Token accessToken =
                 ru.mdkardaev.user.entity.Token.builder()
-                                              .id(accessJwt.getClaims().getId())
-                                              .rawToken(accessJwt.getRawToken())
-                                              .type(TokenType.ACCESS_TOKEN)
-                                              .expiredTime(accessJwt.getClaims()
-                                                                    .getExpiration()
-                                                                    .toInstant()
-                                                                    .toEpochMilli())
-                                              .user(user)
-                                              .build();
+                        .id(accessJwt.getClaims().getId())
+                        .rawToken(accessJwt.getRawToken())
+                        .type(TokenType.ACCESS_TOKEN)
+                        .expiredTime(accessJwt.getClaims()
+                                             .getExpiration()
+                                             .toInstant()
+                                             .toEpochMilli())
+                        .user(user)
+                        .build();
 
         ru.mdkardaev.user.entity.Token refreshToken =
                 ru.mdkardaev.user.entity.Token.builder()
-                                              .id(refreshJwt.getClaims().getId())
-                                              .rawToken(refreshJwt.getRawToken())
-                                              .type(TokenType.REFRESH_TOKEN)
-                                              .expiredTime(refreshJwt.getClaims()
-                                                                     .getExpiration()
-                                                                     .toInstant()
-                                                                     .toEpochMilli())
-                                              .user(user)
-                                              .build();
+                        .id(refreshJwt.getClaims().getId())
+                        .rawToken(refreshJwt.getRawToken())
+                        .type(TokenType.REFRESH_TOKEN)
+                        .expiredTime(refreshJwt.getClaims()
+                                             .getExpiration()
+                                             .toInstant()
+                                             .toEpochMilli())
+                        .user(user)
+                        .build();
 
         tokenRepository.save(accessToken);
         tokenRepository.save(refreshToken);

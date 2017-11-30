@@ -49,17 +49,6 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
         return ResponseEntity.badRequest().body(new ErrorResponse(errors));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) throws Exception {
-
-        if (!(e instanceof BadCredentialsException)) {
-            //Doesn't log incorrect input password or login
-            log.error(e.getMessage(), e);
-        }
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
-
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<?> handleApiException(ApiException e) throws Exception {
         return ResponseEntity.status(e.getHttpStatus()).body(constructSingleErrorResponse(e.getErrorDescription()));

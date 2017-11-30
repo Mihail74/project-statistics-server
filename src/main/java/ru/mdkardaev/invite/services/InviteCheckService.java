@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.exceptions.EntityNotFoundException;
 import ru.mdkardaev.exceptions.NoAccessException;
+import ru.mdkardaev.i18n.services.Messages;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.repository.InviteRepository;
 
@@ -16,18 +17,19 @@ public class InviteCheckService {
 
     @Autowired
     private InviteRepository inviteRepository;
+    @Autowired
+    private Messages messages;
 
     /**
      * @throws EntityNotFoundException if invite doesn't exist
      */
-    @Transactional
-    public void checkInviteExist(Long id) {
+    public Invite checkAndGet(Long id) {
         Invite invite = inviteRepository.findOne(id);
 
         if (invite == null) {
-            //TODO:
-//            throw new EntityNotFoundException("Invite not found");
+            throw new EntityNotFoundException(messages.getMessage("invite.errors.notFound", id));
         }
+        return invite;
     }
 
     /**
@@ -35,12 +37,10 @@ public class InviteCheckService {
      *
      * @throws NoAccessException if invite doesn't belong to user with specified login
      */
-    @Transactional
     public void checkInviteBelongToUser(Long inviteID, Long userID) {
-        Invite invite = inviteRepository.findOne(inviteID);
+        Invite invite = checkAndGet(inviteID);
         if (!invite.getUser().getId().equals(userID)) {
-            //TODO:
-//            throw new NoAccessException();
+            throw new NoAccessException(messages.getMessage("invite.errors.inviteForOtherUser"));
         }
     }
 }

@@ -71,7 +71,7 @@ public class AuthorizationController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Logout", response = Void.class)
+    @ApiOperation(value = "Logout")
     @RequestMapping(value = "/logout")
     public ResponseEntity<?> logout() {
         log.debug("logout; enter");

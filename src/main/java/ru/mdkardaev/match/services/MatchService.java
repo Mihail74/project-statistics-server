@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mdkardaev.exceptions.InvalidParametersException;
+import ru.mdkardaev.exceptions.factory.ErrorDescriptionFactory;
+import ru.mdkardaev.exceptions.responses.ErrorDescription;
 import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
+import ru.mdkardaev.i18n.services.Messages;
 import ru.mdkardaev.match.dtos.MatchDTO;
 import ru.mdkardaev.match.entity.Match;
 import ru.mdkardaev.match.entity.TeamMatchScore;
@@ -22,10 +26,7 @@ import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.user.entity.User;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,18 +39,18 @@ public class MatchService {
 
     @Autowired
     private MatchRepository matchRepository;
-
     @Autowired
     private TeamMatchScoreRepository teamMatchScoreRepository;
-
     @Autowired
     private TeamRepository teamRepository;
-
     @Autowired
     private GameRepository gameRepository;
-
     @Autowired
     private ConversionService conversionService;
+    @Autowired
+    private Messages messages;
+    @Autowired
+    private ErrorDescriptionFactory errorDescriptionFactory;
 
     @Transactional
     public MatchDTO create(CreateMatchRequest request) {
@@ -60,17 +61,17 @@ public class MatchService {
         Game game = gameRepository.findOne(request.getGameID());
 
         Long winnerTeamID = request.getTeamsScore()
-                                   .stream()
-                                   .filter(e -> e.getScore().equals(game.getScoreToWin()))
-                                   .map(TeamScore::getTeamID)
-                                   .findFirst()
-                                   .get();
+                .stream()
+                .filter(e -> e.getScore().equals(game.getScoreToWin()))
+                .map(TeamScore::getTeamID)
+                .findFirst()
+                .get();
 
 
         List<Long> participantTeamIDs = request.getTeamsScore()
-                                               .stream()
-                                               .map(TeamScore::getTeamID)
-                                               .collect(Collectors.toList());
+                .stream()
+                .map(TeamScore::getTeamID)
+                .collect(Collectors.toList());
 
         List<Team> participantTeams = teamRepository.findAll(participantTeamIDs);
 
@@ -140,43 +141,72 @@ public class MatchService {
     }
 
     private void checkCreateRequest(CreateMatchRequest request) {
-        List<Long> teamsID = request.getTeamsScore().stream().map(TeamScore::getTeamID).distinct().collect(Collectors.toList());
+        List<ErrorDescription> errors = new ArrayList<>();
 
-        List<Team> teams = teamRepository.findAll(teamsID);
+        List<Long> teamIDs = request.getTeamsScore()
+                .stream()
+                .map(TeamScore::getTeamID)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<Team> teams = teamRepository.findAll(teamIDs);
         Game game = gameRepository.findOne(request.getGameID());
 
         if (game == null) {
-            //TODO:
-//            throw new EntityNotFoundException("Game not found");
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("gameID",
+                                                 messages.getMessage("game.errors.notFound", request.getGameID()));
+            errors.add(error);
         }
+
 
         if (CollectionUtils.size(request.getTeamsScore()) != CollectionUtils.size(teams)) {
-//            throw new EntityNotFoundException("Not all teams found or has duplicate teams");
-        }
-
-        if (CollectionUtils.size(teamsID) != game.getTeamCountInMatch()) {
-//            throw new InvalidParameterException("teamID [count]", "Incorrect team count for specified game");
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("teamsScore",
+                                                 messages.getMessage("match.errors.incorrectTeamsCount"));
+            errors.add(error);
+        } else if (CollectionUtils.size(teamIDs) != game.getTeamCountInMatch()) {
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("teamsScore",
+                                                 messages.getMessage("match.errors.incorrectTeamsCountForGame"));
+            errors.add(error);
         }
 
         List<User> users = teams.stream().flatMap(e -> e.getUsers().stream()).collect(Collectors.toList());
         long uniqueUsers = users.stream().map(User::getId).distinct().count();
 
-        if(CollectionUtils.size(users) != uniqueUsers){
-//            throw new InvalidParameterException("teamID [teamsScore]", "Incorrect team. Some team have common member");
+        if (CollectionUtils.size(users) != uniqueUsers) {
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("teamsScore",
+                                                 messages.getMessage(
+                                                         "match.errors.existsDuplicateUserInDifferentTeam"));
+            errors.add(error);
         }
 
         Long scoreToWin = game.getScoreToWin();
 
-        boolean isAllTeamHaveCorrectScore = request.getTeamsScore().stream().allMatch(e -> e.getScore() >= 0 && e.getScore() <= scoreToWin);
+        boolean isAllTeamHaveCorrectScore = request.getTeamsScore().stream().allMatch(
+                e -> e.getScore() >= 0 && e.getScore() <= scoreToWin);
 
         if (!isAllTeamHaveCorrectScore) {
-//            throw new InvalidParameterException("score", String.format("Some team has incorrect score. Score must be between 0 and %d", scoreToWin));
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("teamsScore",
+                                                 messages.getMessage("match.errors.existTeamWithIncorrectScore"));
+            errors.add(error);
         }
 
-        boolean isOnlyOneWinner = request.getTeamsScore().stream().filter(e -> e.getScore().equals(game.getScoreToWin())).count() == 1;
+        boolean isOnlyOneWinner = request.getTeamsScore().stream().filter(
+                e -> e.getScore().equals(game.getScoreToWin())).count() == 1;
 
         if (!isOnlyOneWinner) {
-//            throw new InvalidParameterException("score", "More than one winner. Winner must be only one.");
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("teamsScore",
+                                                 messages.getMessage("match.errors.moreThanOneWinner"));
+            errors.add(error);
+        }
+
+        if (!errors.isEmpty()) {
+            throw new InvalidParametersException(errors);
         }
     }
 }

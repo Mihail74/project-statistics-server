@@ -5,6 +5,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.exceptions.NoAccessException;
+import ru.mdkardaev.i18n.services.Messages;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
@@ -27,6 +28,8 @@ public class UpdateTeamService {
     private TeamOwnerService teamOwnerService;
     @Autowired
     private TeamCheckService teamCheckService;
+    @Autowired
+    private Messages messages;
 
     /**
      * Check that user with userLogin is leader of team with specified id and change formingStatus to {@link TeamFormingStatus#FORMED}
@@ -36,8 +39,7 @@ public class UpdateTeamService {
         Team team = teamCheckService.checkAndGetTeam(id);
 
         if (!teamOwnerService.isLeaderTeam(userID, id)) {
-            //TODO:
-//            throw new NoAccessException();
+            throw new NoAccessException(messages.getMessage("team.errors.onlyLeaderCanTeamForm"));
         }
 
         team.setFormingStatus(TeamFormingStatus.FORMED);

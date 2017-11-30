@@ -84,7 +84,6 @@ public class TeamCreationService {
                     .createInvalidParameterError("membersID",
                                                  messages.getMessage("team.errors.incorrectMembersInTeamCount"));
             throw new InvalidParametersException(error);
-
         }
     }
 

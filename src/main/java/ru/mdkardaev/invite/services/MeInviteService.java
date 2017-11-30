@@ -48,7 +48,7 @@ public class MeInviteService {
      * Check invite exist and it's invite belong to user with specified id
      */
     private void checkInviteAndAccess(Long inviteID, Long userID) {
-        inviteCheckService.checkInviteExist(inviteID);
+        inviteCheckService.checkAndGet(inviteID);
         inviteCheckService.checkInviteBelongToUser(inviteID, userID);
     }
 }

@@ -7,6 +7,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mdkardaev.exceptions.InvalidParametersException;
+import ru.mdkardaev.exceptions.factory.ErrorDescriptionFactory;
+import ru.mdkardaev.exceptions.responses.ErrorDescription;
+import ru.mdkardaev.i18n.services.Messages;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.entity.Invite;
 import ru.mdkardaev.invite.enums.InviteStatus;
@@ -39,6 +43,10 @@ public class InviteService {
     private ConversionService conversionService;
     @Autowired
     private TeamCheckService teamCheckService;
+    @Autowired
+    private Messages messages;
+    @Autowired
+    private ErrorDescriptionFactory errorDescriptionFactory;
 
     /**
      * Create invites in team for specified users
@@ -54,17 +62,17 @@ public class InviteService {
 
         for (User user : users) {
             Invite invite = Invite.builder()
-                                  .team(team)
-                                  .user(user)
-                                  .status(InviteStatus.NEW)
-                                  .build();
+                    .team(team)
+                    .user(user)
+                    .status(InviteStatus.NEW)
+                    .build();
             invites.add(invite);
         }
 
         return inviteRepository.save(invites)
-                               .stream()
-                               .map(e -> conversionService.convert(e, InviteDTO.class))
-                               .collect(Collectors.toList());
+                .stream()
+                .map(e -> conversionService.convert(e, InviteDTO.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -74,19 +82,13 @@ public class InviteService {
     public InviteDTO acceptInvitation(Long inviteID, Long userID) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite.getStatus() != InviteStatus.NEW) {
-            throw new WrongInviteStatusException("Invite already accepted/declined");
-        }
+        checkInviteStatusIsNew(inviteID, invite);
 
         User user = userRepository.findOne(userID);
-        Team team = teamRepository.findOne(invite.getTeam().getId());
-
-        if (team == null) {
-            //TODO:
-//            throw new InvalidParameterException("teamID", "Team doesn't exist");
-        }
+        Team team = teamCheckService.checkAndGetTeam(invite.getTeam().getId());
 
         team.getUsers().add(user);
+
         teamRepository.save(team);
 
         invite.setStatus(InviteStatus.ACCEPTED);
@@ -102,14 +104,20 @@ public class InviteService {
     public InviteDTO declineInvitation(Long inviteID) {
         Invite invite = inviteRepository.findOne(inviteID);
 
-        if (invite.getStatus() != InviteStatus.NEW) {
-            throw new WrongInviteStatusException("Invite already accepted/declined");
-        }
+        checkInviteStatusIsNew(inviteID, invite);
 
         invite.setStatus(InviteStatus.DECLINED);
 
         Invite savedInvite = inviteRepository.save(invite);
         return conversionService.convert(savedInvite, InviteDTO.class);
+    }
+
+    private void checkInviteStatusIsNew(Long inviteID, Invite invite) {
+        if (invite.getStatus() != InviteStatus.NEW) {
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("id", messages.getMessage("invite.error.wrongStatus", inviteID));
+            throw new InvalidParametersException(error);
+        }
     }
 
     /**
@@ -118,9 +126,9 @@ public class InviteService {
     public List<InviteDTO> getUserInvites(InvitesFilter filters) {
         Specification<Invite> specification = InviteSpecifications.createGetInviteSpecification(filters);
         return inviteRepository.findAll(specification)
-                             .stream()
-                             .map(e -> conversionService.convert(e, InviteDTO.class))
-                             .collect(Collectors.toList());
+                .stream()
+                .map(e -> conversionService.convert(e, InviteDTO.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -146,8 +154,8 @@ public class InviteService {
         teamCheckService.checkAndGetTeam(id);
 
         return inviteRepository.findByTeam_id(id)
-                               .stream()
-                               .map(e -> conversionService.convert(e, InviteDTO.class))
-                               .collect(Collectors.toList());
+                .stream()
+                .map(e -> conversionService.convert(e, InviteDTO.class))
+                .collect(Collectors.toList());
     }
 }
