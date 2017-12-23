@@ -17,7 +17,7 @@ public class CreateTeamRequest {
     @NotEmpty
     private String name;
 
-    @ApiModelProperty(value = "List of member's id", example = "[1]", required = true)
+    @ApiModelProperty(value = "List of member's id", example = "[1]", required = false)
     @NotEmpty
     private List<Long> membersID;
 

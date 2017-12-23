@@ -73,13 +73,15 @@ public class TeamCreationService {
         List<User> users = userRepository.findAll(request.getMembersID());
         int membersCountInTeam = users.size() + 1; //+1 leader
 
-        if (users.size() != CollectionUtils.size(request.getMembersID())
-                || request.getMembersID().contains(leaderID)) {
-            ErrorDescription error = errorDescriptionFactory
-                    .createInvalidParameterError("membersID",
-                                                 messages.getMessage("team.errors.incorrectMembersCount"));
-            throw new InvalidParametersException(error);
-        } else if (game.getMemberCountInTeam().intValue() != membersCountInTeam) {
+//        if (users.size() != CollectionUtils.size(request.getMembersID())
+//                || request.getMembersID().contains(leaderID)) {
+//            ErrorDescription error = errorDescriptionFactory
+//                    .createInvalidParameterError("membersID",
+//                                                 messages.getMessage("team.errors.incorrectMembersCount"));
+//            throw new InvalidParametersException(error);
+//        } else 
+        	
+    	if (game.getMemberCountInTeam().intValue() != membersCountInTeam) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("membersID",
                                                  messages.getMessage("team.errors.incorrectMembersInTeamCount"));
