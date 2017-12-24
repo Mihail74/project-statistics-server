@@ -103,9 +103,9 @@ public class MatchService {
         match.setTeamsMatchScore(teamMatchScores);
 
         for (Team team : participantTeams) {
-            team.setNumberOfMatches((team.getNumberOfMatches() != null ? team.getNumberOfMatches() : 0) + 1);
+            team.setNumberOfMatches(team.getNumberOfMatches() + 1);
             if (team.getId().equals(winnerTeamID)) {
-                team.setNumberOfWinMatches((team.getNumberOfWinMatches() != null ? team.getNumberOfWinMatches() : 0) + 1);
+                team.setNumberOfWinMatches(team.getNumberOfWinMatches() + 1);
             }
         }
 
