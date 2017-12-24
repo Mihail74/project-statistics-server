@@ -23,6 +23,7 @@ import ru.mdkardaev.match.requests.TeamScore;
 import ru.mdkardaev.match.specifications.MatchSpecifications;
 import ru.mdkardaev.match.specifications.MatchesFilters;
 import ru.mdkardaev.team.entity.Team;
+import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.repository.TeamRepository;
 import ru.mdkardaev.user.entity.User;
 
@@ -169,6 +170,14 @@ public class MatchService {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
                                                  messages.getMessage("match.errors.incorrectTeamsCountForGame"));
+            errors.add(error);
+        }
+
+        boolean isHasNotFormedTeam = teams.stream().anyMatch(e -> e.getFormingStatus() != TeamFormingStatus.FORMED);
+        if (isHasNotFormedTeam) {
+            ErrorDescription error = errorDescriptionFactory
+                    .createInvalidParameterError("teamsScore",
+                                                 messages.getMessage("match.errors.notAllTeamFormed"));
             errors.add(error);
         }
 
