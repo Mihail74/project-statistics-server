@@ -36,4 +36,11 @@ public class UserService {
                              .map(e -> conversionService.convert(e, UserDTO.class))
                              .collect(Collectors.toList());
     }
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(e -> conversionService.convert(e, UserDTO.class))
+                .collect(Collectors.toList());
+    }
 }

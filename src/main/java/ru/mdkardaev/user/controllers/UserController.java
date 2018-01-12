@@ -3,6 +3,7 @@ package ru.mdkardaev.user.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,13 @@ public class UserController {
     public ResponseEntity<?> getUsers(GetUsersRequest request, @AuthenticationPrincipal UserDetails principal) {
         log.debug("getUsers; request is {}", request);
 
-        List<UserDTO> users = userService.getUsersExcludeUserWithID(Long.valueOf(principal.getUsername()));
+        List<UserDTO> users;
+
+        if (BooleanUtils.isTrue(request.getIncludeMe())) {
+            users = userService.getAllUsers();
+        } else {
+            users = userService.getUsersExcludeUserWithID(Long.valueOf(principal.getUsername()));
+        }
 
         log.debug("getUsers; returns {} matches", users.size());
         return ResponseEntity.ok(new GetUsersResponse(users));
