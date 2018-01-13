@@ -15,6 +15,7 @@ import ru.mdkardaev.team.dtos.TeamDTO;
 import ru.mdkardaev.team.entity.Team;
 import ru.mdkardaev.team.enums.TeamFormingStatus;
 import ru.mdkardaev.team.repository.TeamRepository;
+import ru.mdkardaev.team.requests.EditTeamRequest;
 
 /**
  * Service that handles requests to update team information
@@ -52,14 +53,31 @@ public class UpdateTeamService {
         return conversionService.convert(teamRepository.save(team), TeamDTO.class);
     }
 
+    /**
+     * Edit team according to specified request.
+     */
+    public TeamDTO editTeam(EditTeamRequest request, Long id, Long userID) {
+        Team team = teamCheckService.checkAndGetTeam(id);
+
+        checkUserIsLeaderOfTeam(userID, team);
+
+        team.setName(request.getName());
+        
+        return conversionService.convert(teamRepository.save(team), TeamDTO.class);
+    }
+
     private void checkFormPossible(Team team, Long userID) {
-        if (!team.getLeader().getId().equals(userID)) {
-            throw new NoAccessException(messages.getMessage("team.errors.onlyLeaderCanTeamForm"));
-        }
+        checkUserIsLeaderOfTeam(userID, team);
 
         if (team.getUsers().size() != team.getGame().getMemberCountInTeam()) {
             throw new ApiException(new ErrorDescription(ErrorID.NOT_ENOUGH_MEMBER_TO_FORM_TEAM,
                     messages.getMessage("team.errors.notEnoughUser")));
+        }
+    }
+
+    private void checkUserIsLeaderOfTeam(Long userID, Team team) {
+        if (!team.getLeader().getId().equals(userID)) {
+            throw new NoAccessException(messages.getMessage("team.errors.onlyLeaderCanDoThis"));
         }
     }
 }

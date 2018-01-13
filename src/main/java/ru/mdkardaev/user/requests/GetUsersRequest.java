@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@ApiModel(value = "Request on list of users")
+@ApiModel(value = "Request for a list of users")
 @Data
 public class GetUsersRequest {
 
