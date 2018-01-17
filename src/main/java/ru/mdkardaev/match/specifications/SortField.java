@@ -5,8 +5,7 @@ import lombok.Getter;
 @Getter
 public enum SortField {
 
-    TIMESTAMP("timestamp"),
-    SCORE("teamsMatchScore.score");
+    TIMESTAMP("timestamp");
 
     private String property;
 

@@ -3,6 +3,7 @@ package ru.mdkardaev.user.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.user.dtos.UserDTO;
+import ru.mdkardaev.user.requests.EditUserRequest;
 import ru.mdkardaev.user.requests.GetUsersRequest;
+import ru.mdkardaev.user.responses.EditUserResponse;
 import ru.mdkardaev.user.responses.GetUsersResponse;
 import ru.mdkardaev.user.services.UserService;
 
@@ -33,9 +36,26 @@ public class UserController {
     public ResponseEntity<?> getUsers(GetUsersRequest request, @AuthenticationPrincipal UserDetails principal) {
         log.debug("getUsers; request is {}", request);
 
-        List<UserDTO> users = userService.getUsersExcludeUserWithID(Long.valueOf(principal.getUsername()));
+        List<UserDTO> users;
+
+        if (BooleanUtils.isTrue(request.getIncludeMe())) {
+            users = userService.getAllUsers();
+        } else {
+            users = userService.getUsersExcludeUserWithID(Long.valueOf(principal.getUsername()));
+        }
 
         log.debug("getUsers; returns {} matches", users.size());
         return ResponseEntity.ok(new GetUsersResponse(users));
+    }
+
+    @RequestMapping(path = "/me/edit", method = RequestMethod.PUT)
+    @ApiOperation(value = "Edit me", response = EditUserRequest.class)
+    public ResponseEntity<?> editMe(EditUserRequest request, @AuthenticationPrincipal UserDetails principal) {
+        log.debug("editMe; request is {}", request);
+
+        UserDTO user = userService.editUser(request, Long.valueOf(principal.getUsername()));
+
+        log.debug("editMe; returns {}", user);
+        return ResponseEntity.ok(new EditUserResponse(user));
     }
 }

@@ -12,7 +12,8 @@ public enum ErrorID {
     ENTITY_NOT_FOUND(1, HttpStatus.NOT_FOUND),
     INVALID_PARAMETER(2, HttpStatus.BAD_REQUEST),
     NO_ACCESS(3, HttpStatus.NOT_ACCEPTABLE),
-    DATABASE_CONSTRAINT_VIOLATION(4, HttpStatus.CONFLICT);
+    DATABASE_CONSTRAINT_VIOLATION(4, HttpStatus.CONFLICT),
+    NOT_ENOUGH_MEMBER_TO_FORM_TEAM(5, HttpStatus.FORBIDDEN);
 
     @Getter(onMethod = @__({@JsonValue}))
     private int id;
