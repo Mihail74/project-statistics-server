@@ -17,5 +17,7 @@ public class MatchesFilters {
     //sort order
     private SortField sortField;
     private Sort.Direction sortDirection;
+
+    private int pageNumber;
 }
 

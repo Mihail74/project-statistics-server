@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.mdkardaev.team.dtos.TeamDTO;
+import ru.mdkardaev.team.dtos.TeamsPage;
 
 import java.util.List;
 
@@ -13,6 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class GetTeamsResponse {
 
-    @ApiModelProperty(value = "teams", required = true)
-    private List<TeamDTO> teams;
+    @ApiModelProperty("Teams page")
+    private TeamsPage page;
 }

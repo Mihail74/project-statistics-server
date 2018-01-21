@@ -8,15 +8,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.invite.dtos.InviteDTO;
 import ru.mdkardaev.invite.services.InviteService;
 import ru.mdkardaev.team.dtos.TeamDTO;
+import ru.mdkardaev.team.dtos.TeamsPage;
 import ru.mdkardaev.team.requests.CreateTeamRequest;
 import ru.mdkardaev.team.requests.GetTeamsRequest;
 import ru.mdkardaev.team.responses.GetInvitesInTeamResponse;
@@ -29,6 +26,7 @@ import ru.mdkardaev.team.specifications.TeamsFilters;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/teams",
@@ -68,14 +66,15 @@ public class TeamController {
         log.debug("getTeams; request is {}", request);
 
         TeamsFilters filters = TeamsFilters.builder()
-                                           .gameID(request.getGameID())
-                                           .formingStatus(request.getFormingStatus())
-                                           .memberID(request.getMemberID())
-                                           .build();
-        List<TeamDTO> teams = getTeamsService.getTeams(filters);
+                .gameID(request.getGameID())
+                .formingStatus(request.getFormingStatus())
+                .memberID(request.getMemberID())
+                .pageNumber(Optional.ofNullable(request.getPageNumber()).map(e -> e -= 1).orElse(null))
+                .build();
+        TeamsPage page = getTeamsService.getTeams(filters);
 
-        log.debug("getTeams; returns {} teams", teams.size());
-        return ResponseEntity.ok(new GetTeamsResponse(teams));
+        log.debug("getTeams; returns {} teams", page.getContent().size());
+        return ResponseEntity.ok(new GetTeamsResponse(page));
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)

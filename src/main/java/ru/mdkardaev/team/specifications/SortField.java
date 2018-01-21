@@ -1,4 +1,4 @@
-package ru.mdkardaev.match.specifications;
+package ru.mdkardaev.team.specifications;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SortField {
 
-    TIMESTAMP("timestamp");
+    NAME("name");
 
     private String property;
 }
