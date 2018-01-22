@@ -13,4 +13,5 @@ public class TeamsFilters {
     private Long gameID;
     private TeamFormingStatus formingStatus;
     private Long memberID;
+    private Integer pageNumber;
 }

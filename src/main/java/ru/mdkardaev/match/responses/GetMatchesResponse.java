@@ -1,9 +1,11 @@
 package ru.mdkardaev.match.responses;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Value;
 import ru.mdkardaev.match.dtos.MatchDTO;
+import ru.mdkardaev.match.dtos.MatchesPage;
 
 import java.util.List;
 
@@ -11,6 +13,6 @@ import java.util.List;
 @Value
 public class GetMatchesResponse {
 
-    @ApiModelProperty(value = "Matches", required = true)
-    private List<MatchDTO> matches;
+    @ApiModelProperty("Matches page")
+    private MatchesPage page;
 }

@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mdkardaev.exceptions.InvalidParametersException;
@@ -13,6 +15,7 @@ import ru.mdkardaev.game.entity.Game;
 import ru.mdkardaev.game.repository.GameRepository;
 import ru.mdkardaev.i18n.services.Messages;
 import ru.mdkardaev.match.dtos.MatchDTO;
+import ru.mdkardaev.match.dtos.MatchesPage;
 import ru.mdkardaev.match.entity.Match;
 import ru.mdkardaev.match.entity.TeamMatchScore;
 import ru.mdkardaev.match.entity.TeamMatchScorePK;
@@ -38,6 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MatchService {
 
+    private static final int DEFAULT_PAGE_SIZE = 10;
     @Autowired
     private MatchRepository matchRepository;
     @Autowired
@@ -123,18 +127,25 @@ public class MatchService {
         return convert(matchRepository.findOne(id));
     }
 
-    public List<MatchDTO> getMatches(MatchesFilters filters) {
+    public MatchesPage getMatches(MatchesFilters filters) {
         log.trace("getMatches; enter");
 
-        List<MatchDTO> result = matchRepository
-                .findAll(MatchSpecifications.createGetMatchesSpecification(filters),
-                         MatchSpecifications.createGetMatchesSort(filters))
+        PageRequest pageRequest = new PageRequest(
+                filters.getPageNumber(),
+                DEFAULT_PAGE_SIZE,
+                MatchSpecifications.createGetMatchesSort(filters));
+
+        Page<Match> page = matchRepository
+                .findAll(MatchSpecifications.createGetMatchesSpecification(filters), pageRequest);
+
+        List<MatchDTO> result = page.getContent()
                 .stream()
                 .map(this::convert)
                 .collect(Collectors.toList());
 
         log.trace("getMatches; return {} matches", result.size());
-        return result;
+        return new MatchesPage(result, page.getTotalPages(), page.getTotalElements(),
+                page.getNumber() + 1, page.getNumberOfElements());
     }
 
     private MatchDTO convert(Match match) {
@@ -156,7 +167,7 @@ public class MatchService {
         if (game == null) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("gameID",
-                                                 messages.getMessage("game.errors.notFound", request.getGameID()));
+                            messages.getMessage("game.errors.notFound", request.getGameID()));
             errors.add(error);
         }
 
@@ -164,12 +175,12 @@ public class MatchService {
         if (CollectionUtils.size(request.getTeamsScore()) != CollectionUtils.size(teams)) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
-                                                 messages.getMessage("match.errors.incorrectTeamsCount"));
+                            messages.getMessage("match.errors.incorrectTeamsCount"));
             errors.add(error);
         } else if (CollectionUtils.size(teamIDs) != game.getTeamCountInMatch()) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
-                                                 messages.getMessage("match.errors.incorrectTeamsCountForGame"));
+                            messages.getMessage("match.errors.incorrectTeamsCountForGame"));
             errors.add(error);
         }
 
@@ -177,7 +188,7 @@ public class MatchService {
         if (isHasNotFormedTeam) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
-                                                 messages.getMessage("match.errors.notAllTeamFormed"));
+                            messages.getMessage("match.errors.notAllTeamFormed"));
             errors.add(error);
         }
 
@@ -187,8 +198,8 @@ public class MatchService {
         if (CollectionUtils.size(users) != uniqueUsers) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
-                                                 messages.getMessage(
-                                                         "match.errors.existsDuplicateUserInDifferentTeam"));
+                            messages.getMessage(
+                                    "match.errors.existsDuplicateUserInDifferentTeam"));
             errors.add(error);
         }
 
@@ -200,7 +211,7 @@ public class MatchService {
         if (!isAllTeamHaveCorrectScore) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
-                                                 messages.getMessage("match.errors.existTeamWithIncorrectScore"));
+                            messages.getMessage("match.errors.existTeamWithIncorrectScore"));
             errors.add(error);
         }
 
@@ -210,7 +221,7 @@ public class MatchService {
         if (!isOnlyOneWinner) {
             ErrorDescription error = errorDescriptionFactory
                     .createInvalidParameterError("teamsScore",
-                                                 messages.getMessage("match.errors.moreThanOneWinner"));
+                            messages.getMessage("match.errors.moreThanOneWinner"));
             errors.add(error);
         }
 

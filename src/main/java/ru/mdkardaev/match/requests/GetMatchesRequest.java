@@ -6,7 +6,8 @@ import lombok.Data;
 import org.springframework.data.domain.Sort;
 import ru.mdkardaev.match.specifications.SortField;
 
-import java.util.List;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @ApiModel(value = "Request list of matches")
 @Data
@@ -24,4 +25,9 @@ public class GetMatchesRequest {
 
     @ApiModelProperty("Sort direction")
     private Sort.Direction sortDirection;
+
+    @NotNull
+    @Min(1)
+    @ApiModelProperty(value = "Page number", required = true)
+    private Integer pageNumber;
 }

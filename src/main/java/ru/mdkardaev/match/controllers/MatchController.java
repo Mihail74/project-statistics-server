@@ -9,13 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.mdkardaev.common.config.SwaggerConfig;
 import ru.mdkardaev.match.dtos.MatchDTO;
+import ru.mdkardaev.match.dtos.MatchesPage;
 import ru.mdkardaev.match.requests.CreateMatchRequest;
 import ru.mdkardaev.match.requests.GetMatchesRequest;
 import ru.mdkardaev.match.responses.GetMatchResponse;
@@ -58,15 +55,16 @@ public class MatchController {
         Long userID = Long.valueOf(principal.getUsername());
 
         MatchesFilters filters = MatchesFilters.builder()
-                                               .teamID(request.getTeamID())
-                                               .sortField(request.getSortField())
-                                               .sortDirection(request.getSortDirection())
-                                               .requiredTeamMemberUserID(BooleanUtils.isTrue(request.getOnlyMyMatches()) ? userID : null)
-                                               .build();
-        List<MatchDTO> matches = matchService.getMatches(filters);
+                .teamID(request.getTeamID())
+                .sortField(request.getSortField())
+                .sortDirection(request.getSortDirection())
+                .requiredTeamMemberUserID(BooleanUtils.isTrue(request.getOnlyMyMatches()) ? userID : null)
+                .pageNumber(request.getPageNumber() - 1)
+                .build();
+        MatchesPage matchesPage = matchService.getMatches(filters);
 
-        log.debug("get; returns {} matches", matches.size());
-        return ResponseEntity.ok(new GetMatchesResponse(matches));
+        log.debug("get; returns {} matches", matchesPage.getContent().size());
+        return ResponseEntity.ok(new GetMatchesResponse(matchesPage));
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
